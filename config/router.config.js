@@ -144,7 +144,18 @@ export default [
           },
         ],
       },
-
+      {
+        path: '/Applicant',
+        icon: 'file',
+        name: 'Applicant',
+        routes: [
+          {
+            path: '/Applicant/Application',
+            name: 'Application',
+            component: './Applicant/Application',
+          },
+        ],
+      },
 
 
       {
