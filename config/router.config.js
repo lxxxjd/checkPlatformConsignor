@@ -42,82 +42,6 @@ export default [
       // Entrustment
       { path: '/', redirect: '/Company/PreCompany',authority: ['admin', 'user']},
 
-
-      {
-        path: '/Cargo',
-        icon: 'profile',
-        name: 'Cargo',
-        routes: [
-
-
-
-          {
-            path: '/Cargo/CargoInfo',
-            name: 'CargoInfo',
-            component: './Cargo/CargoInfo',
-          },
-          {
-            path: '/Cargo/ItemList',
-            name: 'ItemList',
-            component: './Cargo/ItemList',
-            hideInMenu: 'true',//添加页不需要在menu上显示
-          },
-          {
-            path: '/Cargo/StandardList',
-            name: 'StandardList',
-            component: './Cargo/StandardList',
-            hideInMenu: 'true',//添加页不需要在menu上显示
-          },
-
-
-          {
-            path: '/Cargo/CargoSort1',
-            name: 'CargoSort1',
-            component: './Cargo/CargoSort1',
-          },
-
-          {
-            path: '/Cargo/CargoSort2',
-            name: 'CargoSort2',
-            component: './Cargo/CargoSort2',
-            hideInMenu: 'true',//添加页不需要在menu上显示
-          },
-
-
-
-
-          {
-            path: '/Cargo/CNASTwo',
-            name: 'CNASTwo',
-            component: './Cargo/CNASTwo',
-            hideInMenu: 'true',//添加页不需要在menu上显示
-          },
-
-          {
-            path: '/Cargo/CNASThree',
-            name: 'CNASThree',
-            component: './Cargo/CNASThree',
-            hideInMenu: 'true',//添加页不需要在menu上显示
-          },
-
-
-          {
-            path: '/Cargo/CNASOne',
-            name: 'CNASOne',
-            component: './Cargo/CNASOne',
-          },
-
-          {
-            path: '/Cargo/CNASFour',
-            name: 'CNASFour',
-            component: './Cargo/CNASFour',
-            hideInMenu: 'true',//添加页不需要在menu上显示
-          },
-
-
-        ],
-      },
-
       {
         path: '/Company',
         icon: 'file',
@@ -130,18 +54,6 @@ export default [
             component: './Company/PreCompany',
           },
 
-          {
-            path: '/Company/Company',
-            name: 'Company',
-            component: './Company/Company',
-          },
-
-          {
-            path: '/Company/CNASCheckFourCertCode',
-            name: 'CNASCheckFourCertCode',
-            component: './Company/CNASCheckFourCertCode',
-            hideInMenu: 'true',//添加页不需要在menu上显示
-          },
         ],
       },
 

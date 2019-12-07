@@ -1,6 +1,5 @@
 import {getPreCompanyList,addPreCompany,updatePreCompany,deletePreCompany,createAccount,
   getCompanyList,addCompany,updateCompany,deleteCompany} from '@/services/company';
-import {getCNASCheckFourCertCodeListInfo} from '@/services/cnas';
 
 export default {
   namespace: 'company',
@@ -17,14 +16,6 @@ export default {
   },
   effects: {
 
-    *getCNASCheckFourCertCodeListInfo({ payload,callback }, { call, put }) {
-      const response = yield call(getCNASCheckFourCertCodeListInfo, payload);
-      yield put({
-        type: 'getCNASCheckFourCertCodeListInfoResult',
-        payload: response,
-      });
-      if (callback) callback(response);
-    },
 
     *getPreCompanyList({ payload,callback }, { call, put }) {
       const response = yield call(getPreCompanyList, payload);
