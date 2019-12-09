@@ -66,6 +66,26 @@ export default [
             name: 'Application',
             component: './Applicant/Application',
           },
+          {
+            path: '/Applicant/Accept',
+            name: 'Accept',
+            component: './Applicant/Accept',
+          },
+          {
+            path: '/Applicant/UnAccept',
+            name: 'UnAccept',
+            component: './Applicant/UnAccept',
+          },
+          {
+            path: '/Applicant/DetailForUnAccept',
+            name: 'DetailForUnAccept',
+            component: './Applicant/DetailForUnAccept',
+          },
+          {
+            path: '/Applicant/AddAttention',
+            name: 'AddAttention',
+            component: './Applicant/AddAttention',
+          },
         ],
       },
 

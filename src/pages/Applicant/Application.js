@@ -1,4 +1,4 @@
-import React, {PureComponent} from 'react';
+import React, {PureComponent,Fragment} from 'react';
 import {
   Card,
   Button,
@@ -16,6 +16,9 @@ import {
   notification,
   AutoComplete,
   Table,
+  Divider,
+  Modal,
+  Upload,
 } from 'antd';
 
 import {connect} from 'dva';
@@ -52,7 +55,6 @@ const options = [
   },
 ];
 const fieldLabels = {
-  customsNo: '报关号',
   applicant: '申请人',
   applicantname: '联系人',
   applicanttel: '联系方式',
@@ -84,6 +86,14 @@ const fieldLabels = {
   customsName:'海关部门'
 };
 
+function getBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = error => reject(error);
+  });
+}
 
 @connect(({applicant, loading}) => ({
   applicant,
@@ -97,50 +107,27 @@ class Application extends PureComponent {
     applicantName: [],
     agentName:[],
     payerName:[],
-    businessSort: [],
-    businessSource: [],
-    tradeway: [],
     checkProject: [],
     cargos: [],
     applicantContacts: [],
     agentContacts: [],
-    cnasInfo: {
-      checkcode: '',
-      checkname: '',
-      domaincode: '',
-      domainname: '',
-      subdomaincode: '',
-      subdomainname: '',
-    },
+    visible:false,
     departments:[],
     cargoname:"",
+    fileList:[],
+    tempFileList:[],
+    company:[],
   };
   columns = [
     {
       title: '记录名',
-      dataIndex: 'recordname',
-      render: val => {
-        //取文件名
-        var pattern = /\.{1}[a-z]{1,}$/;
-        if (pattern.exec(val) !== null) {
-          return <span>{val.slice(0, pattern.exec(val).index)}</span>;
-        } else {
-          return <span>{val}</span>;
-        }
-      }
-    },
-    {
-      title: '上传日期',
-      dataIndex: 'recorddate',
-      render: val => <span>{
-         moment(val).format('YYYY-MM-DD')
-      }</span>
+      dataIndex: 'name',
     },
     {
       title: '操作',
       render: (text, record) => (
         <Fragment>
-          <a onClick={() => this.previewItem(text, record)}>查看</a>
+          <a onClick={() => this.deleteItem(text, record)}>删除</a>
         </Fragment>
       ),
     },
@@ -151,7 +138,6 @@ class Application extends PureComponent {
     form.setFieldsValue({['unit']: "公吨"});
     const now = moment().format("YYYY-MM-DD HH:mm:ss");
     form.setFieldsValue({['inspdate']: moment(now, "YYYY-MM-DD HH:mm:ss")});
-    form.setFieldsValue({['reportdate']: moment(now, "YYYY-MM-DD HH:mm:ss")});
     const user = JSON.parse(localStorage.getItem("userinfo"));
     const {dispatch} = this.props;
     dispatch({
@@ -161,27 +147,6 @@ class Application extends PureComponent {
         this.setState({applicantName: response});
         this.setState({agentName: response});
         this.setState({payerName:response});
-      }
-    });
-    dispatch({
-      type: 'applicant/getBusinessSort',
-      payload: {},
-      callback: (response) => {
-        this.setState({businessSort: response})
-      }
-    });
-    dispatch({
-      type: 'applicant/getBusinessSource',
-      payload: {},
-      callback: (response) => {
-        this.setState({businessSource: response})
-      }
-    });
-    dispatch({
-      type: 'applicant/getTradeWay',
-      payload: {},
-      callback: (response) => {
-        this.setState({tradeway: response})
       }
     });
     dispatch({
@@ -203,13 +168,12 @@ class Application extends PureComponent {
       }
     });
     dispatch({
-      type: 'applicant/getDepartmentList',
+      type: 'applicant/getCompanyList',
       payload: {
-        certCode: user.certCode,
+        // certCode: user.certCode,
       },
-      callback: (response) => {
-        console.log(response);
-        this.setState({departments: response.data})
+      callback: (response) => {        
+        this.setState({company : response.data})
       }
     });
   }
@@ -219,35 +183,46 @@ class Application extends PureComponent {
       form: {validateFieldsAndScroll},
       dispatch,
     } = this.props;
-    const { cnasInfo } = this.state;
+    const { tempFileList } = this.state;
     validateFieldsAndScroll((error, values) => {
       const user = JSON.parse(localStorage.getItem("userinfo"));
       if(values.inspplace1 !== null && values.inspplace1 !== undefined){
          values.inspplace1 = values.inspplace1[2];
       }
-      if(values.customsName !== null && values.customsName !== undefined){
-        values.customsName = values.customsName[1];
-      }
-      console.log(error);
       if (!error) {
         // submit the values
         dispatch({
-          type: 'entrustment/addReport',
+          type: 'applicant/addPremaininfo',
           payload: {
             ...values,
-            username: user.nameC,
-            certcode: user.certCode,
-            reportplace: user.place,
-            cnasCode: cnasInfo.checkcode
+            consigoruser: user.userName,
           },
           callback: (response) => {
             if (response.code === 200) {
-              notification.open({
-                message: '添加成功',
+              let formData = new FormData();
+              const user = JSON.parse(localStorage.getItem("userinfo"));
+              let files = [];
+              tempFileList.forEach(file => {
+                files.push(file.originFileObj);
               });
-              sessionStorage.setItem('reportno', response.data.reportno);
-              router.push({
-                pathname: '/Entrustment/DetailForEntrustment',
+              formData.append('files', files);
+              formData.append('prereportno', response.data);
+              formData.append('creator', user.userName);
+              dispatch({
+                type: 'applicant/addPremaininfo',
+                payload:formData,
+                callback: (response) =>{
+                  if (response.code === 200) {
+                    notification.open({
+                      message: '添加成功',
+                    });
+                  }else {
+                    notification.open({
+                      message: '添加失败',
+                      description: response.data,
+                    });
+                  }
+                }
               });
             } else {
               notification.open({
@@ -262,6 +237,18 @@ class Application extends PureComponent {
         console.log(error);
       }
     });
+  };
+
+  deleteItem = text =>{
+    let files = this.state.tempFileList;
+    for(let file in files){
+      if(files[file].name === text.name){
+        files.splice(file,1);
+        break;
+      }
+    }
+    this.setState({tempFileList:files});
+    this.forceUpdate();
   };
 
   onChange = e => {
@@ -279,7 +266,7 @@ class Application extends PureComponent {
   handleAgentSearch = value => {
     const {dispatch} = this.props;
     dispatch({
-      type: 'entrustment/getClientName',
+      type: 'applicant/getClientName',
       payload: {
         content: value
       },
@@ -291,7 +278,7 @@ class Application extends PureComponent {
   handleApplicantSearch = value => {
     const {dispatch} = this.props;
     dispatch({
-      type: 'entrustment/getClientName',
+      type: 'applicant/getClientName',
       payload: {
         content: value
       },
@@ -303,7 +290,7 @@ class Application extends PureComponent {
   handlePayerSearch = value => {
     const {dispatch} = this.props;
     dispatch({
-      type: 'entrustment/getClientName',
+      type: 'applicant/getClientName',
       payload: {
         content: value
       },
@@ -316,7 +303,7 @@ class Application extends PureComponent {
     const {dispatch} = this.props;
    // const certCode = JSON.parse(localStorage.getItem("userinfo")).certCode;
     dispatch({
-      type: 'entrustment/searchCargos',
+      type: 'applicant/searchCargos',
       payload: {
         // certCode,
         value
@@ -332,10 +319,9 @@ class Application extends PureComponent {
   };
 
   onAppliantChange = value => {
-    console.log(value);
     const {dispatch} = this.props;
     dispatch({
-      type: 'entrustment/getContacts',
+      type: 'applicant/getContacts',
       payload: {
         value
       },
@@ -345,10 +331,41 @@ class Application extends PureComponent {
     });
   };
 
+  handleChange = ({ file,fileList }) => {
+    // 限制图片 格式、size、分辨率
+    const isJPG = file.type === 'image/jpg';
+    const isJPEG = file.type === 'image/jpeg';
+    const isGIF = file.type === 'image/gif';
+    const isPNG = file.type === 'image/png';
+    const isPDF = file.type === 'application/pdf'
+    const size = file.size / 1024 / 1024 < 20;
+    if (!(isJPG || isJPEG || isGIF || isPNG || isPDF)) {
+      Modal.error({
+        title: '只能上传JPG 、JPEG 、GIF、 PNG、 PDF格式的图片~',
+      });
+      return;
+    } else if (!size) {
+      Modal.error({
+        title: '超过20M限制，不允许上传~',
+      });
+      return;
+    }
+    let val = file.name;
+    const pattern = /\.{1}[a-z]{1,}$/;
+    if (pattern.exec(val) !== null) {
+      val = val.slice(0, pattern.exec(val).index)
+    } 
+    const {
+      form
+    } = this.props;
+    form.setFieldsValue({['filename']: val});
+    this.setState({ fileList});
+  };
+
   onAgentChange = value => {
     const {dispatch} = this.props;
     dispatch({
-      type: 'entrustment/getContacts',
+      type: 'applicant/getContacts',
       payload: {
         value
       },
@@ -380,28 +397,61 @@ class Application extends PureComponent {
     }
   };
 
+  show = value =>{
+    this.setState({visible:true});
+  };
+
+  handleCancel = () =>{
+    const {
+      form
+    } = this.props;
+    form.setFieldsValue({'filename': null});
+    form.setFieldsValue({'MultipartFile': []});
+    this.setState({ visible: false });
+  };
+
+  handleOk =() =>{
+    const {
+      form: {validateFieldsAndScroll},
+      dispatch,
+    } = this.props;
+    validateFieldsAndScroll((error, values) => {
+      if(!error){
+        values.MultipartFile.fileList[0].name = values.filename;
+        this.state.tempFileList.push(values.MultipartFile.fileList[0]);
+        this.setState({visible:false});
+      }
+    });
+  };
+
   render() {
+    const parentMethods = {
+      handleOk:this.handleOk,
+      handleCancel:this.handleCancel
+    };
     const {
       form: {getFieldDecorator},
       loading,
     } = this.props;
-    const {applicantName, agentName, payerName , businessSort, businessSource, tradeway, checkProject, cargos, agentContacts, applicantContacts, departments, disable} = this.state;
-
+    const {applicantName, agentName, payerName  , checkProject, cargos, agentContacts, applicantContacts, visible, company , fileList,tempFileList} = this.state;
+    const uploadButton = (
+      <div>
+        <Icon type="plus" />
+        <div className="ant-upload-text">Upload</div>
+      </div>
+    );
     const applicantOptions = applicantName.map(d => <Option key={d} value={d}>{d}</Option>);
     const agentOptions = agentName.map(d => <Option key={d} value={d}>{d}</Option>);
     const payerOptions = payerName.map(d => <Option key={d} value={d}>{d}</Option>);
-    const businessSortOptions = businessSort.map(d => <Option key={d} value={d}>{d}</Option>);
-    const businessSourceOptions = businessSource.map(d => <Option key={d} value={d}>{d}</Option>);
-    const tradewayOptions = tradeway.map(d => <Option key={d} value={d}>{d}</Option>);
     const cargosOptions = cargos.map(d => d.cargonamec);
-    const departmentOptions = departments.map(d => <Option key={d.branchname} value={d.branchname}>{d.branchname}</Option>);
     const applicantContactsOptions = applicantContacts.map(d => <Option key={d.contactName} value={d.contactName}>{d.contactName}</Option>);
     const agentContactsOptions = agentContacts.map(d =><Option key={d.contactName} value={d.contactName}>{d.contactName}</Option>);
+    const companyOptions = company.map(d =><Option key={d.certcode} value={d.certcode}>{d.namec}</Option>);
     //申请人选项
     return (
       <PageHeaderWrapper
       >
-        <Card bordered={false}>
+        <Card bordered={false} className={styles.card}>
           <Row gutter={16}>
             <Col span={2}>
               <Button type="primary" onClick={this.validate}>提交</Button>
@@ -415,22 +465,22 @@ class Application extends PureComponent {
             <Row gutter={16}>
               <Col span={8}>
                 <Form.Item
-                  label={fieldLabels.applicant}
+                  label='请选择检验机构'
                   labelCol={{span: 6}}
                   wrapperCol={{span: 18}}
                   colon={false}
                 >
-                  {getFieldDecorator('applicant', {
-                    rules: [{required: true, message: '请选择检验机构'}],
+                  {getFieldDecorator('certcode', {
+                    rules: visible ?[]:[{required: true, message: '请选择检验机构'}]
                   })(
                     <Select
-                      showSearch
+                      // showSearch
                       placeholder="请选择检验机构"
                       filterOption={false}
-                      onSearch={this.handleApplicantSearch}
-                      onChange={this.onAppliantChange}
+                      // onSearch={this.handleApplicantSearch}
+                      // onChange={this.onAppliantChange}
                     >
-                      {applicantOptions}
+                      {companyOptions}
                     </Select>
                   )}
                 </Form.Item>            
@@ -451,7 +501,7 @@ class Application extends PureComponent {
                   colon={false}
                 >
                   {getFieldDecorator('applicant', {
-                    rules: [{required: true, message: '请输入申请人'}],
+                    rules: visible ?[]:[{required: true, message: '请输入申请人'}]
                   })(
                     <Select
                       showSearch
@@ -605,7 +655,7 @@ class Application extends PureComponent {
                   colon={false}
                 >
                   {getFieldDecorator('cargoname', {
-                    rules: [{required: true, message: '请输入检查品名'}],
+                    rules: visible ?[]:[{required: true, message: '请输入货物名称'}]
                   })(
                     <AutoComplete
                       className="global-search"
@@ -736,7 +786,7 @@ class Application extends PureComponent {
                   colon={false}
                 >
                   {getFieldDecorator('inspway', {
-                    rules: [{required: true, message: '申请项目'}],
+                    rules:visible ? []: [{required: true, message: '请输入申请人'}]
                   })(
                     <CheckboxGroup
                       options={checkProject}
@@ -759,13 +809,47 @@ class Application extends PureComponent {
             </Row>
           </Form>
         </Card>
-        <Card title="上传文件" className={styles.card} bordered={false}>
-          <Table
+        <Card className={styles.card} bordered={false}>
+          <Row>
+            <Col span={24}>
+              <Button style={{ marginBottom: 12 }} type="primary" onClick={this.show}>上传文件</Button>
+            </Col>
+          </Row>
+        <Modal
+            title="文件上传"
+            visible={visible}
+            onOk={this.handleOk}
+            onCancel={this.handleCancel}
+         >
+          <Form.Item label="文件上传">
+                {getFieldDecorator('MultipartFile', {
+                  rules: visible ?[{required: true, message: '请输入文件上传'}]:[],
+              })(
+                <Upload
+                  listType="picture-card"
+                  fileList={fileList}
+                  onPreview={this.handlePreview}
+                  beforeUpload={this.handleBeforeUpload}
+                  onChange={this.handleChange}
+                >
+                  {fileList.length >= 1 ? null : uploadButton}
+                </Upload>
+              )}
+              </Form.Item>
+              <Form.Item label="文件名称">
+                {getFieldDecorator('filename', {
+                  rules: visible ? [{required: true, message: '请输入文件名称'}]:[],
+              })(
+                <Input style={{width: '100%'}} placeholder="请输入文件名称"/>
+              )}
+            </Form.Item>
+        </Modal>          
+        <Table
             size="middle"
             loading={loading}
-            //dataSource={recordData}
+            dataSource={tempFileList}
             columns={this.columns}
-            rowKey="recordname"
+            rowKey="name"
             pagination={{showQuickJumper:true,showSizeChanger:true}}
           />
         </Card>

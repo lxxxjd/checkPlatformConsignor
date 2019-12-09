@@ -1,6 +1,4 @@
-import { submitApplication ,queryAllReports,queryAllReportsByFilter,
-        queryReport,cancelReportItem,getAllClientName,getAllBusinessSort,
-        getAllBusinessSource,getTradeWay,getCheckProject,getCargos,updateReport,getContacts,searchCargos,getDepartmentList} from '@/services/Applicant';
+import {queryAllReports,queryAllReportsByFilter,queryReport,getAllClientName,getCheckProject,getCargos,getContacts,searchCargos,getCompanyList,upload,getPremaininfoList, addPremaininfo} from '@/services/Applicant';
 
 export default {
   namespace: 'applicant',
@@ -11,13 +9,11 @@ export default {
     },
     report:{},
     clientName:[],
-    businessSort:[],
-    businessSource:[],
-    tradeway: [],
     cargos: [],
     copyNo:'',
     deleteResult:null,
     checkProject:[],
+    preMainInfoList:[]
   },
 
   effects: {
@@ -28,22 +24,30 @@ export default {
         payload: response,
       });
     },
-    *getDepartmentList({ payload , callback}, { call, put }) {
-      const response = yield call(getDepartmentList, payload);
+
+    *getCompanyList({ payload ,callback}, { call, put }) {
+      const response = yield call(getCompanyList, payload);
       if (callback) callback(response);
     },
-    *getCustomInfos({ payload , callback}, { call, put }) {
-      const response = yield call(getCustomInfos, payload);
+
+    *addPremaininfo({ payload ,callback}, { call, put }) {
+      const response = yield call(addPremaininfo, payload);
       if (callback) callback(response);
     },
-    *addReport({ payload, callback }, { call, put }) {
-      const response = yield call(submitApplication, payload);
+
+    *getPremaininfoList({ payload ,callback}, { call, put }) {
+      const response = yield call(getPremaininfoList, payload);
       yield put({
-        type: 'submit',
-        payload,
+        type: 'getPremaininfo',
+        payload: response,
       });
       if (callback) callback(response);
     },
+    *upload({ payload ,callback}, { call, put }) {
+      const response = yield call(upload, payload);
+      if (callback) callback(response);
+    },
+
     *filter({ payload }, { call, put }) {
       const response = yield call(queryAllReportsByFilter, payload);
       yield put({
@@ -68,22 +72,6 @@ export default {
       });
       if (callback) callback(response.data);
     },
-    *getBusinessSort({ payload,callback }, { call, put }) {
-      const response = yield call(getAllBusinessSort, payload);
-      yield put({
-        type: 'getBusinessName',
-        payload:response,
-      });
-      if (callback) callback(response.data);
-    },
-    *getBusinessSource({ payload,callback }, { call, put }) {
-      const response = yield call(getAllBusinessSource, payload);
-      yield put({
-        type: 'getBusinessSourceName',
-        payload:response,
-      });
-      if (callback) callback(response.data);
-    },
 
     *getCheckProject({ payload,callback }, { call, put }) {
       const response = yield call(getCheckProject, payload);
@@ -103,14 +91,6 @@ export default {
       if (callback) callback(response.data);
     },
 
-    *updateReport({ payload, callback }, { call, put }) {
-      const response = yield call(updateReport, payload);
-      yield put({
-        type: 'update',
-        payload:response,
-      });
-      if (callback) callback(response);
-    },
 
     *getCargos({ payload ,callback}, { call, put }) {
       const response = yield call(getCargos, payload);
@@ -155,6 +135,12 @@ export default {
         report: payload.data,
       };
     },
+    getPremaininfo(state, { payload }) {
+      return {
+        ...state,
+        preMainInfoList: payload.data,
+      };
+    },
     get(state, { payload }) {
       return {
         ...state,
@@ -171,18 +157,6 @@ export default {
       return {
         ...state,
         checkProject: payload.data,
-      };
-    },
-    getBusinessName(state, { payload }) {
-      return {
-        ...state,
-        businessSort: payload.data,
-      };
-    },
-    getBusinessSourceName(state, { payload }) {
-      return {
-        ...state,
-        businessSource: payload.data,
       };
     },
 
