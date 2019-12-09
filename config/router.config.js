@@ -80,6 +80,7 @@ export default [
             path: '/Applicant/DetailForUnAccept',
             name: 'DetailForUnAccept',
             component: './Applicant/DetailForUnAccept',
+            hideInMenu: 'true',//添加页不需要在menu上显示
           },
           {
             path: '/Applicant/AddAttention',

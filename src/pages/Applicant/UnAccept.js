@@ -35,12 +35,8 @@ class UnAccept extends PureComponent {
 
   columns = [
     {
-      title: '委托编号',
-      dataIndex: 'reportno',
-    },
-    {
-      title: '委托日期',
-      dataIndex: 'reportdate',
+      title: '检验日期',
+      dataIndex: 'inspdate',
       render: val => <span>{
         moment(val).format('YYYY-MM-DD')
       }</span>
@@ -58,12 +54,16 @@ class UnAccept extends PureComponent {
       dataIndex: 'cargoname',
     },
     {
+      title: '状态',
+      dataIndex: 'overallstate',
+    },
+    {
       title: '操作',
       render: (text, record) => (
         <Fragment>
           <a onClick={() => this.modifyItem(text, record)}>修改</a>
           &nbsp;&nbsp;
-          <a onClick={() => this.uploadItem(text, record)}>上传文件</a>
+          <a onClick={() => this.deleteItem(text, record)}>撤回</a>
           &nbsp;&nbsp;
           <a onClick={() => this.previewItem(text, record)}>委托详情</a>
         </Fragment>
@@ -91,10 +91,9 @@ class UnAccept extends PureComponent {
     });
   };
   previewItem = text => {
-    sessionStorage.setItem('reportno',text.reportno);
-    localStorage.setItem('reportDetailNo',text.reportno);
+    sessionStorage.setItem('prereportno',text.prereportno);
     router.push({
-      pathname:'/Entrustment/DetailForEntrustment',
+      pathname:'/applicant/DetailForUnAccept',
     });
   };
 
@@ -169,10 +168,10 @@ class UnAccept extends PureComponent {
                 rules: [{  message: '搜索类型' }],
               })(
                 <Select placeholder="搜索类型">
-                  <Option value="reportno">委托编号</Option>
                   <Option value="applicant">委托人</Option>
                   <Option value="shipname">船名标识</Option>
                   <Option value="cargoname">检查品名</Option>
+                  <Option value="overallstate">状态</Option>
                 </Select>
               )}
             </Form.Item>
@@ -216,7 +215,7 @@ class UnAccept extends PureComponent {
               className={styles.antTable}
               rowClassName={styles.antTable2}
               loading={loading}
-              rowKey='reportno'
+              rowKey='prereportno'
               dataSource={preMainInfoList}
               columns={this.columns}
               pagination={{showQuickJumper:true,showSizeChanger:true}}

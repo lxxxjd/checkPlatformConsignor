@@ -70,7 +70,7 @@ const fieldLabels = {
   shipname: '标识/船名',
   fromto: '产地/装卸港',
   insplinkway: '现场联系方式',
-  inspdate: '检验时间',
+  inspdate: '预报日期',
   cargoname: '检查品名',
   cargosort: '货物类别',
   quantityD: '申报数量',
@@ -201,15 +201,13 @@ class Application extends PureComponent {
             if (response.code === 200) {
               let formData = new FormData();
               const user = JSON.parse(localStorage.getItem("userinfo"));
-              let files = [];
               tempFileList.forEach(file => {
-                files.push(file.originFileObj);
+                formData.append('files', file.originFileObj);
               });
-              formData.append('files', files);
               formData.append('prereportno', response.data);
               formData.append('creator', user.userName);
               dispatch({
-                type: 'applicant/addPremaininfo',
+                type: 'applicant/upload',
                 payload:formData,
                 callback: (response) =>{
                   if (response.code === 200) {
@@ -406,7 +404,7 @@ class Application extends PureComponent {
       form
     } = this.props;
     form.setFieldsValue({'filename': null});
-    form.setFieldsValue({'MultipartFile': []});
+    this.setState({fileList:[]});
     this.setState({ visible: false });
   };
 
@@ -420,6 +418,11 @@ class Application extends PureComponent {
         values.MultipartFile.fileList[0].name = values.filename;
         this.state.tempFileList.push(values.MultipartFile.fileList[0]);
         this.setState({visible:false});
+        const {
+          form
+        } = this.props;
+        form.setFieldsValue({'filename':null});
+        this.setState({fileList:[]});
       }
     });
   };
@@ -654,7 +657,7 @@ class Application extends PureComponent {
                   wrapperCol={{span: 18}}
                   colon={false}
                 >
-                  {getFieldDecorator('cargoname', {
+                  {getFieldDecorator('chineselocalname', {
                     rules: visible ?[]:[{required: true, message: '请输入货物名称'}]
                   })(
                     <AutoComplete
@@ -735,7 +738,7 @@ class Application extends PureComponent {
                     rules: [],
                   })(
                     <DatePicker
-                      placeholder="检查日期"
+                      placeholder="预报日期"
                       style={{width: '100%'}}
                       format="YYYY-MM-DD"
                       getPopupContainer={trigger => trigger.parentNode}

@@ -5,16 +5,16 @@ import PageHeaderWrapper from '@/components/PageHeaderWrapper';
 import styles from './style.less';
 import moment from 'moment'
 const { Title} = Typography;
-@connect(({ entrustment,testRecordEntrustment, loading }) => ({
-  entrustment,
-  testRecordEntrustment,
-  loading: loading.models.entrustment,
+@connect(({ applicant, loading }) => ({
+  applicant,
+  loading: loading.models.applicant,
 }))
 class DetailForUnAccept extends Component {
   state = {
     visible: false ,
     showVisible:false,
     url:"",
+    preMainInfo:{}
   };
   columns = [
     {
@@ -48,50 +48,28 @@ class DetailForUnAccept extends Component {
   ];
 
   componentWillMount() {
-    const reportnNo = sessionStorage.getItem("reportno");
+    const prereportno = sessionStorage.getItem("prereportno");
+    console.log(prereportno);
     const { dispatch } = this.props;
     const user = JSON.parse(localStorage.getItem("userinfo"));
     dispatch({
-      type: 'entrustment/getReport',
-      payload: reportnNo,
-    });
-    dispatch({
-      type: 'testRecordEntrustment/getRecordInfo',
-      payload:{
-         reportno : reportnNo,
-         source : '委托',
+      type: 'applicant/getPremaininfo',
+      payload: {
+        prereportno,
+      },
+      callback : response =>{
+        if(response.code === 200){
+          this.setState({preMainInfo:response.data});
+        }
       }
     });
-  }
-  componentDidMount(){
-    const {
-      entrustment:{ report  },
-      dispatch
-    } = this.props;
-
-    if(report.cnasCode!==undefined && report.cnasCode!==null  ){
-      if(report.iscnas === 1){
-        dispatch({
-          type: 'entrustment/getCnasInfo',
-          payload: {
-            checkCode:report.cnasCode,
-          },
-          callback: (response) => {
-            if (response.code === 200) {
-              this.setState({cnasInfo: response.data});
-            }
-          }
-        });
-      }
-    }
-
   }
   previewItem = text => {
     const { dispatch } = this.props;
-    const reportno = sessionStorage.getItem('reportno');
+    const preMainInfono = sessionStorage.getItem('preMainInfono');
     const params = {
       ...text,
-      reportno:reportno
+      preMainInfono:preMainInfono
     };
     dispatch({
       type: 'testRecordEntrustment/getRecord',
@@ -115,10 +93,10 @@ class DetailForUnAccept extends Component {
   handleOk = e => {
     console.log(e);
     const { dispatch, match } = this.props;
-    const reportnNo = sessionStorage.getItem("reportno");
+    const preMainInfonNo = sessionStorage.getItem("preMainInfono");
     dispatch({
       type: 'entrustment/remove',
-      payload: {reportno:reportnNo},
+      payload: {preMainInfono:preMainInfonNo},
     });
     this.setState({
       visible: false,
@@ -132,7 +110,7 @@ class DetailForUnAccept extends Component {
     });
   };
 
-  deleteReport = () => {
+  deletepreMainInfo = () => {
     this.setState({
       visible: true,
     });
@@ -147,12 +125,9 @@ class DetailForUnAccept extends Component {
   }
   render() {
     const {
-      entrustment,
-      testRecordEntrustment:{recordData},
       loading
     } = this.props;
-    const { report  } = entrustment;
-    const { showVisible ,url, cnasInfo} = this.state;
+    const { showVisible ,url, preMainInfo} = this.state;
     return (
       <PageHeaderWrapper loading={loading}>
         <Card bordered={false}>
@@ -178,29 +153,31 @@ class DetailForUnAccept extends Component {
           </Modal>
           <Divider style={{ marginBottom: 32 }} />
           <Descriptions size="large" title="业务信息" style={{ marginBottom: 32 }} bordered>
-            <Descriptions.Item label="委托编号">{report.reportno}</Descriptions.Item>
-            <Descriptions.Item label="委托日期">{moment(report.reportdate).format('YYYY-MM-DD')}</Descriptions.Item>
-            <Descriptions.Item label="申请人">{report.applicant}</Descriptions.Item>
-            <Descriptions.Item label="联系人">{report.applicantname}</Descriptions.Item>
-            <Descriptions.Item label="联系电话">{report.applicanttel}</Descriptions.Item>
-            <Descriptions.Item label="代理人">{report.agent}</Descriptions.Item>
-            <Descriptions.Item label="联系人">{report.agentname}</Descriptions.Item>
-            <Descriptions.Item label="联系电话">{report.agenttel}</Descriptions.Item>
-            <Descriptions.Item label="付款人">{report.payer}</Descriptions.Item>
-            <Descriptions.Item label="检验费">{report.price}</Descriptions.Item>
-            <Descriptions.Item label="船名标识">{report.shipname}</Descriptions.Item>
+            <Descriptions.Item label="委托编号">{preMainInfo.preMainInfono}</Descriptions.Item>
+            <Descriptions.Item label="查询密码">{preMainInfo.randomcode}</Descriptions.Item>
+            <Descriptions.Item label="委托日期">{moment(preMainInfo.preMainInfodate).format('YYYY-MM-DD')}</Descriptions.Item>
+            <Descriptions.Item label="申请人">{preMainInfo.applicant}</Descriptions.Item>
+            <Descriptions.Item label="联系人">{preMainInfo.applicantname}</Descriptions.Item>
+            <Descriptions.Item label="联系电话">{preMainInfo.applicanttel}</Descriptions.Item>
+            <Descriptions.Item label="代理人">{preMainInfo.agent}</Descriptions.Item>
+            <Descriptions.Item label="联系人">{preMainInfo.agentname}</Descriptions.Item>
+            <Descriptions.Item label="联系电话">{preMainInfo.agenttel}</Descriptions.Item>
+            <Descriptions.Item label="付款人">{preMainInfo.payer}</Descriptions.Item>
+            <Descriptions.Item label="检验费">{preMainInfo.price}</Descriptions.Item>
+            <Descriptions.Item label="船名标识">{preMainInfo.shipname}</Descriptions.Item>
           </Descriptions>
           <Divider style={{ marginBottom: 32 }} />
           <Descriptions size="large" title="检查对象" style={{ marginBottom: 32 }} bordered>
-            <Descriptions.Item label="检查品名">{report.cargoname}</Descriptions.Item>
-            <Descriptions.Item label="申报数量和单位">{((report.quantityd === undefined || report.quantityd === null ) ? "":report.quantityd  )+report.unit }</Descriptions.Item>
-            <Descriptions.Item label="到达地点">{report.inspplace1}</Descriptions.Item>
-            <Descriptions.Item label="详细地址">{report.inspplace2}</Descriptions.Item>
-            <Descriptions.Item label="检验时间">{moment(report.inspdate).format('YYYY-MM-DD')}</Descriptions.Item>
+            <Descriptions.Item label="检验机构">{preMainInfo.certcode}</Descriptions.Item>
+            <Descriptions.Item label="检查品名">{preMainInfo.chineselocalname}</Descriptions.Item>
+            <Descriptions.Item label="申报数量和单位">{((preMainInfo.quantityd === undefined || preMainInfo.quantityd === null ) ? "":preMainInfo.quantityd  )+preMainInfo.unit }</Descriptions.Item>
+            <Descriptions.Item label="到达地点">{preMainInfo.inspplace1}</Descriptions.Item>
+            <Descriptions.Item label="详细地址">{preMainInfo.inspplace2}</Descriptions.Item>
+            <Descriptions.Item label="检验时间">{moment(preMainInfo.inspdate).format('YYYY-MM-DD')}</Descriptions.Item>
           </Descriptions>
           <Descriptions size="large" title="申请项目" style={{ marginBottom: 32 }} bordered>
-            <Descriptions.Item label="申请项目">{report.inspway}</Descriptions.Item>
-            <Descriptions.Item label="检验备注">{report.inspwaymemo1}</Descriptions.Item>
+            <Descriptions.Item label="申请项目">{preMainInfo.inspway}</Descriptions.Item>
+            <Descriptions.Item label="检验备注">{preMainInfo.inspwaymemo1}</Descriptions.Item>
           </Descriptions>
         </Card>
         <Card bordered={false}  title="附件">
@@ -208,7 +185,7 @@ class DetailForUnAccept extends Component {
             <Table
               size="middle"
               loading={loading}
-              dataSource={recordData}
+              //dataSource={recordData}
               columns={this.columns}
               rowKey="recordname"
               pagination={{showQuickJumper:true,showSizeChanger:true}}

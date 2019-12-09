@@ -1,4 +1,4 @@
-import {queryAllReports,queryAllReportsByFilter,queryReport,getAllClientName,getCheckProject,getCargos,getContacts,searchCargos,getCompanyList,upload,getPremaininfoList, addPremaininfo} from '@/services/Applicant';
+import {queryAllReports,queryAllReportsByFilter,queryReport,getAllClientName,getCheckProject,getCargos,getContacts,searchCargos,getCompanyList,upload,getPremaininfoList, addPremaininfo,getPremaininfo} from '@/services/Applicant';
 
 export default {
   namespace: 'applicant',
@@ -7,7 +7,6 @@ export default {
       list: [],
       pagination: {},
     },
-    report:{},
     clientName:[],
     cargos: [],
     copyNo:'',
@@ -38,9 +37,13 @@ export default {
     *getPremaininfoList({ payload ,callback}, { call, put }) {
       const response = yield call(getPremaininfoList, payload);
       yield put({
-        type: 'getPremaininfo',
+        type: 'getPremaininfos',
         payload: response,
       });
+      if (callback) callback(response);
+    },
+    *getPremaininfo({ payload ,callback}, { call, put }) {
+      const response = yield call(getPremaininfo, payload);
       if (callback) callback(response);
     },
     *upload({ payload ,callback}, { call, put }) {
@@ -135,7 +138,7 @@ export default {
         report: payload.data,
       };
     },
-    getPremaininfo(state, { payload }) {
+    getPremaininfos(state, { payload }) {
       return {
         ...state,
         preMainInfoList: payload.data,

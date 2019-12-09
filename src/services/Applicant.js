@@ -70,6 +70,10 @@ export async function queryReport(params) {
   return request(`/api/report/get_report?reportNo=${params}`);
 }
 
+export async function getPremaininfo(params) {
+  return request(`/api/premaininfo/getPremaininfo?prereportno=${params.prereportno}`);
+}
+
 export async function getContacts(params) {
   return request(`/api/contact/getContacts?companyName=${params.value}`);
 }

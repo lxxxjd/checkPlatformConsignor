@@ -14,8 +14,8 @@ export default {
 
   'menu.Applicant':'委托人',
   'menu.Applicant.Application':'申请',
-  'menu.Applicant.Accept':'受理',
-  'menu.Applicant.UnAccept':'未受理',
+  'menu.Applicant.Accept':'已受理',
+  'menu.Applicant.UnAccept':'申请记录',
   'menu.Applicant.AddAttention':'加关注',
   'menu.Applicant.DetailForUnAccept':'未受理订单详情',
 
