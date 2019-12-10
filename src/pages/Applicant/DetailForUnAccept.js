@@ -49,9 +49,7 @@ class DetailForUnAccept extends Component {
 
   componentWillMount() {
     const prereportno = sessionStorage.getItem("prereportno");
-    console.log(prereportno);
     const { dispatch } = this.props;
-    const user = JSON.parse(localStorage.getItem("userinfo"));
     dispatch({
       type: 'applicant/getPremaininfo',
       payload: {
@@ -173,7 +171,7 @@ class DetailForUnAccept extends Component {
             <Descriptions.Item label="申报数量和单位">{((preMainInfo.quantityd === undefined || preMainInfo.quantityd === null ) ? "":preMainInfo.quantityd  )+preMainInfo.unit }</Descriptions.Item>
             <Descriptions.Item label="到达地点">{preMainInfo.inspplace1}</Descriptions.Item>
             <Descriptions.Item label="详细地址">{preMainInfo.inspplace2}</Descriptions.Item>
-            <Descriptions.Item label="检验时间">{moment(preMainInfo.inspdate).format('YYYY-MM-DD')}</Descriptions.Item>
+            <Descriptions.Item label="预报日期">{moment(preMainInfo.inspdate).format('YYYY-MM-DD')}</Descriptions.Item>
           </Descriptions>
           <Descriptions size="large" title="申请项目" style={{ marginBottom: 32 }} bordered>
             <Descriptions.Item label="申请项目">{preMainInfo.inspway}</Descriptions.Item>

@@ -10,7 +10,9 @@ import {
   Input,
   Button,
   Select,
-  Table
+  Table,
+  notification,
+  Modal
 } from 'antd';
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
 import styles from './SearchForEntrustment.less';
@@ -31,6 +33,8 @@ const { Option } = Select;
 @Form.create()
 class UnAccept extends PureComponent {
   state = {
+    visible:false,
+    prereportno:null,
   };
 
   columns = [
@@ -84,32 +88,24 @@ class UnAccept extends PureComponent {
     });
   }
 
-  uploadItem = text => {
-    sessionStorage.setItem('reportno',text.reportno);
-    router.push({
-      pathname:'/Entrustment/EntrustmentRecord',
-    });
+  deleteItem = text => {
+    this.setState({visible:true});
+    this.setState({prereportno:text.prereportno});
   };
   previewItem = text => {
     sessionStorage.setItem('prereportno',text.prereportno);
     router.push({
-      pathname:'/applicant/DetailForUnAccept',
+      pathname:'/Applicant/DetailForUnAccept',
     });
   };
 
   modifyItem = text => {
-    sessionStorage.setItem('reportno',text.reportno);
+    sessionStorage.setItem('prereportno',text.prereportno);
     router.push({
-      pathname:'/Entrustment/ModifyForEntrustment',
+      pathname:'/Applicant/ModifyApplication',
     });
   };
 
-  copyItem = text => {
-    sessionStorage.setItem('reportno',text.reportno);
-    router.push({
-      pathname:'/Entrustment/copyForEntrustment',
-    });
-  };
 
   handleFormReset = () => {
 
@@ -149,7 +145,34 @@ class UnAccept extends PureComponent {
     });
   };
 
+  handleCancel= () =>{
+    this.setState({visible:false});
+  };
 
+  handleOk = () =>{
+    const {prereportno} = this.state;
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'applicant/deletePremaininfo',
+      payload: {
+        prereportno,
+      },
+      callback : response =>{
+        if (response.code === 200) {
+          notification.open({
+            message: '删除成功',
+          });
+        }else {
+          notification.open({
+            message: '删除失败',
+            description: response.data,
+          });
+        }
+      }
+    });
+    this.setState({visible:false});
+    this.setState({prereportno:null});
+  }
 
   renderSimpleForm() {
     const {
@@ -205,6 +228,7 @@ class UnAccept extends PureComponent {
       applicant: {preMainInfoList},
       loading,
     } = this.props;
+    const {visible} = this.state;
     return (
       <PageHeaderWrapper>
         <Card size='small' bordered={false}>
@@ -221,6 +245,13 @@ class UnAccept extends PureComponent {
               pagination={{showQuickJumper:true,showSizeChanger:true}}
             />
           </div>
+          <Modal
+            title="确认撤回"
+            visible={visible}
+            onOk={this.handleOk}
+            onCancel={this.handleCancel}
+          >
+          </Modal>
         </Card>
       </PageHeaderWrapper>
     );

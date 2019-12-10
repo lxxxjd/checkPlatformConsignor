@@ -1,4 +1,5 @@
-import {queryAllReports,queryAllReportsByFilter,queryReport,getAllClientName,getCheckProject,getCargos,getContacts,searchCargos,getCompanyList,upload,getPremaininfoList, addPremaininfo,getPremaininfo} from '@/services/Applicant';
+import {queryAllReports,queryAllReportsByFilter,queryReport,getAllClientName,getCheckProject,getCargos,getContacts,
+  searchCargos,getCompanyList,upload,getPremaininfoList, addPremaininfo,getPremaininfo,deletePremaininfo} from '@/services/Applicant';
 
 export default {
   namespace: 'applicant',
@@ -31,6 +32,11 @@ export default {
 
     *addPremaininfo({ payload ,callback}, { call, put }) {
       const response = yield call(addPremaininfo, payload);
+      if (callback) callback(response);
+    },
+
+    *deletePremaininfo({ payload ,callback}, { call, put }) {
+      const response = yield call(deletePremaininfo, payload);
       if (callback) callback(response);
     },
 

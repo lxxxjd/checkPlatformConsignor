@@ -67,6 +67,11 @@ export default [
             component: './Applicant/Application',
           },
           {
+            path: '/Applicant/ModifyApplication',
+            name: 'ModifyApplication',
+            component: './Applicant/ModifyApplication',
+          },
+          {
             path: '/Applicant/Accept',
             name: 'Accept',
             component: './Applicant/Accept',

@@ -65,6 +65,9 @@ export async function upload(params) {
     data:params,
   });
 }
+export async function deletePremaininfo(params) {
+  return request(`/api/premaininfo/deletePremaininfo?prereportno=${params.prereportno}`);
+}
 
 export async function queryReport(params) {
   return request(`/api/report/get_report?reportNo=${params}`);
