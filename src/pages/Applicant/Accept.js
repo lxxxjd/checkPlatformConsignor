@@ -10,7 +10,9 @@ import {
   Input,
   Button,
   Select,
-  Table
+  Table,
+  Modal,
+  Rate
 } from 'antd';
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
 import styles from './SearchForEntrustment.less';
@@ -31,8 +33,8 @@ const { Option } = Select;
 @Form.create()
 class Accept extends PureComponent {
   state = {
-    selectedRows: [],
-    formValues: {},
+    visible:false,
+
   };
 
   columns = [
@@ -69,7 +71,7 @@ class Accept extends PureComponent {
           &nbsp;&nbsp;
           <a onClick={() => this.uploadItem(text, record)}>退回证书</a>
           &nbsp;&nbsp;
-          <a onClick={() => this.uploadItem(text, record)}>评价</a>
+          <a onClick={() => this.rateItem(text, record)}>评价</a>
           &nbsp;&nbsp;
           <a onClick={() => this.uploadItem(text, record)}>复制</a>
           &nbsp;&nbsp;
@@ -92,7 +94,9 @@ class Accept extends PureComponent {
       payload: params,
     });
   }
-
+  rateItem = text =>{
+    this.setState({visible:true});
+  }
   uploadItem = text => {
     sessionStorage.setItem('reportno',text.reportno);
     router.push({
@@ -158,7 +162,13 @@ class Accept extends PureComponent {
     });
   };
 
+  handleCancel = () =>{
+    this.setState({visible:false});
+  };
 
+  handleOk = () => {
+
+  };
 
   renderSimpleForm() {
     const {
@@ -213,8 +223,9 @@ class Accept extends PureComponent {
     const {
       applicant: {reports},
       loading,
+      form:{getFieldDecorator}
     } = this.props;
-    const { selectedRows, } = this.state;
+    const { visible, } = this.state;
     return (
       <PageHeaderWrapper>
         <Card size='small' bordered={false}>
@@ -231,6 +242,70 @@ class Accept extends PureComponent {
               pagination={{showQuickJumper:true,showSizeChanger:true}}
             />
           </div>
+        <Modal
+          title="文件上传"
+          visible={visible}
+          onOk={this.handleOk}
+          onCancel={this.handleCancel}
+        >
+          <Form layout= 'horizontal' >
+            <Form.Item 
+              label="客户服务"
+              labelCol={{span: 6}}
+              wrapperCol={{span: 18}}
+            >
+              {getFieldDecorator('MultipartFile', {
+                rules: [{required: true, message: '请选择评分'}],
+              })(
+                <Rate />
+              )}
+            </Form.Item>
+            <FormItem 
+              label="现场检查"
+              labelCol={{span: 6}}
+              wrapperCol={{span: 18}}
+            >
+              {getFieldDecorator('filename', {
+                rules: [{required: true, message: '请选择评分'}],
+              })(
+                <Rate />
+              )}
+            </FormItem>
+            <FormItem 
+              label="分析测试"              
+              labelCol={{span: 6}}
+              wrapperCol={{span: 18}}
+            >
+              {getFieldDecorator('filename', {
+                rules: [{required: true, message: '请选择评分'}],
+              })(
+                <Rate />
+              )}
+            </FormItem>
+            <FormItem 
+              label="流程时效"              
+              labelCol={{span: 6}}
+              wrapperCol={{span: 18}}
+            >
+              {getFieldDecorator('filename', {
+                rules: [{required: true, message: '请选择评分'}],
+              })(
+                <Rate />
+              )}
+            </FormItem>
+            <FormItem 
+              label="检验费用" 
+              labelCol={{span: 6}}
+              wrapperCol={{span: 18}}
+            >
+              {getFieldDecorator('filename', {
+                rules: [{required: true, message: '请选择评分'}],
+              })(
+                <Rate tooltips={['低廉','较低廉','适中','较昂贵','昂贵']}/>
+              )}
+            </FormItem>
+          </Form>
+        </Modal>
         </Card>
       </PageHeaderWrapper>
     );

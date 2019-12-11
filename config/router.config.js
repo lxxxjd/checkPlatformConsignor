@@ -42,20 +42,20 @@ export default [
       // Entrustment
       { path: '/', redirect: '/Company/PreCompany',authority: ['admin', 'user']},
 
-      {
-        path: '/Company',
-        icon: 'file',
-        name: 'Company',
-        routes: [
+      // {
+      //   path: '/Company',
+      //   icon: 'file',
+      //   name: 'Company',
+      //   routes: [
 
-          {
-            path: '/Company/PreCompany',
-            name: 'PreCompany',
-            component: './Company/PreCompany',
-          },
+      //     {
+      //       path: '/Company/PreCompany',
+      //       name: 'PreCompany',
+      //       component: './Company/PreCompany',
+      //     },
 
-        ],
-      },
+      //   ],
+      // },
       {
         path: '/Applicant',
         icon: 'file',
