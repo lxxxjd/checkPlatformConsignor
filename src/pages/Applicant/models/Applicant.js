@@ -1,5 +1,5 @@
-import {queryAllReports,queryAllReportsByFilter,queryReport,getAllClientName,getCheckProject,getCargos,getContacts,
-  searchCargos,getCompanyList,upload,getPremaininfoList, addPremaininfo,getPremaininfo,deletePremaininfo} from '@/services/Applicant';
+import {getAllClientName,getCheckProject,getCargos,getContacts,
+  searchCargos,getCompanyList,upload,getPremaininfoList, addPremaininfo,getPremaininfo,deletePremaininfo,getReportByConfigor,getPreRecord,deletePreRecord} from '@/services/Applicant';
 
 export default {
   namespace: 'applicant',
@@ -13,23 +13,38 @@ export default {
     copyNo:'',
     deleteResult:null,
     checkProject:[],
-    preMainInfoList:[]
+    preMainInfoList:[],
+    reports:[],
+    preRecordData:[],
+
   },
 
   effects: {
-    *fetch({ payload }, { call, put }) {
-      const response = yield call(queryAllReports, payload);
+
+    *getReportByConfigor({ payload ,callback}, { call, put }) {
+      const response = yield call(getReportByConfigor, payload);
       yield put({
-        type: 'save',
+        type: 'getReport',
         payload: response,
       });
+      if (callback) callback(response);
     },
-
+    *getPreRecord({ payload ,callback}, { call, put }) {
+      const response = yield call(getPreRecord, payload);
+      yield put({
+        type: 'getPreRecords',
+        payload: response,
+      });
+      if (callback) callback(response);
+    },
     *getCompanyList({ payload ,callback}, { call, put }) {
       const response = yield call(getCompanyList, payload);
       if (callback) callback(response);
     },
-
+    *deletePreRecord({ payload ,callback}, { call, put }) {
+      const response = yield call(deletePreRecord, payload);
+      if (callback) callback(response);
+    },
     *addPremaininfo({ payload ,callback}, { call, put }) {
       const response = yield call(addPremaininfo, payload);
       if (callback) callback(response);
@@ -132,16 +147,16 @@ export default {
   },
 
   reducers: {
-    submit(state, { payload }) {
+    getReport(state, { payload }) {
       return {
         ...state,
-        report: payload.data,
+        reports: payload.data,
       };
     },
-    update(state, { payload }) {
+    getPreRecords(state, { payload }) {
       return {
         ...state,
-        report: payload.data,
+        preRecordData: payload.data,
       };
     },
     getPremaininfos(state, { payload }) {
@@ -186,12 +201,6 @@ export default {
       return {
         ...state,
         data: payload.data,
-      };
-    },
-    delete(state, { payload }) {
-      return {
-        ...state,
-        deleteResult: payload,
       };
     },
   },

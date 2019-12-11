@@ -58,6 +58,16 @@ export async function getCompanyList(params) {
   });
 }
 
+export async function getReportByConfigor(params) {
+  return request(`/api/ConfigorAuthority/getReportByConfigor`,{
+    method: 'POST',
+    data: {
+      ...params,
+      method: 'post',
+    },
+  });
+}
+
 export async function upload(params) {
     return request(`/api/preRecordInfo/upload`,{
     method: 'POST',
@@ -65,12 +75,26 @@ export async function upload(params) {
     data:params,
   });
 }
+
+
 export async function deletePremaininfo(params) {
   return request(`/api/premaininfo/deletePremaininfo?prereportno=${params.prereportno}`);
 }
 
-export async function queryReport(params) {
-  return request(`/api/report/get_report?reportNo=${params}`);
+export async function getPreRecord(params) {
+  return request(`/api/preRecordInfo/getRecord?prereportno=${params.prereportno}`);
+}
+
+export async function deletePreRecord(params) {
+  return request(`/api/preRecordInfo/deleteRecord?id=${params.id}`);
+}
+
+export async function unfollow(params) {
+  return request(`/api/ConfigorAuthority/unfollow?reportNo=${params.reportNo}&&consigoruser=${params.consigoruser}`);
+}
+
+export async function follow(params) {
+  return request(`/api/ConfigorAuthority/follow?reportNo=${params.reportNo}&&consigoruser=${params.consigoruser}`);
 }
 
 export async function getPremaininfo(params) {

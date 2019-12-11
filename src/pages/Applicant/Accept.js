@@ -63,9 +63,15 @@ class Accept extends PureComponent {
       title: '操作',
       render: (text, record) => (
         <Fragment>
-          <a onClick={() => this.modifyItem(text, record)}>修改</a>
+          <a onClick={() => this.modifyItem(text, record)}>人员</a>
           &nbsp;&nbsp;
-          <a onClick={() => this.uploadItem(text, record)}>上传文件</a>
+          <a onClick={() => this.uploadItem(text, record)}>查看证书</a>
+          &nbsp;&nbsp;
+          <a onClick={() => this.uploadItem(text, record)}>退回证书</a>
+          &nbsp;&nbsp;
+          <a onClick={() => this.uploadItem(text, record)}>评价</a>
+          &nbsp;&nbsp;
+          <a onClick={() => this.uploadItem(text, record)}>复制</a>
           &nbsp;&nbsp;
           <a onClick={() => this.previewItem(text, record)}>委托详情</a>
         </Fragment>
@@ -78,10 +84,11 @@ class Accept extends PureComponent {
     const user = JSON.parse(localStorage.getItem("userinfo"));
     const { dispatch } = this.props;
     const params = {
-      certCode:user.certCode
+      consigoruser:user.userName,
+      source:'已受理'
     };
     dispatch({
-      type: 'entrustment/fetch',
+      type: 'applicant/getReportByConfigor',
       payload: params,
     });
   }
@@ -117,17 +124,14 @@ class Accept extends PureComponent {
   handleFormReset = () => {
 
     const user = JSON.parse(localStorage.getItem("userinfo"));
-    const params = {
-      certCode:user.certCode
-    };
-    const { form } = this.props;
+    const { form,dispatch } = this.props;
     form.resetFields();
-    this.setState({
-      formValues: {},
-    });
-    const { dispatch } = this.props;
+    const params = {
+      consigoruser:user.userName,
+      source:'已受理'
+    };
     dispatch({
-      type: 'entrustment/fetch',
+      type: 'applicant/getReportByConfigor',
       payload: params,
     });
   };
@@ -144,12 +148,11 @@ class Accept extends PureComponent {
       const user = JSON.parse(localStorage.getItem("userinfo"));
       const values = {
         ...fieldsValue,
-        kind :fieldsValue.kind,
-        value: fieldsValue.value,
-        certCode:user.certCode,
+        consigoruser:user.userName,
+        source:'已受理'
       };
       dispatch({
-        type: 'entrustment/fetch',
+        type: 'applicant/getReportByConfigor',
         payload: values,
       });
     });
@@ -208,7 +211,7 @@ class Accept extends PureComponent {
 
   render() {
     const {
-      applicant: {data},
+      applicant: {reports},
       loading,
     } = this.props;
     const { selectedRows, } = this.state;
@@ -223,7 +226,7 @@ class Accept extends PureComponent {
               rowClassName={styles.antTable2}
               loading={loading}
               rowKey='reportno'
-              dataSource={data.list}
+              dataSource={reports}
               columns={this.columns}
               pagination={{showQuickJumper:true,showSizeChanger:true}}
             />

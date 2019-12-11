@@ -69,6 +69,8 @@ class UnAccept extends PureComponent {
           &nbsp;&nbsp;
           <a onClick={() => this.deleteItem(text, record)}>撤回</a>
           &nbsp;&nbsp;
+          <a onClick={() => this.uploadItem(text, record)}>附件编辑</a>
+          &nbsp;&nbsp;
           <a onClick={() => this.previewItem(text, record)}>委托详情</a>
         </Fragment>
       ),
@@ -92,6 +94,15 @@ class UnAccept extends PureComponent {
     this.setState({visible:true});
     this.setState({prereportno:text.prereportno});
   };
+
+  uploadItem = text => {
+    sessionStorage.setItem('prereportno',text.prereportno);
+    sessionStorage.setItem('applicant',text.applicant);
+    router.push({
+      pathname:'/Applicant/ModifyRecord',
+    }); 
+  };
+
   previewItem = text => {
     sessionStorage.setItem('prereportno',text.prereportno);
     router.push({
@@ -162,6 +173,7 @@ class UnAccept extends PureComponent {
           notification.open({
             message: '删除成功',
           });
+          this.componentDidMount();
         }else {
           notification.open({
             message: '删除失败',

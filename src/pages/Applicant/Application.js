@@ -468,7 +468,7 @@ class Application extends PureComponent {
             <Row gutter={16}>
               <Col span={8}>
                 <Form.Item
-                  label='请选择检验机构'
+                  label='检验机构'
                   labelCol={{span: 6}}
                   wrapperCol={{span: 18}}
                   colon={false}

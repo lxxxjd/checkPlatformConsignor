@@ -10,10 +10,12 @@ import {
   Input,
   Button,
   Select,
-  Table
+  Table,
+  Modal,
+  Descriptions,
 } from 'antd';
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
-import styles from './SearchForEntrustment.less';
+import styles from './AddAttention.less';
 import moment from 'moment';
 
 
@@ -31,8 +33,8 @@ const { Option } = Select;
 @Form.create()
 class AddAttention extends PureComponent {
   state = {
-    selectedRows: [],
-    formValues: {},
+    preMainInfo:{},
+    visible:false,
   };
 
   columns = [
@@ -63,9 +65,7 @@ class AddAttention extends PureComponent {
       title: '操作',
       render: (text, record) => (
         <Fragment>
-          <a onClick={() => this.modifyItem(text, record)}>修改</a>
-          &nbsp;&nbsp;
-          <a onClick={() => this.uploadItem(text, record)}>上传文件</a>
+          <a onClick={() => this.modifyItem(text, record)}>取消关注</a>
           &nbsp;&nbsp;
           <a onClick={() => this.previewItem(text, record)}>委托详情</a>
         </Fragment>
@@ -78,10 +78,11 @@ class AddAttention extends PureComponent {
     const user = JSON.parse(localStorage.getItem("userinfo"));
     const { dispatch } = this.props;
     const params = {
-      certCode:user.certCode
+      consigoruser:user.userName,
+      source:'已关注'
     };
     dispatch({
-      type: 'entrustment/fetch',
+      type: 'applicant/getReportByConfigor',
       payload: params,
     });
   }
@@ -155,7 +156,13 @@ class AddAttention extends PureComponent {
     });
   };
 
+  handleOk = e =>{
 
+  };
+
+  handleCancel = ()=>{
+    this.setState({visible:false});
+  };
 
   renderSimpleForm() {
     const {
@@ -164,27 +171,33 @@ class AddAttention extends PureComponent {
     return (
       <Form onSubmit={this.handleSearch} layout="inline">
         <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
-          <Col md={3} sm={20}>
+          <Col span = {6}>
             <Form.Item
-              labelCol={{ span: 5 }}
-              wrapperCol={{ span: 6 }}
+              label='委托编号'
+              labelCol={{ span: 8 }}
+              wrapperCol={{ span: 16 }}
               colon={false}
             >
               {getFieldDecorator('reportno', {
                 rules: [{  message: '搜索类型' }],
               })(
-                <Input placeholder="请输入" />
+                <Input placeholder="请输入委托编号" />
               )}
             </Form.Item>
           </Col>
-          <Col md={6} sm={20}>
-            <FormItem>
-              {getFieldDecorator('password',{rules: [{ message: '搜索数据' }],})(<Input placeholder="请输入" />)}
+          <Col span = {6}>
+            <FormItem
+              label='密码'
+              labelCol={{ span: 4 }}
+              wrapperCol={{ span: 20 }}
+              colon={false}
+            >
+              {getFieldDecorator('password',{rules: [{ message: '搜索数据' }],})(<Input placeholder="请输入密码" />)}
             </FormItem>
           </Col>
 
           <Col md={8} sm={20}>
-            <span className={styles.submitButtons}>
+            <span >
               <Button type="primary" htmlType="submit">
                 查询
               </Button>
@@ -203,10 +216,10 @@ class AddAttention extends PureComponent {
 
   render() {
     const {
-      applicant: {data},
+      applicant: {reports},
       loading,
     } = this.props;
-    const { selectedRows, } = this.state;
+    const { selectedRows, preMainInfo,visible} = this.state;
     return (
       <PageHeaderWrapper>
         <Card size='small' bordered={false}>
@@ -218,12 +231,33 @@ class AddAttention extends PureComponent {
               rowClassName={styles.antTable2}
               loading={loading}
               rowKey='reportno'
-              dataSource={data.list}
+              dataSource={reports}
               columns={this.columns}
               pagination={{showQuickJumper:true,showSizeChanger:true}}
             />
           </div>
         </Card>
+        <Modal
+          title="加关注"
+          visible={visible}
+          onOk={this.handleOk}
+          onCancel={this.handleCancel}
+        >
+          <Descriptions size="large" title="业务信息" style={{ marginBottom: 32 }} bordered>
+            <Descriptions.Item label="委托编号">{preMainInfo.preMainInfono}</Descriptions.Item>
+            <Descriptions.Item label="查询密码">{preMainInfo.randomcode}</Descriptions.Item>
+            <Descriptions.Item label="委托日期">{moment(preMainInfo.preMainInfodate).format('YYYY-MM-DD')}</Descriptions.Item>
+            <Descriptions.Item label="申请人">{preMainInfo.applicant}</Descriptions.Item>
+            <Descriptions.Item label="联系人">{preMainInfo.applicantname}</Descriptions.Item>
+            <Descriptions.Item label="联系电话">{preMainInfo.applicanttel}</Descriptions.Item>
+            <Descriptions.Item label="代理人">{preMainInfo.agent}</Descriptions.Item>
+            <Descriptions.Item label="联系人">{preMainInfo.agentname}</Descriptions.Item>
+            <Descriptions.Item label="联系电话">{preMainInfo.agenttel}</Descriptions.Item>
+            <Descriptions.Item label="付款人">{preMainInfo.payer}</Descriptions.Item>
+            <Descriptions.Item label="检验费">{preMainInfo.price}</Descriptions.Item>
+            <Descriptions.Item label="船名标识">{preMainInfo.shipname}</Descriptions.Item>
+          </Descriptions>
+        </Modal>
       </PageHeaderWrapper>
     );
   }

@@ -70,6 +70,7 @@ export default [
             path: '/Applicant/ModifyApplication',
             name: 'ModifyApplication',
             component: './Applicant/ModifyApplication',
+            hideInMenu: 'true',//添加页不需要在menu上显示
           },
           {
             path: '/Applicant/Accept',
@@ -85,6 +86,12 @@ export default [
             path: '/Applicant/DetailForUnAccept',
             name: 'DetailForUnAccept',
             component: './Applicant/DetailForUnAccept',
+            hideInMenu: 'true',//添加页不需要在menu上显示
+          },
+          {
+            path: '/Applicant/ModifyRecord',
+            name: 'ModifyRecord',
+            component: './Applicant/ModifyRecord',
             hideInMenu: 'true',//添加页不需要在menu上显示
           },
           {

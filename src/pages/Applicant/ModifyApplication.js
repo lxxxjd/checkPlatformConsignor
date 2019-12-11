@@ -462,7 +462,7 @@ class ModifyApplication extends PureComponent {
       form: {getFieldDecorator},
       loading,
     } = this.props;
-    const {applicantName, agentName, payerName  , checkProject, cargos, agentContacts, applicantContacts, visible, company , fileList,tempFileList} = this.state;
+    const {applicantName, agentName, payerName  , checkProject, cargos, agentContacts, applicantContacts, company ,} = this.state;
     const uploadButton = (
       <div>
         <Icon type="plus" />
@@ -837,50 +837,6 @@ class ModifyApplication extends PureComponent {
               </Col>
             </Row>
           </Form>
-        </Card>
-        <Card className={styles.card} bordered={false}>
-          <Row>
-            <Col span={24}>
-              <Button style={{ marginBottom: 12 }} type="primary" onClick={this.show}>上传文件</Button>
-            </Col>
-          </Row>
-        <Modal
-            title="文件上传"
-            visible={visible}
-            onOk={this.handleOk}
-            onCancel={this.handleCancel}
-         >
-          <Form.Item label="文件上传">
-                {getFieldDecorator('MultipartFile', {
-                  rules: visible ?[{required: true, message: '请输入文件上传'}]:[],
-              })(
-                <Upload
-                  listType="picture-card"
-                  fileList={fileList}
-                  onPreview={this.handlePreview}
-                  beforeUpload={this.handleBeforeUpload}
-                  onChange={this.handleChange}
-                >
-                  {fileList.length >= 1 ? null : uploadButton}
-                </Upload>
-              )}
-              </Form.Item>
-              <Form.Item label="文件名称">
-                {getFieldDecorator('filename', {
-                  rules: visible ? [{required: true, message: '请输入文件名称'}]:[],
-              })(
-                <Input style={{width: '100%'}} placeholder="请输入文件名称"/>
-              )}
-            </Form.Item>
-        </Modal>          
-        <Table
-            size="middle"
-            loading={loading}
-            dataSource={tempFileList}
-            columns={this.columns}
-            rowKey="name"
-            pagination={{showQuickJumper:true,showSizeChanger:true}}
-          />
         </Card>
       </PageHeaderWrapper>
     );
