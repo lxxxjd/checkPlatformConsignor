@@ -13,6 +13,7 @@ import {
   Table,
   Modal,
   Descriptions,
+  notification
 } from 'antd';
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
 import styles from './AddAttention.less';
@@ -65,7 +66,7 @@ class AddAttention extends PureComponent {
       title: '操作',
       render: (text, record) => (
         <Fragment>
-          <a onClick={() => this.modifyItem(text, record)}>取消关注</a>
+          <a onClick={() => this.deleteItem(text, record)}>取消关注</a>
           &nbsp;&nbsp;
           <a onClick={() => this.previewItem(text, record)}>委托详情</a>
         </Fragment>
@@ -87,12 +88,6 @@ class AddAttention extends PureComponent {
     });
   }
 
-  uploadItem = text => {
-    sessionStorage.setItem('reportno',text.reportno);
-    router.push({
-      pathname:'/Entrustment/EntrustmentRecord',
-    });
-  };
   previewItem = text => {
     sessionStorage.setItem('reportno',text.reportno);
     localStorage.setItem('reportDetailNo',text.reportno);
@@ -101,42 +96,41 @@ class AddAttention extends PureComponent {
     });
   };
 
-  modifyItem = text => {
-    sessionStorage.setItem('reportno',text.reportno);
-    router.push({
-      pathname:'/Entrustment/ModifyForEntrustment',
-    });
-  };
-
-  copyItem = text => {
-    sessionStorage.setItem('reportno',text.reportno);
-    router.push({
-      pathname:'/Entrustment/copyForEntrustment',
+  deleteItem = text => {
+    const user = JSON.parse(localStorage.getItem("userinfo"));
+    const { dispatch } = this.props;
+    const params = {
+      consigoruser:user.userName,
+      reportNo:text.reportno
+    };
+    dispatch({
+      type: 'applicant/unfollow',
+      payload: params,
+      callback: (response) =>{
+        if (response.code === 200) {
+          notification.open({
+            message: '取消关注成功',
+            description: response.data,
+          });
+          this.componentDidMount();
+        }else {
+          notification.open({
+            message: '取消关注失败',
+            description: response.data,
+          });
+        }
+      }
     });
   };
 
   handleFormReset = () => {
-
-    const user = JSON.parse(localStorage.getItem("userinfo"));
-    const params = {
-      certCode:user.certCode
-    };
     const { form } = this.props;
     form.resetFields();
-    this.setState({
-      formValues: {},
-    });
-    const { dispatch } = this.props;
-    dispatch({
-      type: 'entrustment/fetch',
-      payload: params,
-    });
   };
 
 
 
   handleSearch = e => {
-
     e.preventDefault();
     const { dispatch, form } = this.props;
     form.validateFields((err, fieldsValue) => {
@@ -145,19 +139,52 @@ class AddAttention extends PureComponent {
       const user = JSON.parse(localStorage.getItem("userinfo"));
       const values = {
         ...fieldsValue,
-        kind :fieldsValue.kind,
-        value: fieldsValue.value,
-        certCode:user.certCode,
       };
       dispatch({
-        type: 'entrustment/fetch',
+        type: 'applicant/getReportByRandomCode',
         payload: values,
+        callback: (response) =>{
+          if (response.code === 200) {
+            this.setState({visible:true});
+            this.setState({preMainInfo:response.data});
+          }else {
+            notification.open({
+              message: '查询错误',
+              description: response.data,
+            });
+          }
+        }
       });
     });
   };
 
-  handleOk = e =>{
-
+  handleOk = () =>{
+    const user = JSON.parse(localStorage.getItem("userinfo"));
+    const { dispatch } = this.props;
+    const {preMainInfo} = this.state;
+    const params = {
+      consigoruser:user.userName,
+      reportNo:preMainInfo.reportno,
+    };
+    dispatch({
+      type: 'applicant/follow',
+      payload: params,
+      callback: response =>{
+        if (response.code === 200) {
+          notification.open({
+            message: '关注成功',
+            description: response.data,
+          });
+          this.setState({visible:false});
+          this.componentDidMount();
+        }else {
+          notification.open({
+            message: '关注失败',
+            description: response.data,
+          });
+        }
+      }
+    });
   };
 
   handleCancel = ()=>{
@@ -179,7 +206,7 @@ class AddAttention extends PureComponent {
               colon={false}
             >
               {getFieldDecorator('reportno', {
-                rules: [{  message: '搜索类型' }],
+                rules: [{  message: '输入委托编号' }],
               })(
                 <Input placeholder="请输入委托编号" />
               )}
@@ -192,7 +219,7 @@ class AddAttention extends PureComponent {
               wrapperCol={{ span: 20 }}
               colon={false}
             >
-              {getFieldDecorator('password',{rules: [{ message: '搜索数据' }],})(<Input placeholder="请输入密码" />)}
+              {getFieldDecorator('randomcode',{rules: [{ message: '请输入密码' }],})(<Input.Password placeholder="请输入密码" />)}
             </FormItem>
           </Col>
 
@@ -242,11 +269,12 @@ class AddAttention extends PureComponent {
           visible={visible}
           onOk={this.handleOk}
           onCancel={this.handleCancel}
+          width={1000}
         >
           <Descriptions size="large" title="业务信息" style={{ marginBottom: 32 }} bordered>
-            <Descriptions.Item label="委托编号">{preMainInfo.preMainInfono}</Descriptions.Item>
-            <Descriptions.Item label="查询密码">{preMainInfo.randomcode}</Descriptions.Item>
+            <Descriptions.Item label="委托编号">{preMainInfo.reportno}</Descriptions.Item>
             <Descriptions.Item label="委托日期">{moment(preMainInfo.preMainInfodate).format('YYYY-MM-DD')}</Descriptions.Item>
+            <Descriptions.Item label="船名标识">{preMainInfo.shipname}</Descriptions.Item>
             <Descriptions.Item label="申请人">{preMainInfo.applicant}</Descriptions.Item>
             <Descriptions.Item label="联系人">{preMainInfo.applicantname}</Descriptions.Item>
             <Descriptions.Item label="联系电话">{preMainInfo.applicanttel}</Descriptions.Item>
@@ -255,7 +283,6 @@ class AddAttention extends PureComponent {
             <Descriptions.Item label="联系电话">{preMainInfo.agenttel}</Descriptions.Item>
             <Descriptions.Item label="付款人">{preMainInfo.payer}</Descriptions.Item>
             <Descriptions.Item label="检验费">{preMainInfo.price}</Descriptions.Item>
-            <Descriptions.Item label="船名标识">{preMainInfo.shipname}</Descriptions.Item>
           </Descriptions>
         </Modal>
       </PageHeaderWrapper>

@@ -1,5 +1,6 @@
 import {getAllClientName,getCheckProject,getCargos,getContacts,
-  searchCargos,getCompanyList,upload,getPremaininfoList, addPremaininfo,getPremaininfo,deletePremaininfo,getReportByConfigor,getPreRecord,deletePreRecord} from '@/services/Applicant';
+  searchCargos,getCompanyList,upload,getPremaininfoList, addPremaininfo,getPremaininfo,deletePremaininfo,getReportByConfigor,getPreRecord,
+  deletePreRecord,getReportByRandomCode,follow,unfollow} from '@/services/Applicant';
 
 export default {
   namespace: 'applicant',
@@ -41,8 +42,20 @@ export default {
       const response = yield call(getCompanyList, payload);
       if (callback) callback(response);
     },
+    *follow({ payload ,callback}, { call, put }) {
+      const response = yield call(follow, payload);
+      if (callback) callback(response);
+    },
+    *unfollow({ payload ,callback}, { call, put }) {
+      const response = yield call(unfollow, payload);
+      if (callback) callback(response);
+    },
     *deletePreRecord({ payload ,callback}, { call, put }) {
       const response = yield call(deletePreRecord, payload);
+      if (callback) callback(response);
+    },
+    *getReportByRandomCode({ payload ,callback}, { call, put }) {
+      const response = yield call(getReportByRandomCode, payload);
       if (callback) callback(response);
     },
     *addPremaininfo({ payload ,callback}, { call, put }) {

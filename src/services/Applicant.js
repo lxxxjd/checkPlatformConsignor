@@ -89,6 +89,10 @@ export async function deletePreRecord(params) {
   return request(`/api/preRecordInfo/deleteRecord?id=${params.id}`);
 }
 
+export async function getReportByRandomCode(params) {
+  return request(`/api/report/getReportByRandomCode?reportno=${params.reportno}&&randomcode=${params.randomcode}`);
+}
+
 export async function unfollow(params) {
   return request(`/api/ConfigorAuthority/unfollow?reportNo=${params.reportNo}&&consigoruser=${params.consigoruser}`);
 }
