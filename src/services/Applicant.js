@@ -21,6 +21,7 @@ export async function getPremaininfoList(params) {
   });
 }
 
+
 export async function getCnasInfo(params) {
   return request(`/api/cnas/getCnasInfo?checkCode=${params.checkCode}`);
 }
@@ -115,9 +116,9 @@ export async function getContacts(params) {
 }
 export async function getAllClientName(params) {
   if(params.content != null){
-    return request(`/api/client/getAllClientName?content=${params.content}`);
+    return request(`/api/contact/getAllContacts?content=${params.content}`);
   }
-  return request('/api/client/getAllClientName');
+  return request('/api/contact/getAllContacts');
 }
 
 

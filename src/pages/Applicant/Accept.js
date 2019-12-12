@@ -62,6 +62,10 @@ class Accept extends PureComponent {
       dataIndex: 'cargoname',
     },
     {
+      title: '状态',
+      dataIndex: 'overallstate',
+    },
+    {
       title: '操作',
       render: (text, record) => (
         <Fragment>
