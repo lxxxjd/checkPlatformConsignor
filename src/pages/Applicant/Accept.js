@@ -94,20 +94,22 @@ class Accept extends PureComponent {
       payload: params,
     });
   }
+
   rateItem = text =>{
     this.setState({visible:true});
-  }
+  };
+
   uploadItem = text => {
     sessionStorage.setItem('reportno',text.reportno);
     router.push({
       pathname:'/Entrustment/EntrustmentRecord',
     });
   };
+  
   previewItem = text => {
     sessionStorage.setItem('reportno',text.reportno);
-    localStorage.setItem('reportDetailNo',text.reportno);
     router.push({
-      pathname:'/Entrustment/DetailForEntrustment',
+      pathname:'/Applicant/DetailForAccept',
     });
   };
 
@@ -301,7 +303,7 @@ class Accept extends PureComponent {
               {getFieldDecorator('filename', {
                 rules: [{required: true, message: '请选择评分'}],
               })(
-                <Rate tooltips={['低廉','较低廉','适中','较昂贵','昂贵']}/>
+                <Rate tooltips={['昂贵','较昂贵','适中','较低廉','低廉']}/>
               )}
             </FormItem>
           </Form>

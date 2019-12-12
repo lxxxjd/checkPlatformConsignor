@@ -90,9 +90,8 @@ class AddAttention extends PureComponent {
 
   previewItem = text => {
     sessionStorage.setItem('reportno',text.reportno);
-    localStorage.setItem('reportDetailNo',text.reportno);
     router.push({
-      pathname:'/Entrustment/DetailForEntrustment',
+      pathname:'/Applicant/DetailForAccept',
     });
   };
 

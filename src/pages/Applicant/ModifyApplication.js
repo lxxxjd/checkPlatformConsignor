@@ -114,8 +114,6 @@ class ModifyApplication extends PureComponent {
     visible:false,
     departments:[],
     cargoname:"",
-    fileList:[],
-    tempFileList:[],
     company:[],
   };
   columns = [
@@ -146,6 +144,7 @@ class ModifyApplication extends PureComponent {
       callback : response =>{
         if(response.code === 200){
           form.setFieldsValue({
+            'certcode': response.data.certcode,
             'unit': response.data.unit,
             'applicant': response.data.applicant,
             'applicanttel': response.data.applicanttel,
@@ -155,7 +154,7 @@ class ModifyApplication extends PureComponent {
             'payer': response.data.payer,
             'price': response.data.price,
             'shipname': response.data.shipname,
-            'inspdate': moment(response.inspdate, "YYYY-MM-DD"),
+            'inspdate': moment(response.data.inspdate, "YYYY-MM-DD"),
             'quantityD': response.data.quantityD,
             'unit': response.data.unit,
             'chineselocalname': response.data.chineselocalname,
@@ -209,45 +208,26 @@ class ModifyApplication extends PureComponent {
       form: {validateFieldsAndScroll},
       dispatch,
     } = this.props;
-    const { tempFileList } = this.state;
     validateFieldsAndScroll((error, values) => {
       const user = JSON.parse(localStorage.getItem("userinfo"));
+      const prereportno = sessionStorage.getItem("prereportno");
       if(values.inspplace1 !== null && values.inspplace1 !== undefined){
          values.inspplace1 = values.inspplace1[2];
       }
       if (!error) {
         // submit the values
         dispatch({
-          type: 'applicant/addPremaininfo',
+          type: 'applicant/updatePremaininfo',
           payload: {
             ...values,
+            prereportno,
             consigoruser: user.userName,
           },
           callback: (response) => {
             if (response.code === 200) {
-              let formData = new FormData();
-              const user = JSON.parse(localStorage.getItem("userinfo"));
-              tempFileList.forEach(file => {
-                formData.append('files', file.originFileObj);
-              });
-              formData.append('prereportno', response.data);
-              formData.append('creator', user.userName);
-              dispatch({
-                type: 'applicant/upload',
-                payload:formData,
-                callback: (response) =>{
-                  if (response.code === 200) {
-                    notification.open({
-                      message: '添加成功',
-                    });
-                  }else {
-                    notification.open({
-                      message: '添加失败',
-                      description: response.data,
-                    });
-                  }
-                }
-              });
+              notification.open({
+                message: '添加成功',
+              });        
             } else {
               notification.open({
                 message: '添加失败',
@@ -462,7 +442,7 @@ class ModifyApplication extends PureComponent {
       form: {getFieldDecorator},
       loading,
     } = this.props;
-    const {applicantName, agentName, payerName  , checkProject, cargos, agentContacts, applicantContacts, company ,} = this.state;
+    const {applicantName, agentName, payerName  , checkProject, cargos, agentContacts, applicantContacts, company } = this.state;
     const uploadButton = (
       <div>
         <Icon type="plus" />
@@ -500,7 +480,7 @@ class ModifyApplication extends PureComponent {
                   colon={false}
                 >
                   {getFieldDecorator('certcode', {
-                    rules: visible ?[]:[{required: true, message: '请选择检验机构'}]
+                    rules: [{required: true, message: '请选择检验机构'}]
                   })(
                     <Select
                       // showSearch
@@ -530,7 +510,7 @@ class ModifyApplication extends PureComponent {
                   colon={false}
                 >
                   {getFieldDecorator('applicant', {
-                    rules: visible ?[]:[{required: true, message: '请输入申请人'}]
+                    rules: [{required: true, message: '请输入申请人'}]
                   })(
                     <Select
                       showSearch
@@ -684,7 +664,7 @@ class ModifyApplication extends PureComponent {
                   colon={false}
                 >
                   {getFieldDecorator('chineselocalname', {
-                    rules: visible ?[]:[{required: true, message: '请输入货物名称'}]
+                    rules: [{required: true, message: '请输入货物名称'}]
                   })(
                     <AutoComplete
                       className="global-search"
@@ -815,7 +795,7 @@ class ModifyApplication extends PureComponent {
                   colon={false}
                 >
                   {getFieldDecorator('inspway', {
-                    rules:visible ? []: [{required: true, message: '请输入申请人'}]
+                    rules: [{required: true, message: '请输入申请人'}]
                   })(
                     <CheckboxGroup
                       options={checkProject}

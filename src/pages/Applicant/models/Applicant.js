@@ -1,6 +1,6 @@
 import {getAllClientName,getCheckProject,getCargos,getContacts,
   searchCargos,getCompanyList,upload,getPremaininfoList, addPremaininfo,getPremaininfo,deletePremaininfo,getReportByConfigor,getPreRecord,
-  deletePreRecord,getReportByRandomCode,follow,unfollow} from '@/services/Applicant';
+  deletePreRecord,getReportByRandomCode,follow,unfollow, getOssPdf, updatePremaininfo, getReportInfo ,getRecordInfo,getCnasInfo} from '@/services/Applicant';
 
 export default {
   namespace: 'applicant',
@@ -17,15 +17,32 @@ export default {
     preMainInfoList:[],
     reports:[],
     preRecordData:[],
-
+    report:{},
+    records:[],
   },
 
   effects: {
-
+    *getRecordInfo({ payload ,callback}, { call, put }) {
+      const response = yield call(getRecordInfo, payload);
+      yield put({
+        type: 'getRecords',
+        payload: response,
+      });
+      if (callback) callback(response);
+    },
+    *getReportInfo({ payload ,callback}, { call, put }) {
+      const response = yield call(getReportInfo, payload);
+      yield put({
+        type: 'getReport',
+        payload: response,
+      });
+      if (callback) callback(response);
+      console.log("bb");
+    },
     *getReportByConfigor({ payload ,callback}, { call, put }) {
       const response = yield call(getReportByConfigor, payload);
       yield put({
-        type: 'getReport',
+        type: 'getReports',
         payload: response,
       });
       if (callback) callback(response);
@@ -40,6 +57,18 @@ export default {
     },
     *getCompanyList({ payload ,callback}, { call, put }) {
       const response = yield call(getCompanyList, payload);
+      if (callback) callback(response);
+    },
+    *getCnasInfo({ payload ,callback}, { call, put }) {
+      const response = yield call(getCnasInfo, payload);
+      if (callback) callback(response);
+    },
+    *updatePremaininfo({ payload ,callback}, { call, put }) {
+      const response = yield call(updatePremaininfo, payload);
+      if (callback) callback(response);
+    },
+    *getOssPdf({ payload ,callback}, { call, put }) {
+      const response = yield call(getOssPdf, payload);
       if (callback) callback(response);
     },
     *follow({ payload ,callback}, { call, put }) {
@@ -85,22 +114,6 @@ export default {
       if (callback) callback(response);
     },
 
-    *filter({ payload }, { call, put }) {
-      const response = yield call(queryAllReportsByFilter, payload);
-      yield put({
-        type: 'save',
-        payload: response,
-      });
-    },
-
-    *getReport({ payload,callback }, { call, put }) {
-      const response = yield call(queryReport, payload);
-      yield put({
-        type: 'get',
-        payload: response,
-      });
-      if (callback) callback(response.data);
-    },
     *getClientName({ payload ,callback}, { call, put }) {
       const response = yield call(getAllClientName, payload);
       yield put({
@@ -160,10 +173,22 @@ export default {
   },
 
   reducers: {
-    getReport(state, { payload }) {
+    getRecords(state, { payload }) {
+      return {
+        ...state,
+        records : payload.data,
+      };
+    },
+    getReports(state, { payload }) {
       return {
         ...state,
         reports: payload.data,
+      };
+    },
+    getReport(state, { payload }) {
+      return {
+        ...state,
+        report: payload.data,
       };
     },
     getPreRecords(state, { payload }) {
@@ -176,12 +201,6 @@ export default {
       return {
         ...state,
         preMainInfoList: payload.data,
-      };
-    },
-    get(state, { payload }) {
-      return {
-        ...state,
-        report: payload.data,
       };
     },
     getName(state, { payload }) {

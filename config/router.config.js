@@ -99,6 +99,12 @@ export default [
             name: 'AddAttention',
             component: './Applicant/AddAttention',
           },
+          {
+            path: '/Applicant/DetailForAccept',
+            name: 'DetailForAccept',
+            component: './Applicant/DetailForAccept',
+            hideInMenu: 'true',//添加页不需要在menu上显示
+          },
         ],
       },
 

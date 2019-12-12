@@ -17,7 +17,8 @@ export default {
   'menu.Applicant.Accept':'已受理',
   'menu.Applicant.UnAccept':'申请记录',
   'menu.Applicant.AddAttention':'加关注',
-  'menu.Applicant.DetailForUnAccept':'未受理订单详情',
+  'menu.Applicant.DetailForUnAccept':'订单详情',
   'menu.Applicant.ModifyApplication':'修改申请',
   'menu.Applicant.ModifyRecord':'附件编辑',
+  'menu.Applicant.DetailForAccept':'受理订单详情',
 };

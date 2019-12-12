@@ -102,29 +102,26 @@ class ModifyRecord extends PureComponent {
   }
 
   previewItem = text => {
-    const {dispatch} = this.props;
-    const reportno = sessionStorage.getItem('reportno');
-    const params = {
-      ...text,
-      reportno: reportno
-    };
+    const { dispatch } = this.props;
     dispatch({
-      type: 'testRecordEntrustment/getRecord',
-      payload: params,
-      callback: (response) => {
-        if (response.code === 400) {
+      type: 'applicant/getOssPdf',
+      payload:{
+        osspath:text.filepath
+      },
+      callback:(response) =>{
+        if(response.code === 400){
           notification.open({
             message: '打开失败',
-            description: response.data,
+            description:response.data,
           });
-        } else {
+        }else{
           const url = response.data;
-          this.setState({url: url});
+          this.setState({url:url});
           //window.open(url);
         }
       }
     });
-    this.setState({showVisible: true});
+    this.setState({showVisible:true});
   };
 
   deleteItem = text => {

@@ -2,29 +2,14 @@ import request from '@/utils/request';
 import { stringify } from 'qs';
 
 
-
-
-
-export async function queryAllReports(params) {
-  return request(`/api/report/getAllReports`,{
-    method: 'POST',
-    data: {
-      ...params,
-      method: 'post',
-    },
-  });
+export async function getReportInfo(params) {
+  console.log("cc");
+  return request(`/api/report/get_report?reportNo=${params.reportno}`);
 }
 
-export async function queryAllReportsByFilter(params) {
-  return request(`/api/report/filter_report`,{
-    method: 'POST',
-    data: {
-      ...params,
-      method: 'post',
-    },
-  });
+export async function getOssPdf(params) {
+  return request(`/api/cert_report/get_pdf?osspath=${params.osspath}`);
 }
-
 
 export async function getPremaininfoList(params) {
   return request(`/api/premaininfo/getPremaininfoList`,{
@@ -36,10 +21,30 @@ export async function getPremaininfoList(params) {
   });
 }
 
+export async function getCnasInfo(params) {
+  return request(`/api/cnas/getCnasInfo?checkCode=${params.checkCode}`);
+}
+//get_pdf
+export async function getRecordInfo(params) {
+  return request(`/api/recordinfo/get_recordInfo?reportno=${params.reportno}&source=${params.source}`);
+}
+
 export async function addPremaininfo(params) {
   const inspway = params.inspway.join(' ');
   params.inspway = inspway;
   return request(`/api/premaininfo/addPremaininfo`,{
+    method: 'POST',
+    data: {
+      ...params,
+      method: 'post',
+    },
+  });
+}
+
+export async function updatePremaininfo(params) {
+  const inspway = params.inspway.join(' ');
+  params.inspway = inspway;
+  return request(`/api/premaininfo/updatePremaininfo`,{
     method: 'POST',
     data: {
       ...params,

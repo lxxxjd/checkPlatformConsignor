@@ -61,17 +61,20 @@ class DetailForUnAccept extends Component {
         }
       }
     });
+    dispatch({
+      type: 'applicant/getPreRecord',
+      payload: {
+        prereportno,
+      }
+    });
   }
   previewItem = text => {
     const { dispatch } = this.props;
-    const preMainInfono = sessionStorage.getItem('preMainInfono');
-    const params = {
-      ...text,
-      preMainInfono:preMainInfono
-    };
     dispatch({
-      type: 'testRecordEntrustment/getRecord',
-      payload:params,
+      type: 'applicant/getOssPdf',
+      payload:{
+        osspath:text.filepath
+      },
       callback:(response) =>{
         if(response.code === 400){
           notification.open({
@@ -93,7 +96,7 @@ class DetailForUnAccept extends Component {
     const { dispatch, match } = this.props;
     const preMainInfonNo = sessionStorage.getItem("preMainInfono");
     dispatch({
-      type: 'entrustment/remove',
+      type: 'applicant/remove',
       payload: {preMainInfono:preMainInfonNo},
     });
     this.setState({
@@ -123,6 +126,7 @@ class DetailForUnAccept extends Component {
   }
   render() {
     const {
+      applicant:{preRecordData},
       loading
     } = this.props;
     const { showVisible ,url, preMainInfo} = this.state;
@@ -183,7 +187,7 @@ class DetailForUnAccept extends Component {
             <Table
               size="middle"
               loading={loading}
-              //dataSource={recordData}
+              dataSource={preRecordData}
               columns={this.columns}
               rowKey="recordname"
               pagination={{showQuickJumper:true,showSizeChanger:true}}
