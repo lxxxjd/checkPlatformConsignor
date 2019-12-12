@@ -65,12 +65,9 @@ class UnAccept extends PureComponent {
       title: '操作',
       render: (text, record) => (
         <Fragment>
-          <a onClick={() => this.modifyItem(text, record)}>修改</a>
-          &nbsp;&nbsp;
-          <a onClick={() => this.deleteItem(text, record)}>撤回</a>
-          &nbsp;&nbsp;
-          <a onClick={() => this.uploadItem(text, record)}>附件编辑</a>
-          &nbsp;&nbsp;
+          {text.overallstate === '未受理' ? [<a onClick={() => this.modifyItem(text, record)}>修改&nbsp;&nbsp;</a>]:[]}
+          {text.overallstate === '未受理' ? [<a onClick={() => this.deleteItem(text, record)}>撤回&nbsp;&nbsp;</a>]:[]}
+          {text.overallstate === '未受理' ? [<a onClick={() => this.uploadItem(text, record)}>附件编辑&nbsp;&nbsp;</a>]:[]}
           <a onClick={() => this.previewItem(text, record)}>委托详情</a>
         </Fragment>
       ),
