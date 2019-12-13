@@ -12,7 +12,8 @@ import {
   Select,
   Table,
   Modal,
-  Rate
+  Rate,
+  notification
 } from 'antd';
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
 import styles from './SearchForEntrustment.less';
@@ -36,6 +37,7 @@ class Accept extends PureComponent {
     visible:false,
     peopleVisible:false,
     man:[],
+    reportno:null,
   };
   columns1 = [
     {
@@ -111,6 +113,7 @@ class Accept extends PureComponent {
   }
 
   rateItem = text =>{
+    this.setState({reportno:text.reportno});
     this.setState({visible:true});
   };
 
@@ -200,8 +203,38 @@ class Accept extends PureComponent {
     this.setState({peopleVisible:false});
   };
 
-  handleOk = () => {
-
+  handleOk = e => {
+    e.preventDefault();
+    const { dispatch, form } = this.props;
+    const {reportno} = this.state;
+    form.validateFields((err, fieldsValue) => {
+      console.log(err);
+      if (err) return;
+      const user = JSON.parse(localStorage.getItem("userinfo"));
+      const values = {
+        ...fieldsValue,
+        consigoruser:user.userName,
+        reportno,
+      };
+      dispatch({
+        type: 'applicant/addEvaluation',
+        payload: values,
+        callback: (response) =>{
+          if (response.code === 200) {
+            notification.open({
+              message: '评分成功',
+            });
+            this.componentDidMount();
+          }else {
+            notification.open({
+              message: '评分失败',
+              description: response.data,
+            });
+          }
+        }
+      });
+      this.setState({visible:false});
+    });
   };
 
   renderSimpleForm() {
@@ -303,7 +336,7 @@ class Accept extends PureComponent {
               labelCol={{span: 6}}
               wrapperCol={{span: 18}}
             >
-              {getFieldDecorator('MultipartFile', {
+              {getFieldDecorator('customerService', {
                 rules: [{required: true, message: '请选择评分'}],
               })(
                 <Rate />
@@ -314,7 +347,7 @@ class Accept extends PureComponent {
               labelCol={{span: 6}}
               wrapperCol={{span: 18}}
             >
-              {getFieldDecorator('filename', {
+              {getFieldDecorator('inspect', {
                 rules: [{required: true, message: '请选择评分'}],
               })(
                 <Rate />
@@ -325,7 +358,7 @@ class Accept extends PureComponent {
               labelCol={{span: 6}}
               wrapperCol={{span: 18}}
             >
-              {getFieldDecorator('filename', {
+              {getFieldDecorator('test', {
                 rules: [{required: true, message: '请选择评分'}],
               })(
                 <Rate />
@@ -336,7 +369,7 @@ class Accept extends PureComponent {
               labelCol={{span: 6}}
               wrapperCol={{span: 18}}
             >
-              {getFieldDecorator('filename', {
+              {getFieldDecorator('cost', {
                 rules: [{required: true, message: '请选择评分'}],
               })(
                 <Rate />
@@ -347,7 +380,7 @@ class Accept extends PureComponent {
               labelCol={{span: 6}}
               wrapperCol={{span: 18}}
             >
-              {getFieldDecorator('filename', {
+              {getFieldDecorator('process', {
                 rules: [{required: true, message: '请选择评分'}],
               })(
                 <Rate tooltips={['昂贵','较昂贵','适中','较低廉','低廉']}/>

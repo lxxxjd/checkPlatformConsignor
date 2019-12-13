@@ -21,6 +21,15 @@ export async function getPremaininfoList(params) {
   });
 }
 
+export async function addEvaluation(params) {
+  return request(`/api/evaluation/addEvaluation`,{
+    method: 'POST',
+    data: {
+      ...params,
+      method: 'post',
+    },
+  });
+}
 
 export async function getCnasInfo(params) {
   return request(`/api/cnas/getCnasInfo?checkCode=${params.checkCode}`);
