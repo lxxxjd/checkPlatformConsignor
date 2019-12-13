@@ -99,6 +99,12 @@ export async function getReportByRandomCode(params) {
   return request(`/api/report/getReportByRandomCode?reportno=${params.reportno}&&randomcode=${params.randomcode}`);
 }
 
+
+export async function getAllMan(params) {
+  return request(`/api/task_info/getAllMan?reportno=${params.reportno}&&certcode=${params.certcode}`);
+}
+
+
 export async function unfollow(params) {
   return request(`/api/ConfigorAuthority/unfollow?reportNo=${params.reportNo}&&consigoruser=${params.consigoruser}`);
 }
@@ -113,6 +119,16 @@ export async function getPremaininfo(params) {
 
 export async function getContacts(params) {
   return request(`/api/contact/getContacts?companyName=${params.value}`);
+}
+
+export async function getConfigorPlaceList(params) {
+  return request(`/api/ConfigorPlace/getConfigorPlaceList`,{
+    method: 'POST',
+    data: {
+      ...params,
+      method: 'post',
+    },
+  });
 }
 export async function getAllClientName(params) {
   if(params.content != null){

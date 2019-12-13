@@ -34,9 +34,20 @@ const { Option } = Select;
 class Accept extends PureComponent {
   state = {
     visible:false,
-
+    peopleVisible:false,
+    man:[],
   };
+  columns1 = [
+    {
+      title: '检验人员',
+      dataIndex: 'inspman',
+    },
 
+    {
+      title: '联系方式',
+      dataIndex: 'tel',
+    },
+  ];
   columns = [
     {
       title: '委托编号',
@@ -69,7 +80,7 @@ class Accept extends PureComponent {
       title: '操作',
       render: (text, record) => (
         <Fragment>
-          <a onClick={() => this.modifyItem(text, record)}>人员</a>
+          <a onClick={() => this.peopleItem(text, record)}>人员</a>
           &nbsp;&nbsp;
           <a onClick={() => this.uploadItem(text, record)}>查看证书</a>
           &nbsp;&nbsp;
@@ -103,6 +114,22 @@ class Accept extends PureComponent {
     this.setState({visible:true});
   };
 
+  peopleItem = text =>{
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'applicant/getAllMan',
+      payload: {
+        reportno:text.reportno,
+        certcode:text.certcode,
+      },
+      callback:response =>{
+        if (response.code === 200) {
+          this.setState({man:response.data});
+        }
+      }
+    });
+    this.setState({peopleVisible:true});
+  }
   uploadItem = text => {
     sessionStorage.setItem('reportno',text.reportno);
     router.push({
@@ -170,6 +197,7 @@ class Accept extends PureComponent {
 
   handleCancel = () =>{
     this.setState({visible:false});
+    this.setState({peopleVisible:false});
   };
 
   handleOk = () => {
@@ -231,7 +259,7 @@ class Accept extends PureComponent {
       loading,
       form:{getFieldDecorator}
     } = this.props;
-    const { visible, } = this.state;
+    const { visible,peopleVisible ,man} = this.state;
     return (
       <PageHeaderWrapper>
         <Card size='small' bordered={false}>
@@ -249,7 +277,22 @@ class Accept extends PureComponent {
             />
           </div>
         <Modal
-          title="文件上传"
+          title="人员"
+          visible={peopleVisible}
+          onOk={this.handleCancel}
+          onCancel={this.handleCancel}
+        >
+          <Table
+              size="middle"
+              loading={loading}
+              rowKey='inspman'
+              dataSource={man}
+              columns={this.columns1}
+              pagination={{showQuickJumper:true,showSizeChanger:true}}
+            />
+        </Modal>
+        <Modal
+          title="评分"
           visible={visible}
           onOk={this.handleOk}
           onCancel={this.handleCancel}

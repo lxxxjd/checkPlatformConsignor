@@ -21,4 +21,7 @@ export default {
   'menu.Applicant.ModifyApplication':'修改申请',
   'menu.Applicant.ModifyRecord':'附件编辑',
   'menu.Applicant.DetailForAccept':'受理订单详情',
+
+  'menu.Manage':'管理',
+  'menu.Manage.ManagePlace':'管理地址',
 };

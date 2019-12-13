@@ -117,6 +117,7 @@ class Application extends PureComponent {
     fileList:[],
     tempFileList:[],
     company:[],
+    placeName:[],
   };
   columns = [
     {
@@ -156,6 +157,15 @@ class Application extends PureComponent {
       },
       callback: (response) => {
         this.setState({checkProject: response})
+      }
+    });
+    dispatch({
+      type: 'applicant/getConfigorPlaceList',
+      payload: {
+        consigoruser : user.userName,
+      },
+      callback: (response) => {
+        this.setState({placeName: response})
       }
     });
     dispatch({
@@ -297,6 +307,23 @@ class Application extends PureComponent {
       }
     });
   };
+
+  placeSearch = value =>{
+    const {dispatch} = this.props;
+   const user = JSON.parse(localStorage.getItem("userinfo"));
+    dispatch({
+      type: 'applicant/getConfigorPlaceList',
+      payload: {
+        kind:'placename',
+        value,
+        consigoruser : user.userName,
+      },
+      callback: (response) => {
+        this.setState({placeName: response})
+      }
+    });
+  };
+
   cargoSearch = value => {
     const {dispatch} = this.props;
    // const certCode = JSON.parse(localStorage.getItem("userinfo")).certCode;
@@ -436,7 +463,7 @@ class Application extends PureComponent {
       form: {getFieldDecorator},
       loading,
     } = this.props;
-    const {applicantName, agentName, payerName  , checkProject, cargos, agentContacts, applicantContacts, visible, company , fileList,tempFileList} = this.state;
+    const {applicantName, agentName, payerName  , checkProject, cargos, agentContacts, applicantContacts, visible, company , fileList,tempFileList,placeName} = this.state;
     const uploadButton = (
       <div>
         <Icon type="plus" />
@@ -447,6 +474,7 @@ class Application extends PureComponent {
     const agentOptions = agentName.map(d => <Option key={d} value={d}>{d}</Option>);
     const payerOptions = payerName.map(d => <Option key={d} value={d}>{d}</Option>);
     const cargosOptions = cargos.map(d => d.cargonamec);
+    const placeOptions = placeName.map(d => d.placename);
     const applicantContactsOptions = applicantContacts.map(d => <Option key={d.contactName} value={d.contactName}>{d.contactName}</Option>);
     const agentContactsOptions = agentContacts.map(d =><Option key={d.contactName} value={d.contactName}>{d.contactName}</Option>);
     const companyOptions = company.map(d =><Option key={d.certcode} value={d.certcode}>{d.namec}</Option>);
@@ -771,7 +799,15 @@ class Application extends PureComponent {
                   {getFieldDecorator('inspplace2', {
                     rules: [],
                   })(
-                    <Input placeholder="请输入详细地址" />
+                    <AutoComplete
+                      className="global-search"
+                      dataSource={placeOptions}
+                      onSearch={this.placeSearch}
+                      placeholder="请输入货物名称"
+                    >
+                      <Input
+                      />
+                    </AutoComplete>
                   )}
                 </Form.Item>
               </Col>

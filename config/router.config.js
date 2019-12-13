@@ -108,7 +108,20 @@ export default [
         ],
       },
 
+      {
+        path: '/Manage',
+        icon: 'file',
+        name: 'Manage',
+        routes: [
 
+          {
+            path: '/Manage/ManagePlace',
+            name: 'ManagePlace',
+            component: './Manage/ManagePlace',
+          },
+
+        ],
+      },
       {
         component: '404',
       },
