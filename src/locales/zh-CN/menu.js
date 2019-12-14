@@ -23,5 +23,6 @@ export default {
   'menu.Applicant.DetailForAccept':'受理订单详情',
 
   'menu.Manage':'管理',
-  'menu.Manage.ManagePlace':'管理地址',
+  'menu.Manage.ManagePlace':'地址管理',
+  'menu.Manage.UserInfo':'账户管理',
 };

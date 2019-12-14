@@ -1,6 +1,7 @@
 import {getAllClientName,getCheckProject,getCargos,getContacts,
   searchCargos,getCompanyList,upload,getPremaininfoList, addPremaininfo,getPremaininfo,deletePremaininfo,getReportByConfigor,getPreRecord,
-  deletePreRecord,getReportByRandomCode,follow,unfollow, getOssPdf, updatePremaininfo, getReportInfo ,getRecordInfo,getCnasInfo,getAllMan,getConfigorPlaceList, addEvaluation} from '@/services/Applicant';
+  deletePreRecord,getReportByRandomCode,follow,unfollow, getOssPdf, updatePremaininfo, getReportInfo ,
+  getRecordInfo,getCnasInfo,getAllMan,getConfigorPlaceList, addEvaluation, getCertFiles, getPdfByOssPath} from '@/services/Applicant';
 
 export default {
   namespace: 'applicant',
@@ -19,11 +20,16 @@ export default {
     preRecordData:[],
     report:{},
     records:[],
+    recordData:[],
   },
 
   effects: {
     *getConfigorPlaceList({ payload ,callback}, { call, put }) {
       const response = yield call(getConfigorPlaceList, payload);
+      if (callback) callback(response.data);
+    },
+    *getPdfByOssPath({ payload ,callback}, { call, put }) {
+      const response = yield call(getPdfByOssPath, payload);
       if (callback) callback(response.data);
     },
     *addEvaluation({ payload ,callback}, { call, put }) {
@@ -34,6 +40,14 @@ export default {
       const response = yield call(getRecordInfo, payload);
       yield put({
         type: 'getRecords',
+        payload: response,
+      });
+      if (callback) callback(response);
+    },
+    *getCertFiles({ payload ,callback}, { call, put }) {
+      const response = yield call(getCertFiles, payload);
+      yield put({
+        type: 'getCertFile',
         payload: response,
       });
       if (callback) callback(response);
@@ -185,6 +199,12 @@ export default {
   },
 
   reducers: {
+    getCertFile(state, { payload }) {
+      return {
+        ...state,
+        recordData: payload.data,
+      };
+    },
     getRecords(state, { payload }) {
       return {
         ...state,
