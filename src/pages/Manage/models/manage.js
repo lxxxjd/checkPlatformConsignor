@@ -1,4 +1,4 @@
-import {getConfigorPlaceList, deleteConfigorPlace, addConfigorPlace} from '@/services/Manage';
+import {getConfigorPlaceList, deleteConfigorPlace, addConfigorPlace,updateContact} from '@/services/Manage';
 
 export default {
   namespace: 'manage',
@@ -23,6 +23,10 @@ export default {
     *addConfigorPlace({ payload ,callback}, { call, put }) {
       const response = yield call(addConfigorPlace, payload);
       if (callback) callback(response.data);
+    },
+    *updateContact({ payload ,callback}, { call, put }) {
+      const response = yield call(updateContact, payload);
+      if (callback) callback(response);
     },
   },
 
