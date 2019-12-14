@@ -114,15 +114,14 @@ class CompanyInfo extends PureComponent {
 	      wrapperCol: { span: 14 },
 	    };
 	    const { company ,parents} = this.state;
-	    const parentsOptions = parents.map(d => <Option key={d.certcode} value={d.certcode}>{d.namec}</Option>);
  		return(
  			<Card>
 	 			<Form {...formItemLayout} >
 	 				<Form.Item label="公司名称">
-						<span className="ant-form-text">{company.namec}</span>
+						<span className="ant-form-text">{user.companyName}</span>
 			        </Form.Item>
-			        <Form.Item label="英文名称">
-			          {getFieldDecorator('namee', {
+			        <Form.Item label="姓名">
+			          {getFieldDecorator('contactName', {
 			            rules: [
 			              {
 			                required: true,
@@ -141,39 +140,21 @@ class CompanyInfo extends PureComponent {
 			            ],
 			          })(<Input />)}
 			        </Form.Item>
-			        <Form.Item label="银行账户">
-			          {getFieldDecorator('account', {
+			        <Form.Item label="联系方式：">
+			          {getFieldDecorator('isvisible', {
 			            rules: [
 			              {
 			                required: true,
 			                message: '请输入英文名',
 			              },
 			            ],
-			          })(<Input />)}
+			          })(
+			            <Radio.Group >
+		                    <Radio value='可见'>可见</Radio>
+		                    <Radio value='不可见'>不可见</Radio>
+		                 </Radio.Group>    
+			          )}
 			        </Form.Item>
-			        <Form.Item label="开户行">
-			          {getFieldDecorator('bank', {
-			            rules: [
-			              {
-			                required: true,
-			                message: '请输入英文名',
-			              },
-			            ],
-			          })(<Input />)}
-			        </Form.Item>
-			        <Form.Item
-	                  label="母公司"
-	                >
-	                  {getFieldDecorator('belongto', {
-	                  })(
-	                    <Select
-	                      placeholder="请选择母公司"
-	                      filterOption={false}
-	                    >
-	                      {parentsOptions}
-	                    </Select>
-	                  )}
-	                </Form.Item>
 			        <Form.Item wrapperCol={{ span: 12, offset: 6 }}>
 						<Button type="primary" onClick={this.handleSubmit}>
 					  	保存

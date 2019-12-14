@@ -9,9 +9,12 @@ export async function queryCurrent() {
   return request('/api/currentUser');
 }
 
+export async function getRepeatTel(params) {
+  return request(`/api/contact/getRepeatTel?tel=${params.tel}`);
+}
 
-export async function checkUserName(params) {
-  return request(`/api/user/check_user?username=${params.username}`);
+export async function getRepeatUsername(params) {
+  return request(`/api/contact/getRepeatUsername?username=${params.username}`);
 }
 
 // 发送验证码
@@ -31,8 +34,8 @@ export async function getUserList() {
 
 
 // 预注册公司
-export async function registerPreCompany(params) {
-  return request(`/api/precompany/register_precompany`,{
+export async function addContact(params) {
+  return request(`/api/contact/addContact`,{
     method: 'POST',
     data: {
       ...params,

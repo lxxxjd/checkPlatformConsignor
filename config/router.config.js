@@ -40,7 +40,7 @@ export default [
     Routes: ['src/pages/Authorized'],
     routes: [
       // Entrustment
-      { path: '/', redirect: '/Company/PreCompany',authority: ['admin', 'user']},
+      { path: '/', redirect: 'Applicant/Application',authority: ['admin', 'user']},
 
       // {
       //   path: '/Company',
