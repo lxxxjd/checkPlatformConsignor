@@ -1,5 +1,5 @@
 import { fakeRegister} from '@/services/api';
-import { getRepeatUsername ,sendVerify,verifyTel,addContact, getRepeatTel } from '@/services/user';
+import {  sendVerify,verifyTel, getRepeatTel } from '@/services/user';
 import { setAuthority } from '@/utils/authority';
 import { reloadAuthorized } from '@/utils/Authorized';
 
@@ -48,25 +48,6 @@ export default {
 
     *getRepeatTel({ payload,callback }, { call, put }) {
       const response = yield call(getRepeatTel, payload);
-      if (callback) callback(response.data);
-    },
-
-    *getRepeatUsername({ payload,callback }, { call, put }) {
-      const response = yield call(getRepeatUsername, payload);
-      yield put({
-        type: 'getCheckUserNameResult',
-        payload: response,
-      });
-      if (callback) callback(response.data);
-    },
-
-
-    *addContact({ payload,callback }, { call, put }) {
-      const response = yield call(addContact, payload);
-      yield put({
-        type: 'registerPreCompanyResult',
-        payload: response,
-      });
       if (callback) callback(response.data);
     },
 

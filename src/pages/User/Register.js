@@ -3,7 +3,7 @@ import { connect } from 'dva';
 import { formatMessage, FormattedMessage } from 'umi-plugin-react/locale';
 import Link from 'umi/link';
 import router from 'umi/router';
-import { Form, Input, Button, Modal, Select, Row, Col, Popover, Progress,message } from 'antd';
+import { Form, Input, Button, Modal, Select, Row, Col, Popover, Progress,message,  Radio, } from 'antd';
 import styles from './Register.less';
 
 const FormItem = Form.Item;
@@ -68,7 +68,7 @@ class Register extends Component {
       }
     }, 1000);
     const { form,dispatch} = this.props;
-    const tel = form.getFieldValue("mobile");
+    const tel = form.getFieldValue("contactPhone");
     // 判断电话是否未空
     if(tel===undefined){
       message.success("电话号码不能为空");
@@ -114,7 +114,7 @@ class Register extends Component {
     form.validateFields({ force: true }, (err, values) => {
       if (!err) {
         // 1. 验证验证码
-        const tel = values.mobile;
+        const tel = values.contactPhone;
         const verifyCode = values.captcha;
         const params={
           tel,
@@ -128,23 +128,19 @@ class Register extends Component {
               // 请求服务成功
               if(response === "success"){
                 // 注册逻辑
-                let params={
-                  company:values.company,
-                  username:values.username,
-                  password:values.confirm,
-                  certcode:values.certcode,
-                  tel:values.mobile,
-                  contact:values.contact,
-                }
-                console.log(params);
                 dispatch({
-                  type: 'register/registerPreCompany',
-                  payload:params,
+                  type: 'register/addContact',
+                  payload:{
+                    ...values,
+                  },
                   callback: (response2) => {
                     if(response2){
                       // 请求服务成功
                       if(response2 === "success"){
                         message.success("注册成功");
+                        router.push({
+                          pathname:'/Applicant/DetailForAccept',
+                        });
                       }else if(response2 === "手机号未验证"){
                         message.success("手机号未验证");
                       } else if(response2 === "公司重复注册"){
@@ -190,12 +186,12 @@ class Register extends Component {
   checkUserName = (rule, value, callback) => {
     const { dispatch } = this.props;
     dispatch({
-      type: 'register/checkUserNameFetch',
+      type: 'register/getRepeatUsername',
       payload:{username:value},
       callback: (response) => {
-        if (response===undefined || response === "error") {
+        if (response===undefined || response === "用户名已注册") {
           callback(formatMessage({ id: 'validation.userExist.error' }));
-        } else if(response === "repeat"){
+        } else if(response === "用户名已注册"){
           callback(formatMessage({ id: 'validation.userExist.repeated' }));
         }else{
           callback();
@@ -204,6 +200,22 @@ class Register extends Component {
     });
   };
 
+  getRepeatTel = (rule, value, callback) => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'register/getRepeatTel',
+      payload:{tel:value},
+      callback: (response) => {
+        if (response===undefined || response === null) {
+          callback("号码已注册");
+        } else if(response === "号码已注册"){
+          callback("号码已注册");
+        }else{
+          callback();
+        }
+      }
+    });
+  };
 
   checkPassword = (rule, value, callback) => {
     const { visible, confirmDirty } = this.state;
@@ -271,7 +283,7 @@ class Register extends Component {
             <Row gutter={4}>
               <Col span={5}><div>公司名：</div></Col>
               <Col span={19}>
-                {getFieldDecorator('company', {
+                {getFieldDecorator('companyName', {
                   rules: [
                     {
                       required: true,
@@ -280,23 +292,6 @@ class Register extends Component {
                   ],
                 })(
                   <Input size="large" placeholder={formatMessage({ id: 'form.company.placeholder' })} />
-                )}
-              </Col>
-            </Row>
-          </FormItem>
-          <FormItem>
-            <Row gutter={4}>
-              <Col span={5}><div>Certcode：</div></Col>
-              <Col span={19}>
-                {getFieldDecorator('certcode', {
-                  rules: [
-                    {
-                      required: true,
-                      message: formatMessage({ id: 'validation.certcode.required' }),
-                    },
-                  ],
-                })(
-                  <Input size="large" placeholder={formatMessage({ id: 'form.certcode.placeholder' })} />
                 )}
               </Col>
             </Row>
@@ -383,9 +378,9 @@ class Register extends Component {
           </FormItem>
           <FormItem>
             <Row gutter={4}>
-              <Col span={5}><div>联系人：</div></Col>
+              <Col span={5}><div>姓名：</div></Col>
               <Col span={19}>
-                {getFieldDecorator('contact', {
+                {getFieldDecorator('contactName', {
                   rules: [
                     {
                       required: true,
@@ -411,7 +406,7 @@ class Register extends Component {
                   >
                     <Option value="86">+86</Option>
                   </Select>
-                  {getFieldDecorator('mobile', {
+                  {getFieldDecorator('contactPhone', {
                     rules: [
                       {
                         required: true,
@@ -420,6 +415,9 @@ class Register extends Component {
                       {
                         pattern: /^\d{11}$/,
                         message: formatMessage({ id: 'validation.phone-number.wrong-format' }),
+                      },
+                      {
+                        validator: this.getRepeatTel,
                       },
                     ],
                   })(
@@ -462,6 +460,25 @@ class Register extends Component {
                     ? `${count} s`
                     : formatMessage({ id: 'app.register.get-verification-code' })}
                 </Button>
+              </Col>
+            </Row>
+          </FormItem>
+          <FormItem>
+            <Row gutter={4}>
+              <Col span={5}><div>联系方式：</div></Col>
+              <Col span={19}>
+                {getFieldDecorator('isvisible', {
+                  rules: [
+                    {
+                      required: true,
+                      message: '请选择是否可见',
+                    },
+                  ],
+                })(
+                  <Radio.Group >
+                    <Radio value='可见'>可见</Radio>
+                    <Radio value='不可见'>不可见</Radio>
+                  </Radio.Group>                )}
               </Col>
             </Row>
           </FormItem>

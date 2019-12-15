@@ -40,7 +40,7 @@ export default [
     Routes: ['src/pages/Authorized'],
     routes: [
       // Entrustment
-      { path: '/', redirect: '/Company/PreCompany',authority: ['admin', 'user']},
+      { path: '/', redirect: 'Applicant/Application',authority: ['admin', 'user']},
 
       // {
       //   path: '/Company',
@@ -105,6 +105,12 @@ export default [
             component: './Applicant/DetailForAccept',
             hideInMenu: 'true',//添加页不需要在menu上显示
           },
+          {
+            path: '/Applicant/CertificateDetail',
+            name: 'CertificateDetail',
+            component: './Applicant/CertificateDetail',
+            hideInMenu: 'true',//添加页不需要在menu上显示
+          },
         ],
       },
 
@@ -119,7 +125,12 @@ export default [
             name: 'ManagePlace',
             component: './Manage/ManagePlace',
           },
-
+          {
+            path: '/Manage/UserInfo',
+            name: 'UserInfo',
+            component: './Manage/UserInfo',
+            hideInMenu: 'true',//添加页不需要在menu上显示
+          },
         ],
       },
       {

@@ -49,6 +49,10 @@ class Accept extends PureComponent {
       title: '联系方式',
       dataIndex: 'tel',
     },
+    {
+      title: '任务',
+      dataIndex: 'inspway',
+    },
   ];
   columns = [
     {
@@ -89,7 +93,7 @@ class Accept extends PureComponent {
         <Fragment>
           <a onClick={() => this.peopleItem(text, record)}>人员</a>
           &nbsp;&nbsp;
-          <a onClick={() => this.uploadItem(text, record)}>查看证书</a>
+          <a onClick={() => this.fileItem(text, record)}>查看证书</a>
           &nbsp;&nbsp;
           <a onClick={() => this.uploadItem(text, record)}>退回证书</a>
           &nbsp;&nbsp;
@@ -130,6 +134,12 @@ class Accept extends PureComponent {
   };
 
 
+  fileItem = text =>{
+    sessionStorage.setItem('reportno',text.reportno);
+    router.push({
+      pathname:'/Applicant/CertificateDetail',
+    });
+  };
 
   peopleItem = text =>{
     const { dispatch } = this.props;

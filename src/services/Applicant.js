@@ -1,6 +1,14 @@
 import request from '@/utils/request';
 import { stringify } from 'qs';
 
+export async function getCertFiles(params) {
+  return request(`/api/cert_report/getCertFiles?reportno=${params.reportno}`);
+}
+
+
+export async function getPdfByOssPath(params) {
+  return request(`/api/cert_report/get_pdf?osspath=${params.osspath}`);
+}
 
 export async function getReportInfo(params) {
   console.log("cc");

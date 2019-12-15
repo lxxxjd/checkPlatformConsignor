@@ -25,3 +25,13 @@ export async function addConfigorPlace(params) {
     },
   });
 }
+
+export async function updateContact(params) {
+  return request(`/api/contact/updateContact`,{
+    method: 'POST',
+    data: {
+      ...params,
+      method: 'post',
+    },
+  });
+}
