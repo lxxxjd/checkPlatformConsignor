@@ -206,8 +206,8 @@ class Register extends Component {
       type: 'register/getRepeatTel',
       payload:{tel:value},
       callback: (response) => {
-        if (response===undefined || response === "error") {
-          callback(formatMessage({ id: 'validation.userExist.error' }));
+        if (response===undefined || response === null) {
+          callback("号码已注册");
         } else if(response === "号码已注册"){
           callback("号码已注册");
         }else{
