@@ -75,6 +75,11 @@ class Accept extends PureComponent {
       dataIndex: 'cargoname',
     },
     {
+      title: '状态日期',
+      dataIndex: 'overalltime',
+      render: val => this.handleDate(val),
+    },
+    {
       title: '状态',
       dataIndex: 'overallstate',
     },
@@ -117,6 +122,15 @@ class Accept extends PureComponent {
     this.setState({visible:true});
   };
 
+  handleDate = (val) => {
+    if(val!==undefined && val!==null){
+      return  <span>{ moment(val).format('YYYY-MM-DD')}</span>;
+    }
+    return null;
+  };
+
+
+
   peopleItem = text =>{
     const { dispatch } = this.props;
     dispatch({
@@ -139,7 +153,7 @@ class Accept extends PureComponent {
       pathname:'/Entrustment/EntrustmentRecord',
     });
   };
-  
+
   previewItem = text => {
     sessionStorage.setItem('reportno',text.reportno);
     router.push({
@@ -331,7 +345,7 @@ class Accept extends PureComponent {
           onCancel={this.handleCancel}
         >
           <Form layout= 'horizontal' >
-            <Form.Item 
+            <Form.Item
               label="客户服务"
               labelCol={{span: 6}}
               wrapperCol={{span: 18}}
@@ -342,7 +356,7 @@ class Accept extends PureComponent {
                 <Rate />
               )}
             </Form.Item>
-            <FormItem 
+            <FormItem
               label="现场检查"
               labelCol={{span: 6}}
               wrapperCol={{span: 18}}
@@ -353,8 +367,8 @@ class Accept extends PureComponent {
                 <Rate />
               )}
             </FormItem>
-            <FormItem 
-              label="分析测试"              
+            <FormItem
+              label="分析测试"
               labelCol={{span: 6}}
               wrapperCol={{span: 18}}
             >
@@ -364,8 +378,8 @@ class Accept extends PureComponent {
                 <Rate />
               )}
             </FormItem>
-            <FormItem 
-              label="流程时效"              
+            <FormItem
+              label="流程时效"
               labelCol={{span: 6}}
               wrapperCol={{span: 18}}
             >
@@ -375,8 +389,8 @@ class Accept extends PureComponent {
                 <Rate />
               )}
             </FormItem>
-            <FormItem 
-              label="检验费用" 
+            <FormItem
+              label="检验费用"
               labelCol={{span: 6}}
               wrapperCol={{span: 18}}
             >
