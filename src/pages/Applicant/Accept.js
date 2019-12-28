@@ -134,6 +134,7 @@ class Accept extends PureComponent {
   };
 
 
+
   fileItem = text =>{
     sessionStorage.setItem('reportno',text.reportno);
     router.push({
