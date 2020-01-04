@@ -56,7 +56,7 @@ const passwordProgressMap = {
   register,
   loading: loading.models.manage,
 }))
-class CompanyInfo extends PureComponent {
+class UserInfo extends PureComponent {
 
 	state = {
 		count: 0,
@@ -168,26 +168,39 @@ class CompanyInfo extends PureComponent {
 	        // submit the values
 	        user.contactPhone = form.getFieldValue('contactPhone');
 	        dispatch({
-	          type: 'manage/updateContact',
-	          payload: {
-	          	...user,
+	          type: 'register/verifyTel',
+	          payload:{
+	          	tel:values.contactPhone,
+	          	verifyCode:values.captcha,
 	          },
 	          callback: (response) => {
-	            if (response.code === 200) {
-	              notification.open({
-	                message: '修改成功',
-	              });
-	              this.setState({phoneVisible:false});
-	              localStorage.setItem('userinfo',JSON.stringify(user));
-	              this.componentDidMount();
-	            } else {
-	              notification.open({
-	                message: '修改失败',
-	                description: response.data,
-	              });
-	            }
+	          	if(response === "success"){
+	          		dispatch({
+			          type: 'manage/updateContact',
+			          payload: {
+			          	...user,
+			          },
+			          callback: (response) => {
+			            if (response.code === 200) {
+			              notification.open({
+			                message: '修改成功',
+			              });
+			              this.setState({phoneVisible:false});
+			              localStorage.setItem('userinfo',JSON.stringify(user));
+			              this.componentDidMount();
+			            } else {
+			              notification.open({
+			                message: '修改失败',
+			                description: response.data,
+			              });
+			            }
+			          }
+			        });
+	          	}else{
+	          		message.error("验证码错误");
+	          	}
 	          }
-	        });
+	      	});
 	      }
 	    });
 	};
@@ -496,15 +509,14 @@ class CompanyInfo extends PureComponent {
 			                    />
 			                  )}
 				        </Form.Item>
-          				<Form.Item label='确认密码:'>
+          				<Form.Item label='验证码:'>
 							{getFieldDecorator('captcha', {
-			                  rules: [
+			                  rules:
 			                  	phoneVisible ?
 			                    [{
 			                      required: true,
 			                      message: formatMessage({ id: 'validation.verification-code.required' }),
 			                    }]:[],
-			                  ],
 			                })(
 			                  <Input
 			                    size="large"
@@ -530,4 +542,4 @@ class CompanyInfo extends PureComponent {
  	}
 }
 
-export default CompanyInfo;
+export default UserInfo;
