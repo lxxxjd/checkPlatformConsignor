@@ -56,7 +56,7 @@ const passwordProgressMap = {
   register,
   loading: loading.models.manage,
 }))
-class CompanyInfo extends PureComponent {
+class UserInfo extends PureComponent {
 
 	state = {
 		count: 0,
@@ -542,4 +542,4 @@ class CompanyInfo extends PureComponent {
  	}
 }
 
-export default CompanyInfo;
+export default UserInfo;
