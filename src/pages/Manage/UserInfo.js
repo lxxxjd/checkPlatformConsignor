@@ -119,7 +119,7 @@ class CompanyInfo extends PureComponent {
 	      }
 	    });
 	};
-	
+
 	modifyPassword = () =>{
 		const {
 	      form,
