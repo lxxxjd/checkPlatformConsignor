@@ -119,6 +119,7 @@ class CompanyInfo extends PureComponent {
 	      }
 	    });
 	};
+	
 	modifyPassword = () =>{
 		const {
 	      form,
@@ -385,29 +386,8 @@ class CompanyInfo extends PureComponent {
 			                )}
 			          </Form.Item>
 			          <Form.Item label='手机号码：'>
-
-		                  {getFieldDecorator('contactPhone', {
-		                    rules: [
-		                      {
-		                        required: true,
-		                        message: formatMessage({ id: 'validation.phone-number.required' }),
-		                      },
-		                      {
-		                        pattern: /^\d{11}$/,
-		                        message: formatMessage({ id: 'validation.phone-number.wrong-format' }),
-		                      },
-		                      {
-		                        validator: this.getRepeatTel,
-		                      },
-		                    ],
-		                  })(
-		                    <Input
-		                      size="large"
-		                      style={{ width: '75%' }}
-		                      placeholder={formatMessage({ id: 'form.phone-number.placeholder' })}
-		                    />
-		                  )}
-		                    <Fragment><a onClick={() => this.showModifyPhone()}>&nbsp;&nbsp;修改手机</a></Fragment>
+                  <span className="ant-form-text">{user.contactPhone}</span>
+		              <Fragment><a onClick={() => this.showModifyPhone()}>&nbsp;&nbsp;修改手机</a></Fragment>
 			          </Form.Item>
 			          <Form.Item label='联系方式:'>
 			                {getFieldDecorator('isvisible', {
@@ -432,7 +412,7 @@ class CompanyInfo extends PureComponent {
 					  	保存
 						</Button>
 			        </Form.Item>
-			        <Modal          
+			        <Modal
 			        	title="修改密码"
           				visible={passwordVisible}
           				onOk={this.modifyPassword}
@@ -486,9 +466,9 @@ class CompanyInfo extends PureComponent {
 			                    placeholder='请输入密码'
 			                  />
 			                )}
-				          </Form.Item>				        
+				          </Form.Item>
 			        </Modal>
-			        <Modal          
+			        <Modal
 			        	title="修改手机"
           				visible={phoneVisible}
           				onOk={this.modifyPhone}
@@ -542,7 +522,7 @@ class CompanyInfo extends PureComponent {
 			                    ? `${count} s`
 			                    : formatMessage({ id: 'app.register.get-verification-code' })}
 			                </Button>
-				        </Form.Item>				        
+				        </Form.Item>
 			        </Modal>
 			    </Form>
 		    </Card>
