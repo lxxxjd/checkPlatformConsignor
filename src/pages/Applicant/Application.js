@@ -182,7 +182,7 @@ class Application extends PureComponent {
       payload: {
         // certCode: user.certCode,
       },
-      callback: (response) => {        
+      callback: (response) => {
         this.setState({company : response.data})
       }
     });
@@ -283,6 +283,22 @@ class Application extends PureComponent {
       }
     });
   };
+
+  onCertCodeChange = value => {
+    const {dispatch} = this.props;
+    dispatch({
+      type: 'applicant/getCheckProject',
+      payload: {
+        certCode : value,
+      },
+      callback: (response) => {
+        this.setState({checkProject: response})
+      }
+    });
+  };
+
+
+
   handleApplicantSearch = value => {
     const {dispatch} = this.props;
     dispatch({
@@ -379,7 +395,7 @@ class Application extends PureComponent {
     const pattern = /\.{1}[a-z]{1,}$/;
     if (pattern.exec(val) !== null) {
       val = val.slice(0, pattern.exec(val).index)
-    } 
+    }
     const {
       form
     } = this.props;
@@ -509,12 +525,12 @@ class Application extends PureComponent {
                       placeholder="请选择检验机构"
                       filterOption={false}
                       // onSearch={this.handleApplicantSearch}
-                      // onChange={this.onAppliantChange}
+                      onChange={this.onCertCodeChange}
                     >
                       {companyOptions}
                     </Select>
                   )}
-                </Form.Item>            
+                </Form.Item>
               </Col>
               <Col span={16}>
               </Col>
@@ -636,7 +652,7 @@ class Application extends PureComponent {
                   {getFieldDecorator('payer', {
                     //rules: [{required: true, message: '请输入付款人'}],
                   })(
-                    <Select                       
+                    <Select
                       showSearch
                       placeholder="请选择付款人"
                       filterOption={false}
@@ -882,7 +898,7 @@ class Application extends PureComponent {
                 <Input style={{width: '100%'}} placeholder="请输入文件名称"/>
               )}
             </Form.Item>
-        </Modal>          
+        </Modal>
         <Table
             size="middle"
             loading={loading}
