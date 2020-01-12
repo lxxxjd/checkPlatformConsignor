@@ -311,6 +311,7 @@ class Application extends PureComponent {
       }
     });
   };
+
   handlePayerSearch = value => {
     const {dispatch} = this.props;
     dispatch({
