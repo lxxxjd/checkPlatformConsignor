@@ -97,7 +97,7 @@ class UnAccept extends PureComponent {
     sessionStorage.setItem('applicant',text.applicant);
     router.push({
       pathname:'/Applicant/ModifyRecord',
-    }); 
+    });
   };
 
   previewItem = text => {

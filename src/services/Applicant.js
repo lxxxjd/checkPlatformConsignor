@@ -11,7 +11,6 @@ export async function getPdfByOssPath(params) {
 }
 
 export async function getReportInfo(params) {
-  console.log("cc");
   return request(`/api/report/get_report?reportNo=${params.reportno}`);
 }
 
@@ -54,7 +53,6 @@ export async function addPremaininfo(params) {
     method: 'POST',
     data: {
       ...params,
-      method: 'post',
     },
   });
 }
@@ -66,7 +64,6 @@ export async function updatePremaininfo(params) {
     method: 'POST',
     data: {
       ...params,
-      method: 'post',
     },
   });
 }
@@ -86,7 +83,6 @@ export async function getReportByConfigor(params) {
     method: 'POST',
     data: {
       ...params,
-      method: 'post',
     },
   });
 }
@@ -143,7 +139,6 @@ export async function getConfigorPlaceList(params) {
     method: 'POST',
     data: {
       ...params,
-      method: 'post',
     },
   });
 }

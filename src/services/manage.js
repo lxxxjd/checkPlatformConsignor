@@ -7,7 +7,6 @@ export async function getConfigorPlaceList(params) {
     method: 'POST',
     data: {
       ...params,
-      method: 'post',
     },
   });
 }
@@ -21,7 +20,6 @@ export async function addConfigorPlace(params) {
     method: 'POST',
     data: {
       ...params,
-      method: 'post',
     },
   });
 }
@@ -31,7 +29,6 @@ export async function updateContact(params) {
     method: 'POST',
     data: {
       ...params,
-      method: 'post',
     },
   });
 }

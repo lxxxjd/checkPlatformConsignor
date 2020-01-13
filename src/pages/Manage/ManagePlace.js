@@ -56,7 +56,7 @@ class ManagePlace extends PureComponent {
     dispatch({
       type: 'manage/getConfigorPlaceList',
       payload: {
-        consigoruser : user.userName,
+        consigoruser : user.username,
       }
     });
   }
@@ -64,7 +64,7 @@ class ManagePlace extends PureComponent {
   deleteItem = text => {
     const {
       dispatch,
-    } = this.props;    
+    } = this.props;
     dispatch({
       type: 'manage/deleteConfigorPlace',
       payload: {
@@ -95,7 +95,7 @@ class ManagePlace extends PureComponent {
           type: 'manage/addConfigorPlace',
           payload: {
             ...values,
-            consigoruser : user.userName,
+            consigoruser : user.username,
           },
           callback: (response) => {
             if (response.code === 400) {

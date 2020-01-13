@@ -111,6 +111,7 @@ class Accept extends PureComponent {
   componentDidMount() {
     const user = JSON.parse(localStorage.getItem("userinfo"));
     const { dispatch } = this.props;
+    console.log(user);
     const params = {
       consigoruser:user.userName,
       source:'已受理'

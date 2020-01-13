@@ -197,7 +197,7 @@ class ModifyApplication extends PureComponent {
       payload: {
         // certCode: user.certCode,
       },
-      callback: (response) => {        
+      callback: (response) => {
         this.setState({company : response.data})
       }
     });
@@ -227,7 +227,7 @@ class ModifyApplication extends PureComponent {
             if (response.code === 200) {
               notification.open({
                 message: '添加成功',
-              });        
+              });
             } else {
               notification.open({
                 message: '添加失败',
@@ -358,7 +358,7 @@ class ModifyApplication extends PureComponent {
     const pattern = /\.{1}[a-z]{1,}$/;
     if (pattern.exec(val) !== null) {
       val = val.slice(0, pattern.exec(val).index)
-    } 
+    }
     const {
       form
     } = this.props;
@@ -492,7 +492,7 @@ class ModifyApplication extends PureComponent {
                       {companyOptions}
                     </Select>
                   )}
-                </Form.Item>            
+                </Form.Item>
               </Col>
               <Col span={16}>
               </Col>
@@ -614,7 +614,7 @@ class ModifyApplication extends PureComponent {
                   {getFieldDecorator('payer', {
                     //rules: [{required: true, message: '请输入付款人'}],
                   })(
-                    <Select                       
+                    <Select
                       showSearch
                       placeholder="请选择付款人"
                       filterOption={false}

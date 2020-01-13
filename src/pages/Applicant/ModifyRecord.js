@@ -127,7 +127,7 @@ class ModifyRecord extends PureComponent {
   deleteItem = text => {
     const {
       dispatch,
-    } = this.props;    
+    } = this.props;
     dispatch({
       type: 'applicant/deletePreRecord',
       payload: {
@@ -246,7 +246,7 @@ handleChange = ({ file,fileList }) => {
     const pattern = /\.{1}[a-z]{1,}$/;
     if (pattern.exec(val) !== null) {
       val = val.slice(0, pattern.exec(val).index)
-    } 
+    }
     const {
       form
     } = this.props;
