@@ -57,6 +57,16 @@ export async function addPremaininfo(params) {
   });
 }
 
+export async function addReadRecord(params) {
+  return request(`/api/readrecord/addReadRecord`,{
+    method: 'POST',
+    data: {
+      ...params,
+    },
+  });
+}
+
+
 export async function updatePremaininfo(params) {
   const inspway = params.inspway.join(' ');
   params.inspway = inspway;

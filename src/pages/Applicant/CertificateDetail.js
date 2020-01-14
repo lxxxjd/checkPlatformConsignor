@@ -108,6 +108,28 @@ class CertificateDetail extends PureComponent {
       callback: (response) => {
         if(response.code === 200){
           window.open(response.data);
+          const user = JSON.parse(localStorage.getItem("userinfo"));
+          const params ={
+              reader:user.userName,
+              organization:'委托人',
+              company:user.companyName,
+              // tel:user.isvisible==='可见'?user.contactPhone:null,
+              tel:user.contactPhone,
+              realname:user.contactName,
+              reportno:text.reportno,
+          };
+          dispatch({
+            type: 'applicant/addReadRecord',
+            payload:params,
+            callback: (response2) => {
+              if(response2==="success"){
+                message.success("已阅成功！")
+              }else {
+                message.success("已阅失败");
+              }
+            }
+          });
+
         }else {
           message.success("打开文件失败");
         }

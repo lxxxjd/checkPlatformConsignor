@@ -1,7 +1,7 @@
 import {getAllClientName,getCheckProject,getCargos,getContacts,
   searchCargos,getCompanyList,upload,getPremaininfoList, addPremaininfo,getPremaininfo,deletePremaininfo,getReportByConfigor,getPreRecord,
   deletePreRecord,getReportByRandomCode,follow,unfollow, getOssPdf, updatePremaininfo, getReportInfo ,
-  getRecordInfo,getCnasInfo,getAllMan,getConfigorPlaceList, addEvaluation, getCertFiles, getPdfByOssPath} from '@/services/Applicant';
+  getRecordInfo,getCnasInfo,getAllMan,getConfigorPlaceList, addEvaluation, getCertFiles, getPdfByOssPath,addReadRecord} from '@/services/Applicant';
 
 export default {
   namespace: 'applicant',
@@ -30,6 +30,10 @@ export default {
     },
     *getPdfByOssPath({ payload ,callback}, { call, put }) {
       const response = yield call(getPdfByOssPath, payload);
+      if (callback) callback(response);
+    },
+    *addReadRecord({ payload ,callback}, { call, put }) {
+      const response = yield call(addReadRecord, payload);
       if (callback) callback(response.data);
     },
     *addEvaluation({ payload ,callback}, { call, put }) {
