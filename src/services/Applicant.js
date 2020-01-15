@@ -18,6 +18,10 @@ export async function getOssPdf(params) {
   return request(`/api/cert_report/get_pdf?osspath=${params.osspath}`);
 }
 
+export async function getApplyReason(params) {
+  return request(`/api/cert_report/get_abandon_applyreason?reportno=${params.reportno}`);
+}
+
 export async function getPremaininfoList(params) {
   return request(`/api/premaininfo/getPremaininfoList`,{
     method: 'POST',
@@ -26,6 +30,10 @@ export async function getPremaininfoList(params) {
       method: 'post',
     },
   });
+}
+
+export async function returnReadRecord(params) {
+  return request(`/api/readrecord/returnReadRecord?reportno=${params.reportno}&reader=${params.reader}&company=${params.company}&organization=${params.organization}`);
 }
 
 export async function addEvaluation(params) {
