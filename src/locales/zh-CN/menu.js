@@ -14,6 +14,7 @@ export default {
 
   'menu.Applicant':'委托人',
   'menu.Applicant.Application':'申请',
+  'menu.Applicant.CopyApplication':'复制申请',
   'menu.Applicant.Accept':'已受理',
   'menu.Applicant.UnAccept':'申请记录',
   'menu.Applicant.AddAttention':'加关注',

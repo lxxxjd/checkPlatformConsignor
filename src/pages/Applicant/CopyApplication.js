@@ -65,11 +65,7 @@ const fieldLabels = {
   payer: '付款人',
   price: '检验费',
   reportdate: '委托日期',
-  tradeway: '贸易方式',
-  businesssource: '业务来源',
   shipname: '标识/船名',
-  fromto: '产地/装卸港',
-  insplinkway: '现场联系方式',
   inspdate: '预报日期',
   cargoname: '检查品名',
   cargosort: '货物类别',
@@ -81,9 +77,6 @@ const fieldLabels = {
   area:'区/县/市',
   inspway: '申请项目',
   inspwaymemo1: '检验备注',
-  certstyle: '证书要求',
-  section:'执行部门',
-  customsName:'海关部门'
 };
 
 function getBase64(file) {
@@ -100,7 +93,7 @@ function getBase64(file) {
   loading: loading.models.applicant,
 }))
 @Form.create()
-class Application extends PureComponent {
+class CopyApplication extends PureComponent {
   state = {
     width: '100%',
     value: 1,
@@ -141,6 +134,42 @@ class Application extends PureComponent {
     form.setFieldsValue({['inspdate']: moment(now, "YYYY-MM-DD HH:mm:ss")});
     const user = JSON.parse(localStorage.getItem("userinfo"));
     const {dispatch} = this.props;
+    const reportno = sessionStorage.getItem("reportno");
+    dispatch({
+      type: 'applicant/getReportInfo',
+      payload: {
+        reportno,
+      },
+      callback: (response) => {
+        if(response.code === 200){
+          const report = response.data;
+          form.setFieldsValue({['unit']: report.unit});
+          form.setFieldsValue({['certcode']: report.certcode});
+          form.setFieldsValue({['applicant']: report.applicant});
+          form.setFieldsValue({['payer']: report.payer});
+          form.setFieldsValue({['applicantname']: report.applicantname});
+          form.setFieldsValue({['applicanttel']: report.applicanttel});
+          form.setFieldsValue({['shipname']: report.shipname});
+          form.setFieldsValue({['inspway']: report.inspway.split(" ")});
+          form.setFieldsValue({['agent']: report.agent});
+          form.setFieldsValue({['agentname']: report.agentname});
+          form.setFieldsValue({['agenttel']: report.agenttel});
+          form.setFieldsValue({['chineselocalname']: report.cargoname});
+          form.setFieldsValue({['quantityD']: report.quantityD});
+          form.setFieldsValue({['price']: report.price});
+          form.setFieldsValue({['inspwaymemo1']: report.inspwaymemo1});
+          dispatch({
+            type: 'applicant/getCheckProject',
+            payload: {
+              certCode : report.certcode,
+            },
+            callback: (response) => {
+              this.setState({checkProject: response})
+            }
+          });
+        }
+      }
+    });
     dispatch({
       type: 'applicant/getClientName',
       payload: {},
@@ -148,15 +177,6 @@ class Application extends PureComponent {
         this.setState({applicantName: response});
         this.setState({agentName: response});
         this.setState({payerName:response});
-      }
-    });
-    dispatch({
-      type: 'applicant/getCheckProject',
-      payload: {
-        certCode : user.certCode,
-      },
-      callback: (response) => {
-        this.setState({checkProject: response})
       }
     });
     dispatch({
@@ -914,4 +934,4 @@ class Application extends PureComponent {
   }
 }
 
-export default Application;
+export default CopyApplication;

@@ -103,7 +103,7 @@ class Accept extends PureComponent {
           &nbsp;&nbsp;
           <a onClick={() => this.rateItem(text, record)}>评价</a>
           &nbsp;&nbsp;
-          <a onClick={() => this.uploadItem(text, record)}>复制</a>
+          <a onClick={() => this.copyItem(text, record)}>复制</a>
           &nbsp;&nbsp;
           <a onClick={() => this.previewItem(text, record)}>委托详情</a>
         </Fragment>
@@ -184,10 +184,10 @@ class Accept extends PureComponent {
     this.setState({peopleVisible:true});
   };
 
-  uploadItem = text => {
+  copyItem = text => {
     sessionStorage.setItem('reportno',text.reportno);
     router.push({
-      pathname:'/Entrustment/EntrustmentRecord',
+      pathname:'/Applicant/CopyApplication',
     });
   };
 
@@ -195,20 +195,6 @@ class Accept extends PureComponent {
     sessionStorage.setItem('reportno',text.reportno);
     router.push({
       pathname:'/Applicant/DetailForAccept',
-    });
-  };
-
-  modifyItem = text => {
-    sessionStorage.setItem('reportno',text.reportno);
-    router.push({
-      pathname:'/Entrustment/ModifyForEntrustment',
-    });
-  };
-
-  copyItem = text => {
-    sessionStorage.setItem('reportno',text.reportno);
-    router.push({
-      pathname:'/Entrustment/copyForEntrustment',
     });
   };
 

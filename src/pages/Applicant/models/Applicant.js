@@ -75,7 +75,6 @@ export default {
         payload: response,
       });
       if (callback) callback(response);
-      console.log("bb");
     },
     *getReportByConfigor({ payload ,callback}, { call, put }) {
       const response = yield call(getReportByConfigor, payload);
