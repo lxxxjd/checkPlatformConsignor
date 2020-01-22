@@ -1,7 +1,7 @@
 import {getAllClientName,getCheckProject,getCargos,getContacts,
   searchCargos,getCompanyList,upload,getPremaininfoList, addPremaininfo,getPremaininfo,deletePremaininfo,getReportByConfigor,getPreRecord,
   deletePreRecord,getReportByRandomCode,follow,unfollow, getOssPdf, updatePremaininfo, getReportInfo ,
-  getRecordInfo,getCnasInfo,getAllMan,getConfigorPlaceList, addEvaluation, getCertFiles, getPdfByOssPath,addReadRecord,getBusiness} from '@/services/Applicant';
+  getRecordInfo,getCnasInfo,getAllMan,getConfigorPlaceList, addEvaluation, getCertFiles, getPdfByOssPath,addReadRecord, getApplyReason, returnReadRecord,getBusiness} from '@/services/Applicant';
 
 export default {
   namespace: 'applicant',
@@ -31,6 +31,14 @@ export default {
     *getConfigorPlaceList({ payload ,callback}, { call, put }) {
       const response = yield call(getConfigorPlaceList, payload);
       if (callback) callback(response.data);
+    },
+    *getApplyReason({ payload ,callback}, { call, put }) {
+      const response = yield call(getApplyReason, payload);
+      if (callback) callback(response);
+    },
+    *returnReadRecord({ payload ,callback}, { call, put }) {
+      const response = yield call(returnReadRecord, payload);
+      if (callback) callback(response);
     },
     *getPdfByOssPath({ payload ,callback}, { call, put }) {
       const response = yield call(getPdfByOssPath, payload);
@@ -71,7 +79,6 @@ export default {
         payload: response,
       });
       if (callback) callback(response);
-      console.log("bb");
     },
     *getReportByConfigor({ payload ,callback}, { call, put }) {
       const response = yield call(getReportByConfigor, payload);

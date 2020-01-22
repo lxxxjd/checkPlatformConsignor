@@ -67,6 +67,12 @@ export default [
             component: './Applicant/Application',
           },
           {
+            path: '/Applicant/CopyApplication',
+            name: 'CopyApplication',
+            component: './Applicant/CopyApplication',
+            hideInMenu: 'true',//添加页不需要在menu上显示
+          },
+          {
             path: '/Applicant/ModifyApplication',
             name: 'ModifyApplication',
             component: './Applicant/ModifyApplication',

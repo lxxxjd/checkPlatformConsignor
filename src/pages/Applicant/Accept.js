@@ -13,7 +13,8 @@ import {
   Table,
   Modal,
   Rate,
-  notification
+  notification,
+  Descriptions
 } from 'antd';
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
 import styles from './SearchForEntrustment.less';
@@ -37,6 +38,9 @@ class Accept extends PureComponent {
     visible:false,
     peopleVisible:false,
     man:[],
+    reportno:null,
+    certVisible:false,
+    cert:{},
     reportno:null,
   };
   columns1 = [
@@ -95,11 +99,11 @@ class Accept extends PureComponent {
           &nbsp;&nbsp;
           <a onClick={() => this.fileItem(text, record)}>查看证书</a>
           &nbsp;&nbsp;
-          <a onClick={() => this.uploadItem(text, record)}>退回证书</a>
+          <a onClick={() => this.deleteItem(text, record)}>退回证书</a>
           &nbsp;&nbsp;
           <a onClick={() => this.rateItem(text, record)}>评价</a>
           &nbsp;&nbsp;
-          <a onClick={() => this.uploadItem(text, record)}>复制</a>
+          <a onClick={() => this.copyItem(text, record)}>复制</a>
           &nbsp;&nbsp;
           <a onClick={() => this.previewItem(text, record)}>委托详情</a>
         </Fragment>
@@ -134,7 +138,27 @@ class Accept extends PureComponent {
     return null;
   };
 
-
+  deleteItem = text =>{
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'applicant/getApplyReason',
+      payload: {
+        reportno:text.reportno,
+      },
+      callback:response =>{
+        if (response.code === 200) {
+          this.setState({reportno:text.reportno});
+          this.setState({cert:response.data});
+          this.setState({certVisible:true});
+        }else{
+          notification.open({
+            message: '不存在申请作废证书!',
+            description: response.data,
+          });
+        }
+      }
+    });
+  };
 
   fileItem = text =>{
     sessionStorage.setItem('reportno',text.reportno);
@@ -158,11 +182,12 @@ class Accept extends PureComponent {
       }
     });
     this.setState({peopleVisible:true});
-  }
-  uploadItem = text => {
+  };
+
+  copyItem = text => {
     sessionStorage.setItem('reportno',text.reportno);
     router.push({
-      pathname:'/Entrustment/EntrustmentRecord',
+      pathname:'/Applicant/CopyApplication',
     });
   };
 
@@ -170,20 +195,6 @@ class Accept extends PureComponent {
     sessionStorage.setItem('reportno',text.reportno);
     router.push({
       pathname:'/Applicant/DetailForAccept',
-    });
-  };
-
-  modifyItem = text => {
-    sessionStorage.setItem('reportno',text.reportno);
-    router.push({
-      pathname:'/Entrustment/ModifyForEntrustment',
-    });
-  };
-
-  copyItem = text => {
-    sessionStorage.setItem('reportno',text.reportno);
-    router.push({
-      pathname:'/Entrustment/copyForEntrustment',
     });
   };
 
@@ -227,6 +238,7 @@ class Accept extends PureComponent {
   handleCancel = () =>{
     this.setState({visible:false});
     this.setState({peopleVisible:false});
+    this.setState({certVisible:false});
   };
 
   handleOk = e => {
@@ -309,7 +321,33 @@ class Accept extends PureComponent {
     );
   }
 
-
+  handleCertOk = value =>{
+    const { reportno } = this.state;
+    const { dispatch } = this.props;
+    const user = JSON.parse(localStorage.getItem("userinfo"));
+    dispatch({
+      type: 'applicant/returnReadRecord',
+      payload: {
+        reportno:reportno,
+        organization:"委托人",
+        reader:user.userName,
+        company:user.companyName
+      },
+      callback:response =>{
+        if (response.code === 200) {
+          notification.open({
+            message: "同意成功",
+          });
+          this.setState({certVisible:false});
+        }else{
+          notification.open({
+            message: '同意失败',
+            description: response.data,
+          });
+        }
+      }
+    });
+  };
 
 
   render() {
@@ -318,7 +356,7 @@ class Accept extends PureComponent {
       loading,
       form:{getFieldDecorator}
     } = this.props;
-    const { visible,peopleVisible ,man} = this.state;
+    const { visible,peopleVisible , man, certVisible, cert} = this.state;
     return (
       <PageHeaderWrapper>
         <Card size='small' bordered={false}>
@@ -335,6 +373,23 @@ class Accept extends PureComponent {
               pagination={{showQuickJumper:true,showSizeChanger:true}}
             />
           </div>
+        <Modal
+          title="退回证书"
+          visible={certVisible}
+          onOk={this.handleCertOk}
+          onCancel={this.handleCancel}
+          okText="同意"
+          cancelText="返回"
+        >
+          <Descriptions
+            bordered
+            column={2}
+          >
+            <Descriptions.Item label="请求人">{cert.applyman}</Descriptions.Item>
+            <Descriptions.Item label="请求日期">{moment(cert.applydate).format('YYYY-MM-DD')}</Descriptions.Item>
+            <Descriptions.Item label="证书退回原因">{cert.applyreason}</Descriptions.Item>
+          </Descriptions>
+        </Modal>
         <Modal
           title="人员"
           visible={peopleVisible}
