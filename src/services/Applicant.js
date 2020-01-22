@@ -171,3 +171,9 @@ export async function searchCargos(params) {
   return request(`/api/cargo/search_cargos?value=${params.value}`);
 }
 
+
+// 工商接口
+export async function getBusiness(params) {
+  return request(`/api/business/getBusiness?name=${params.name}`);
+}
+

@@ -274,11 +274,12 @@ class Application extends PureComponent {
   handleAgentSearch = value => {
     const {dispatch} = this.props;
     dispatch({
-      type: 'applicant/getClientName',
+      type: 'applicant/getBusiness',
       payload: {
-        content: value
+        name: value
       },
       callback: (response) => {
+
         this.setState({agentName: response})
       }
     });
@@ -297,16 +298,15 @@ class Application extends PureComponent {
     });
   };
 
-
-
   handleApplicantSearch = value => {
     const {dispatch} = this.props;
     dispatch({
-      type: 'applicant/getClientName',
+      type: 'applicant/getBusiness',
       payload: {
-        content: value
+        name: value
       },
       callback: (response) => {
+
         this.setState({applicantName: response})
       }
     });
@@ -315,11 +315,12 @@ class Application extends PureComponent {
   handlePayerSearch = value => {
     const {dispatch} = this.props;
     dispatch({
-      type: 'applicant/getClientName',
+      type: 'applicant/getBusiness',
       payload: {
-        content: value
+        name: value
       },
       callback: (response) => {
+
         this.setState({payerName: response})
       }
     });
@@ -551,15 +552,15 @@ class Application extends PureComponent {
                   {getFieldDecorator('applicant', {
                     rules: visible ?[]:[{required: true, message: '请输入申请人'}]
                   })(
-                    <Select
-                      showSearch
-                      placeholder="请选择申请人"
-                      filterOption={false}
-                      onSearch={this.handleApplicantSearch}
+                    <AutoComplete
+                      className="global-search"
+                      dataSource={applicantOptions}
                       onChange={this.onAppliantChange}
+                      onSearch={this.handleApplicantSearch}
+                      placeholder="请输入申请人"
                     >
-                      {applicantOptions}
-                    </Select>
+                      <Input />
+                    </AutoComplete>
                   )}
                 </Form.Item>
               </Col>
@@ -601,15 +602,15 @@ class Application extends PureComponent {
                   colon={false}
                 >
                   {getFieldDecorator('agent', {})(
-                    <Select
-                      showSearch
-                      placeholder="请选择代理人"
-                      filterOption={false}
-                      onSearch={this.handleAgentSearch}
-                      onChange={this.onAgentChange}
+                    <AutoComplete
+                      className="global-search"
+                      dataSource={agentOptions}
+                      onChange={this.handleAgentSearch}
+                      onSearch={this.onAgentChange}
+                      placeholder="请输入代理人"
                     >
-                      {agentOptions}
-                    </Select>
+                      <Input />
+                    </AutoComplete>
                   )}
                 </Form.Item>
               </Col>
@@ -653,13 +654,14 @@ class Application extends PureComponent {
                   {getFieldDecorator('payer', {
                     //rules: [{required: true, message: '请输入付款人'}],
                   })(
-                    <Select
-                      showSearch
-                      placeholder="请选择付款人"
-                      filterOption={false}
-                      onSearch={this.handlePayerSearch}>
-                      {payerOptions}
-                    </Select>
+                    <AutoComplete
+                      className="global-search"
+                      dataSource={payerOptions}
+                      onSearch={this.handlePayerSearch}
+                      placeholder="请输入付款人"
+                    >
+                      <Input />
+                    </AutoComplete>
                   )}
                 </Form.Item>
               </Col>
