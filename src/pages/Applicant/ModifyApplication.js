@@ -475,11 +475,11 @@ class ModifyApplication extends PureComponent {
         <Card title="检验机构" className={styles.card} bordered={false}>
           <Form hideRequiredMark labelAlign="left">
             <Row gutter={16}>
-              <Col span={8}>
+              <Col span={12}>
                 <Form.Item
-                  label='请选择检验机构'
-                  labelCol={{span: 6}}
-                  wrapperCol={{span: 18}}
+                  label='检验机构'
+                  labelCol={{span: 4}}
+                  wrapperCol={{span: 20}}
                   colon={false}
                 >
                   {getFieldDecorator('certcode', {
@@ -497,8 +497,7 @@ class ModifyApplication extends PureComponent {
                   )}
                 </Form.Item>
               </Col>
-              <Col span={16}>
-              </Col>
+              <Col span={12} />
             </Row>
           </Form>
         </Card>
