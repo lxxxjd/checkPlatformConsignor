@@ -87,7 +87,7 @@ class LoginPage extends Component {
               this.renderMessage(formatMessage({ id: 'app.login.message-invalid-credentials' }))}
             <UserName
               name="userName"
-              placeholder={`${formatMessage({ id: 'app.login.userName' })}: admin or user`}
+              placeholder={`${formatMessage({ id: 'app.login.userName' })}`}
               rules={[
                 {
                   required: true,
@@ -97,7 +97,7 @@ class LoginPage extends Component {
             />
             <Password
               name="password"
-              placeholder={`${formatMessage({ id: 'app.login.password' })}: ant.design`}
+              placeholder={`${formatMessage({ id: 'app.login.password' })}`}
               rules={[
                 {
                   required: true,
@@ -158,10 +158,10 @@ class LoginPage extends Component {
             <FormattedMessage id="app.login.login" />
           </Submit>
           <div className={styles.other}>
-            <FormattedMessage id="app.login.sign-in-with" />
-            <Icon type="alipay-circle" className={styles.icon} theme="outlined" />
-            <Icon type="taobao-circle" className={styles.icon} theme="outlined" />
-            <Icon type="weibo-circle" className={styles.icon} theme="outlined" />
+            {/*<FormattedMessage id="app.login.sign-in-with" />*/}
+            {/*<Icon type="alipay-circle" className={styles.icon} theme="outlined" />*/}
+            {/*<Icon type="taobao-circle" className={styles.icon} theme="outlined" />*/}
+            {/*<Icon type="weibo-circle" className={styles.icon} theme="outlined" />*/}
             <Link className={styles.register} to="/user/register">
               <FormattedMessage id="app.login.signup" />
             </Link>

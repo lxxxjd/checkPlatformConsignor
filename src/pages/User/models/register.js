@@ -2,7 +2,7 @@ import { fakeRegister} from '@/services/api';
 import { getRepeatUsername ,sendVerify,verifyTel,addContact, getRepeatTel } from '@/services/user';
 import { setAuthority } from '@/utils/authority';
 import { reloadAuthorized } from '@/utils/Authorized';
-
+import {getBusiness} from '@/services/Applicant';
 
 
 export default {
@@ -19,6 +19,12 @@ export default {
   },
 
   effects: {
+
+    *getBusiness({ payload ,callback}, { call, put }) {
+      const response = yield call(getBusiness, payload);
+      if (callback) callback(response.data);
+    },
+
     *submit({ payload }, { call, put }) {
       const response = yield call(fakeRegister, payload);
       yield put({

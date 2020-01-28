@@ -3,7 +3,7 @@ import { connect } from 'dva';
 import { formatMessage, FormattedMessage } from 'umi-plugin-react/locale';
 import Link from 'umi/link';
 import router from 'umi/router';
-import { Form, Input, Button, Modal, Select, Row, Col, Popover, Progress,message,  Radio, } from 'antd';
+import { Form, Input, Button, Modal, Select, Row, Col, Popover, Progress,message,  Radio, AutoComplete} from 'antd';
 import styles from './Register.less';
 
 const FormItem = Form.Item;
@@ -46,6 +46,7 @@ class Register extends Component {
     visible: false,
     help: '',
     prefix: '86',
+    businessName:[],
   };
 
 
@@ -100,7 +101,7 @@ class Register extends Component {
     if (value && value.length > 9) {
       return 'ok';
     }
-    if (value && value.length > 5) {
+    if (value && value.length > 7) {
       return 'pass';
     }
     return 'poor';
@@ -119,7 +120,7 @@ class Register extends Component {
         const params={
           tel,
           verifyCode
-        }
+        };
         dispatch({
           type: 'register/verifyTel',
           payload:params,
@@ -137,14 +138,14 @@ class Register extends Component {
                     if(response2){
                       // 请求服务成功
                       if(response2 === "success"){
-                        message.success("注册成功");
+                        message.success(`用户名：${values.userName}，密码为：${values.password}，注册成功`);
                         router.push({
                           pathname:'/Applicant/DetailForAccept',
                         });
                       }else if(response2 === "手机号未验证"){
-                        message.success("手机号未验证");
+                        message.success("手机号未验证，注册失败");
                       } else if(response2 === "公司重复注册"){
-                        message.success("公司重复注册");
+                        message.success("公司重复注册，注册失败");
                       } else{
                         // 失败
                         message.success("注册失败");
@@ -189,12 +190,12 @@ class Register extends Component {
       type: 'register/getRepeatUsername',
       payload:{username:value},
       callback: (response) => {
-        if (response===undefined || response === "用户名已注册") {
-          callback(formatMessage({ id: 'validation.userExist.error' }));
-        } else if(response === "用户名已注册"){
+        if (response ==="success") {
+          callback();
+        } else if(response === "repeat"){
           callback(formatMessage({ id: 'validation.userExist.repeated' }));
         }else{
-          callback();
+          callback(formatMessage({ id: 'validation.userExist.error' }));
         }
       }
     });
@@ -269,10 +270,27 @@ class Register extends Component {
     ) : null;
   };
 
+  handleCompanySearch = value => {
+    // 工商接口
+    const {dispatch} = this.props;
+    dispatch({
+      type: 'register/getBusiness',
+      payload: {
+        name: value
+      },
+      callback: (response) => {
+        this.setState({businessName: response})
+      }
+    });
+
+  };
+
+
   render() {
     const { form, submitting } = this.props;
     const { getFieldDecorator } = form;
-    const { count, prefix, help, visible } = this.state;
+    const { count, prefix, help, visible ,businessName } = this.state;
+    const businessNameOptions = businessName.map(d => <Option key={d} value={d}>{d}</Option>);
     return (
       <div className={styles.main}>
         <h3>
@@ -291,7 +309,14 @@ class Register extends Component {
                     },
                   ],
                 })(
-                  <Input size="large" placeholder={formatMessage({ id: 'form.company.placeholder' })} />
+                  <AutoComplete
+                    className="global-search"
+                    dataSource={businessNameOptions}
+                    onChange={this.handleCompanySearch}
+                    placeholder="公司名"
+                  >
+                    <Input />
+                  </AutoComplete>
                 )}
               </Col>
             </Row>
@@ -300,7 +325,7 @@ class Register extends Component {
             <Row gutter={4}>
               <Col span={5}><div>用户名：</div></Col>
               <Col span={19}>
-                {getFieldDecorator('username', {
+                {getFieldDecorator('userName', {
                   rules: [
                     {
                       required: true,
@@ -378,7 +403,7 @@ class Register extends Component {
           </FormItem>
           <FormItem>
             <Row gutter={4}>
-              <Col span={5}><div>姓名：</div></Col>
+              <Col span={5}><div>真实姓名：</div></Col>
               <Col span={19}>
                 {getFieldDecorator('contactName', {
                   rules: [
@@ -468,6 +493,7 @@ class Register extends Component {
               <Col span={5}><div>联系方式：</div></Col>
               <Col span={19}>
                 {getFieldDecorator('isvisible', {
+                  initialValue: '可见',
                   rules: [
                     {
                       required: true,
@@ -475,7 +501,7 @@ class Register extends Component {
                     },
                   ],
                 })(
-                  <Radio.Group >
+                  <Radio.Group>
                     <Radio value='可见'>可见</Radio>
                     <Radio value='不可见'>不可见</Radio>
                   </Radio.Group>                )}

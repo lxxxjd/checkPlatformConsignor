@@ -1,7 +1,8 @@
 import {getAllClientName,getCheckProject,getCargos,getContacts,
   searchCargos,getCompanyList,upload,getPremaininfoList, addPremaininfo,getPremaininfo,deletePremaininfo,getReportByConfigor,getPreRecord,
   deletePreRecord,getReportByRandomCode,follow,unfollow, getOssPdf, updatePremaininfo, getReportInfo ,
-  getRecordInfo,getCnasInfo,getAllMan,getConfigorPlaceList, addEvaluation, getCertFiles, getPdfByOssPath,addReadRecord, getApplyReason, returnReadRecord,getBusiness} from '@/services/Applicant';
+  getRecordInfo,getCnasInfo,getAllMan,getConfigorPlaceList, addEvaluation, getCertFiles, getPdfByOssPath,
+  addReadRecord, getApplyReason, returnReadRecord,getBusiness} from '@/services/Applicant';
 
 export default {
   namespace: 'applicant',
