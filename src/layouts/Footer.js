@@ -8,15 +8,15 @@ const FooterView = () => (
     <GlobalFooter
       links={[
         {
-          key: '检验鉴定平台',
-          title: '检验鉴定平台',
-          href: 'https://ant.design',
+          key: '检验检测委托人',
+          title: '检验检测委托人',
+          href: 'http://www.xnjfbm.vip:84/user/login',
           blankTarget: true,
         },
       ]}
       copyright={
         <Fragment>
-          Copyright <Icon type="copyright" /> 中国检验鉴定公司
+          Copyright <Icon type="copyright" /> 水木梁清
         </Fragment>
       }
     />
