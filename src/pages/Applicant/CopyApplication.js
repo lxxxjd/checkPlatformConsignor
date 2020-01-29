@@ -67,7 +67,7 @@ const fieldLabels = {
   reportdate: '委托日期',
   shipname: '标识/船名',
   inspdate: '预报日期',
-  cargoname: '检查品名',
+  cargoname: '货名',
   cargosort: '货物类别',
   quantityD: '申报数量',
   unit: '单位',

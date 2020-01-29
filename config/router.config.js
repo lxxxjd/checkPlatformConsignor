@@ -135,7 +135,6 @@ export default [
             path: '/Manage/UserInfo',
             name: 'UserInfo',
             component: './Manage/UserInfo',
-            hideInMenu: 'true',//添加页不需要在menu上显示
           },
         ],
       },

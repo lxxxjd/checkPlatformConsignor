@@ -54,7 +54,7 @@ class UnAccept extends PureComponent {
       dataIndex: 'shipname',
     },
     {
-      title: '检查品名',
+      title: '货名',
       dataIndex: 'cargoname',
     },
     {
@@ -202,7 +202,7 @@ class UnAccept extends PureComponent {
                 <Select placeholder="搜索类型">
                   <Option value="applicant">委托人</Option>
                   <Option value="shipname">船名标识</Option>
-                  <Option value="cargoname">检查品名</Option>
+                  <Option value="cargoname">货名</Option>
                   <Option value="overallstate">状态</Option>
                 </Select>
               )}

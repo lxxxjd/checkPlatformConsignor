@@ -18,14 +18,14 @@ import {
   notification,
   Upload,
   Icon,
-  message,Popover,Progress
+  message, Popover, Progress, AutoComplete,
 } from 'antd';
 
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
 import styles from './UserInfo.less';
 import moment from 'moment'
 
-
+const {Option} = Select;
 const passwordStatusMap = {
   ok: (
     <div className={styles.success}>
@@ -66,6 +66,7 @@ class UserInfo extends PureComponent {
 		visible: false,
 		passwordVisible:false,
 		phoneVisible:false,
+    companys:[]
 	};
 	componentDidMount() {
 	    const {
@@ -341,38 +342,56 @@ class UserInfo extends PureComponent {
 	        }
 	    });
 	};
+
 	showModifyPhone = () =>{
 		this.setState({phoneVisible:true});
 	};
 
-    renderPasswordProgress = () => {
-	    const { form } = this.props;
-	    const value = form.getFieldValue('password');
-	    const passwordStatus = this.getPasswordStatus();
-	    return value && value.length ? (
-	      <div className={styles[`progress-${passwordStatus}`]}>
-	        <Progress
-	          status={passwordProgressMap[passwordStatus]}
-	          className={styles.progress}
-	          strokeWidth={6}
-	          percent={value.length * 10 > 100 ? 100 : value.length * 10}
-	          showInfo={false}
-	        />
-	      </div>
-	    ) : null;
-	  };
- 	render() {
+  renderPasswordProgress = () => {
+    const { form } = this.props;
+    const value = form.getFieldValue('password');
+    const passwordStatus = this.getPasswordStatus();
+    return value && value.length ? (
+      <div className={styles[`progress-${passwordStatus}`]}>
+        <Progress
+          status={passwordProgressMap[passwordStatus]}
+          className={styles.progress}
+          strokeWidth={6}
+          percent={value.length * 10 > 100 ? 100 : value.length * 10}
+          showInfo={false}
+        />
+      </div>
+    ) : null;
+  };
+
+
+  handleCompanySearch = value => {
+    const {dispatch} = this.props;
+    dispatch({
+      type: 'manage/getBusiness',
+      payload: {
+        name: value
+      },
+      callback: (response) => {
+        this.setState({companys: response})
+      }
+    });
+  };
+
+
+  render() {
  		const { getFieldDecorator } = this.props.form;
  		const FormItemLayout = {
 	      labelCol: { span: 6 },
 	      wrapperCol: { span: 14 },
 	    };
-	    const { user ,help,visible, passwordVisible,phoneVisible, count} = this.state;
+ 		const { user ,help,visible, passwordVisible,phoneVisible, count,companys} = this.state;
+    const companyOptions = companys.map(d => <Option key={d} value={d}>{d}</Option>);
  		return(
  			<Card>
 	 			<Form {...FormItemLayout} >
 	 				<Form.Item label="用户名">
-						<span className="ant-form-text">{user.username}</span>
+						<span className="ant-form-text">{user.userName}</span>
 			        </Form.Item>
 			        <Form.Item label='公司名：'>
 		                {getFieldDecorator('companyName', {
@@ -383,7 +402,12 @@ class UserInfo extends PureComponent {
 		                    },
 		                  ],
 		                })(
-		                  <Input size="large" placeholder={formatMessage({ id: 'form.company.placeholder' })} />
+                        <AutoComplete
+                          className="global-search"
+                          dataSource={companyOptions}
+                          onSearch={this.handleCompanySearch}
+                          placeholder="请输入公司名">
+                        </AutoComplete>
 		                )}
 			          </Form.Item>
 			          <Form.Item label='姓名：'>

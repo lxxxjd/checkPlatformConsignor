@@ -12,8 +12,8 @@ export default {
   'menu.Company.Company':'检验公司',
 
 
-  'menu.Applicant':'委托人',
-  'menu.Applicant.Application':'申请',
+  'menu.Applicant':'我的业务',
+  'menu.Applicant.Application':'我要申请',
   'menu.Applicant.CopyApplication':'复制申请',
   'menu.Applicant.Accept':'已受理',
   'menu.Applicant.UnAccept':'申请记录',
@@ -23,7 +23,7 @@ export default {
   'menu.Applicant.ModifyRecord':'附件编辑',
   'menu.Applicant.DetailForAccept':'受理订单详情',
   'menu.Applicant.CertificateDetail':'查看证书',
-  'menu.Manage':'管理',
+  'menu.Manage':'我的设置',
   'menu.Manage.ManagePlace':'地址管理',
-  'menu.Manage.UserInfo':'账户管理',
+  'menu.Manage.UserInfo':'我',
 };

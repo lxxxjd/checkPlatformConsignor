@@ -59,7 +59,7 @@ class AddAttention extends PureComponent {
       dataIndex: 'shipname',
     },
     {
-      title: '检查品名',
+      title: '货名',
       dataIndex: 'cargoname',
     },
     {

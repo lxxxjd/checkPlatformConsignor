@@ -71,7 +71,7 @@ const fieldLabels = {
   fromto: '产地/装卸港',
   insplinkway: '现场联系方式',
   inspdate: '预报日期',
-  cargoname: '检查品名',
+  cargoname: '货名',
   cargosort: '货物类别',
   quantityD: '申报数量',
   unit: '单位',
@@ -815,7 +815,9 @@ class ModifyApplication extends PureComponent {
                   wrapperCol={{span: 22}}
                   colon={false}
                 >
-                  {getFieldDecorator('inspwaymemo1', {})(<TextArea style={{minHeight: 32}} rows={5}/>)}
+                  {getFieldDecorator('inspwaymemo1', {})(
+                    <TextArea style={{minHeight: 32}} rows={5} placeholder="申请品质时，请简要说明品质指标要求" />
+                    )}
                 </Form.Item>
               </Col>
             </Row>

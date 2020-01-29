@@ -1,4 +1,5 @@
 import {getConfigorPlaceList, deleteConfigorPlace, addConfigorPlace,updateContact} from '@/services/Manage';
+import {getBusiness} from '@/services/Applicant'
 
 export default {
   namespace: 'manage',
@@ -8,6 +9,12 @@ export default {
   },
 
   effects: {
+
+    *getBusiness({ payload ,callback}, { call, put }) {
+      const response = yield call(getBusiness, payload);
+      if (callback) callback(response.data);
+    },
+
     *getConfigorPlaceList({ payload ,callback}, { call, put }) {
       const response = yield call(getConfigorPlaceList, payload);
       yield put({

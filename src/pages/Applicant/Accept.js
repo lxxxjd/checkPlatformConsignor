@@ -79,7 +79,7 @@ class Accept extends PureComponent {
       dataIndex: 'shipname',
     },
     {
-      title: '检查品名',
+      title: '货名',
       dataIndex: 'cargoname',
     },
     {
@@ -295,7 +295,7 @@ class Accept extends PureComponent {
                   <Option value="reportno">委托编号</Option>
                   <Option value="applicant">委托人</Option>
                   <Option value="shipname">船名标识</Option>
-                  <Option value="cargoname">检查品名</Option>
+                  <Option value="cargoname">货名</Option>
                 </Select>
               )}
             </Form.Item>
