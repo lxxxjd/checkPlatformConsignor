@@ -740,7 +740,7 @@ class Application extends PureComponent {
                   wrapperCol={{span: 14}}
                   colon={false}
                 >
-                  {getFieldDecorator('quantityD', {
+                  {getFieldDecorator('quantityd', {
                     rules: [{
                       whitespace: true,
                       type: 'number',
