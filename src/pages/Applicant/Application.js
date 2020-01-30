@@ -169,14 +169,23 @@ class Application extends PureComponent {
       }
     });
     dispatch({
-      type: 'applicant/getCargos',
+      type: 'applicant/getConfigorCargoList',
       payload: {
-        // certCode: user.certCode,
+        consigoruser : user.userName,
       },
       callback: (response) => {
         this.setState({cargos: response})
       }
     });
+    // dispatch({
+    //   type: 'applicant/getCargos',
+    //   payload: {
+    //     // certCode: user.certCode,
+    //   },
+    //   callback: (response) => {
+    //     this.setState({cargos: response})
+    //   }
+    // });
     dispatch({
       type: 'applicant/getCompanyList',
       payload: {
@@ -344,15 +353,16 @@ class Application extends PureComponent {
 
   cargoSearch = value => {
     const {dispatch} = this.props;
-   // const certCode = JSON.parse(localStorage.getItem("userinfo")).certCode;
+    const user = JSON.parse(localStorage.getItem("userinfo"));
     dispatch({
-      type: 'applicant/searchCargos',
+      type: 'applicant/getConfigorCargoList',
       payload: {
-        // certCode,
-        value
+        kind:'cargoname',
+        value,
+        consigoruser : user.userName,      
       },
       callback: (response) => {
-        this.setState({cargos: response});
+        this.setState({cargos: response})
       }
     });
   };
@@ -491,7 +501,7 @@ class Application extends PureComponent {
     const applicantOptions = applicantName.map(d => <Option key={d} value={d}>{d}</Option>);
     const agentOptions = agentName.map(d => <Option key={d} value={d}>{d}</Option>);
     const payerOptions = payerName.map(d => <Option key={d} value={d}>{d}</Option>);
-    const cargosOptions = cargos.map(d => d.cargonamec);
+    const cargosOptions = cargos.map(d => d.cargoname);
     const placeOptions = placeName.map(d => d.placename);
     const applicantContactsOptions = applicantContacts.map(d => <Option key={d.contactName} value={d.contactName}>{d.contactName}</Option>);
     const agentContactsOptions = agentContacts.map(d =><Option key={d.contactName} value={d.contactName}>{d.contactName}</Option>);

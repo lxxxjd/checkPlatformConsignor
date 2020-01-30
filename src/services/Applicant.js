@@ -160,6 +160,16 @@ export async function getConfigorPlaceList(params) {
     },
   });
 }
+
+export async function getConfigorCargoList(params) {
+  return request(`/api/ConfigorCargo/getConfigorCargoList`,{
+    method: 'POST',
+    data: {
+      ...params,
+    },
+  });
+}
+
 export async function getAllClientName(params) {
   if(params.content != null){
     return request(`/api/contact/getAllContacts?content=${params.content}`);
