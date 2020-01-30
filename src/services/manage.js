@@ -32,3 +32,24 @@ export async function updateContact(params) {
     },
   });
 }
+
+export async function getConfigorCargoList(params) {
+  return request(`/api/ConfigorCargo/getConfigorCargoList`,{
+    method: 'POST',
+    data: {
+      ...params,
+    },
+  });
+}
+export async function addConfigorCargo(params) {
+  return request(`/api/ConfigorCargo/addConfigorCargo`,{
+    method: 'POST',
+    data: {
+      ...params,
+    },
+  });
+}
+
+export async function deleteConfigorCargo(params) {
+  return request(`/api/ConfigorCargo/deleteConfigorCargo?keyno=${params.keyno}`);
+}

@@ -25,5 +25,6 @@ export default {
   'menu.Applicant.CertificateDetail':'查看证书',
   'menu.Manage':'我的设置',
   'menu.Manage.ManagePlace':'地址管理',
+  'menu.Manage.ManageCargo':'货物管理',
   'menu.Manage.UserInfo':'我',
 };

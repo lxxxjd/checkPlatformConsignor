@@ -1,11 +1,12 @@
-import {getConfigorPlaceList, deleteConfigorPlace, addConfigorPlace,updateContact} from '@/services/Manage';
+import {getConfigorPlaceList, deleteConfigorPlace, addConfigorPlace,updateContact, getConfigorCargoList, addConfigorCargo, deleteConfigorCargo} from '@/services/Manage';
 import {getBusiness} from '@/services/Applicant'
 
 export default {
   namespace: 'manage',
 
   state: {
-    placeList:[]
+    placeList:[],
+    cargoList:[],
   },
 
   effects: {
@@ -14,7 +15,14 @@ export default {
       const response = yield call(getBusiness, payload);
       if (callback) callback(response.data);
     },
-
+    *getConfigorCargoList({ payload ,callback}, { call, put }) {
+      const response = yield call(getConfigorCargoList, payload);
+      yield put({
+        type: 'getCargoList',
+        payload:response,
+      });
+      if (callback) callback(response.data);
+    },
     *getConfigorPlaceList({ payload ,callback}, { call, put }) {
       const response = yield call(getConfigorPlaceList, payload);
       yield put({
@@ -31,6 +39,14 @@ export default {
       const response = yield call(addConfigorPlace, payload);
       if (callback) callback(response.data);
     },
+    *deleteConfigorCargo({ payload ,callback}, { call, put }) {
+      const response = yield call(deleteConfigorCargo, payload);
+      if (callback) callback(response.data);
+    },
+    *addConfigorCargo({ payload ,callback}, { call, put }) {
+      const response = yield call(addConfigorCargo, payload);
+      if (callback) callback(response.data);
+    },
     *updateContact({ payload ,callback}, { call, put }) {
       const response = yield call(updateContact, payload);
       if (callback) callback(response);
@@ -42,6 +58,12 @@ export default {
       return {
         ...state,
         placeList : payload.data,
+      };
+    },
+    getCargoList(state, { payload }) {
+      return {
+        ...state,
+        cargoList : payload.data,
       };
     },
   },

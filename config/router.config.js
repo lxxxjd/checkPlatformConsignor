@@ -132,6 +132,11 @@ export default [
             component: './Manage/ManagePlace',
           },
           {
+            path: '/Manage/ManageCargo',
+            name: 'ManageCargo',
+            component: './Manage/ManageCargo',
+          },
+          {
             path: '/Manage/UserInfo',
             name: 'UserInfo',
             component: './Manage/UserInfo',
