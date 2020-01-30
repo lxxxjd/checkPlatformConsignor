@@ -140,7 +140,7 @@ class Register extends Component {
                       if(response2 === "success"){
                         message.success(`用户名：${values.userName}，密码为：${values.password}，注册成功`);
                         router.push({
-                          pathname:'/Applicant/DetailForAccept',
+                          pathname:'/user/login',
                         });
                       }else if(response2 === "手机号未验证"){
                         message.success("手机号未验证，注册失败");

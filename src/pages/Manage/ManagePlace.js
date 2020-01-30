@@ -56,7 +56,7 @@ class ManagePlace extends PureComponent {
     dispatch({
       type: 'manage/getConfigorPlaceList',
       payload: {
-        consigoruser : user.username,
+        consigoruser : user.userName,
       }
     });
   }
@@ -95,7 +95,7 @@ class ManagePlace extends PureComponent {
           type: 'manage/addConfigorPlace',
           payload: {
             ...values,
-            consigoruser : user.username,
+            consigoruser : user.userName,
           },
           callback: (response) => {
             if (response.code === 400) {
@@ -164,7 +164,7 @@ class ManagePlace extends PureComponent {
           onCancel={this.handleCancel}
         >
           <Form>
-            <Form.Item label="文件名称">
+            <Form.Item label="地址名称">
               {getFieldDecorator('placename', {
                 rules: [{required: true, message: '请输入地址'}],
               })(

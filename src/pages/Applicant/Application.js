@@ -542,11 +542,11 @@ class Application extends PureComponent {
         <Card title="业务信息" className={styles.card} bordered={false}>
           <Form hideRequiredMark labelAlign="left">
             <Row gutter={16}>
-              <Col span={8}>
+              <Col span={10}>
                 <Form.Item
                   label={fieldLabels.applicant}
-                  labelCol={{span: 6}}
-                  wrapperCol={{span: 18}}
+                  labelCol={{span: 4}}
+                  wrapperCol={{span: 20}}
                   colon={false}
                 >
                   {getFieldDecorator('applicant', {
@@ -564,7 +564,7 @@ class Application extends PureComponent {
                   )}
                 </Form.Item>
               </Col>
-              <Col span={8}>
+              <Col span={7}>
                 <Form.Item
                   label={fieldLabels.applicantname}
                   labelCol={{span: 6}}
@@ -582,7 +582,7 @@ class Application extends PureComponent {
                   )}
                 </Form.Item>
               </Col>
-              <Col span={8}>
+              <Col span={7}>
                 <Form.Item
                   label={fieldLabels.applicanttel}
                   labelCol={{span: 6}}
@@ -594,19 +594,19 @@ class Application extends PureComponent {
               </Col>
             </Row>
             <Row gutter={16}>
-              <Col span={8}>
+              <Col span={10}>
                 <Form.Item
                   label={fieldLabels.agent}
-                  labelCol={{span: 6}}
-                  wrapperCol={{span: 18}}
+                  labelCol={{span: 4}}
+                  wrapperCol={{span: 20}}
                   colon={false}
                 >
                   {getFieldDecorator('agent', {})(
                     <AutoComplete
                       className="global-search"
                       dataSource={agentOptions}
-                      onChange={this.handleAgentSearch}
-                      onSearch={this.onAgentChange}
+                      onSearch={this.handleAgentSearch}
+                      onChange={this.onAgentChange}
                       placeholder="请输入代理人"
                     >
                       <Input />
@@ -614,7 +614,7 @@ class Application extends PureComponent {
                   )}
                 </Form.Item>
               </Col>
-              <Col span={8}>
+              <Col span={7}>
                 <Form.Item
                   label={fieldLabels.agentname}
                   labelCol={{span: 6}}
@@ -632,7 +632,7 @@ class Application extends PureComponent {
                   )}
                 </Form.Item>
               </Col>
-              <Col span={8}>
+              <Col span={7}>
                 <Form.Item
                   label={fieldLabels.agenttel}
                   labelCol={{span: 6}}
@@ -644,11 +644,11 @@ class Application extends PureComponent {
               </Col>
             </Row>
             <Row gutter={16} type="flex">
-              <Col span={8}>
+              <Col span={10}>
                 <Form.Item
                   label={fieldLabels.payer}
-                  labelCol={{span: 6}}
-                  wrapperCol={{span: 18}}
+                  labelCol={{span: 4}}
+                  wrapperCol={{span: 20}}
                   colon={false}
                 >
                   {getFieldDecorator('payer', {
@@ -665,17 +665,17 @@ class Application extends PureComponent {
                   )}
                 </Form.Item>
               </Col>
-              <Col span={8}>
+              <Col span={7}>
                 <Form.Item
                   colon={false}
                 >
                   <Radio.Group onChange={this.onChange}>
-                    <Radio value={2}>付款人同申请人</Radio>
-                    <Radio value={1}>付款人同代理人</Radio>
+                    <Radio value={2}>同申请人</Radio>
+                    <Radio value={1}>同代理人</Radio>
                   </Radio.Group>
                 </Form.Item>
               </Col>
-              <Col span={8}>
+              <Col span={7}>
                 <Form.Item
                   label={fieldLabels.price}
                   labelCol={{span: 6}}
@@ -733,11 +733,11 @@ class Application extends PureComponent {
                   })(<Input placeholder="请输入船名" />)}
                 </Form.Item>
               </Col>
-              <Col span={6}>
+              <Col span={5}>
                 <Form.Item
                   label={fieldLabels.quantityD}
-                  labelCol={{span: 8}}
-                  wrapperCol={{span: 16}}
+                  labelCol={{span: 10}}
+                  wrapperCol={{span: 14}}
                   colon={false}
                 >
                   {getFieldDecorator('quantityD', {
@@ -755,7 +755,7 @@ class Application extends PureComponent {
                   )}
                 </Form.Item>
               </Col>
-              <Col span={2}>
+              <Col span={3}>
                 <Form.Item
                   colon={false}
                 >
