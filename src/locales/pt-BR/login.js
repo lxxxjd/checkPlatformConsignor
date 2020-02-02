@@ -16,7 +16,7 @@ export default {
   'app.login.verification-code-warning':
     'This project is a demo project and will not actually send you a verification code. Please switch to the account password login interface and log in as prompted.',
   'app.register.sign-in': 'Já tem uma conta?',
-  'app.register-result.msg': 'Conta：registrada em {email}',
+  'app.register-result.msg': 'Account：registered at {userName}，Password：register at {password}',
   'app.register-result.activation-email':
     'Um email de ativação foi enviado para o seu email e é válido por 24 horas. Por favor entre no seu email e clique no link de ativação da conta.',
   'app.register-result.back-home': 'Voltar ao Início',

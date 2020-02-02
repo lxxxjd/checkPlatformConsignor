@@ -115,6 +115,7 @@ class ModifyApplication extends PureComponent {
     departments:[],
     cargoname:"",
     company:[],
+    placeName:[],
   };
   columns = [
     {
@@ -172,6 +173,15 @@ class ModifyApplication extends PureComponent {
         this.setState({applicantName: response});
         this.setState({agentName: response});
         this.setState({payerName:response});
+      }
+    });
+    dispatch({
+      type: 'applicant/getConfigorPlaceList',
+      payload: {
+        consigoruser : user.userName,
+      },
+      callback: (response) => {
+        this.setState({placeName: response})
       }
     });
     dispatch({
@@ -436,6 +446,42 @@ class ModifyApplication extends PureComponent {
     });
   };
 
+  onChangeInspplace = value =>{
+    this.setState({placecode:value[2]});
+    const {dispatch} = this.props;
+    const user = JSON.parse(localStorage.getItem("userinfo"));
+    const values={
+      placename:"",
+      placecode:value[2]!==undefined?value[2]:"",
+      consigoruser : user.userName,
+    };
+    dispatch({
+      type: 'applicant/searchPlaceByPlaceCode',
+      payload: values,
+      callback: (response) => {
+        this.setState({placeName: response})
+      }
+    });
+  };
+
+  placeSearch = value =>{
+    const {dispatch} = this.props;
+    const user = JSON.parse(localStorage.getItem("userinfo"));
+    const values={
+      placename:value,
+      placecode:this.state.placecode!==undefined ?this.state.placecode:"",
+      consigoruser : user.userName,
+    };
+    dispatch({
+      type: 'applicant/searchPlaceByPlaceCode',
+      payload: values,
+      callback: (response) => {
+        this.setState({placeName: response})
+      }
+    });
+  };
+
+
   render() {
     const parentMethods = {
       handleOk:this.handleOk,
@@ -445,7 +491,7 @@ class ModifyApplication extends PureComponent {
       form: {getFieldDecorator},
       loading,
     } = this.props;
-    const {applicantName, agentName, payerName  , checkProject, cargos, agentContacts, applicantContacts, company } = this.state;
+    const {applicantName, agentName, payerName  , checkProject, cargos, agentContacts, applicantContacts, company ,placeName} = this.state;
     const uploadButton = (
       <div>
         <Icon type="plus" />
@@ -459,6 +505,7 @@ class ModifyApplication extends PureComponent {
     const applicantContactsOptions = applicantContacts.map(d => <Option key={d.contactName} value={d.contactName}>{d.contactName}</Option>);
     const agentContactsOptions = agentContacts.map(d =><Option key={d.contactName} value={d.contactName}>{d.contactName}</Option>);
     const companyOptions = company.map(d =><Option key={d.certcode} value={d.certcode}>{d.namec}</Option>);
+    const placeOptions = placeName.map(d => d.placename);
     //申请人选项
     return (
       <PageHeaderWrapper
@@ -766,7 +813,7 @@ class ModifyApplication extends PureComponent {
                   {getFieldDecorator('inspplace1', {
                     rules: [],
                   })(
-                    <Cascader options={areaOptions} placeholder="请选择检验地点" />
+                    <Cascader options={areaOptions} placeholder="请选择检验地点" onChange={this.onChangeInspplace} />
                   )}
                 </Form.Item>
               </Col>
@@ -780,7 +827,15 @@ class ModifyApplication extends PureComponent {
                   {getFieldDecorator('inspplace2', {
                     rules: [],
                   })(
-                    <Input placeholder="请输入详细地址" />
+                    <AutoComplete
+                      className="global-search"
+                      dataSource={placeOptions}
+                      onSearch={this.placeSearch}
+                      placeholder="请输入详细地址"
+                    >
+                      <Input
+                      />
+                    </AutoComplete>
                   )}
                 </Form.Item>
               </Col>

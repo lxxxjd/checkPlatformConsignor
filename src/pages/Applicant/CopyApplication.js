@@ -348,21 +348,41 @@ class CopyApplication extends PureComponent {
     });
   };
 
-  placeSearch = value =>{
+  onChangeInspplace = value =>{
+    this.setState({placecode:value[2]});
     const {dispatch} = this.props;
-   const user = JSON.parse(localStorage.getItem("userinfo"));
+    const user = JSON.parse(localStorage.getItem("userinfo"));
+    const values={
+      placename:"",
+      placecode:value[2]!==undefined?value[2]:"",
+      consigoruser : user.userName,
+    };
     dispatch({
-      type: 'applicant/getConfigorPlaceList',
-      payload: {
-        kind:'placename',
-        value,
-        consigoruser : user.userName,
-      },
+      type: 'applicant/searchPlaceByPlaceCode',
+      payload: values,
       callback: (response) => {
         this.setState({placeName: response})
       }
     });
   };
+
+  placeSearch = value =>{
+    const {dispatch} = this.props;
+    const user = JSON.parse(localStorage.getItem("userinfo"));
+    const values={
+      placename:value,
+      placecode:this.state.placecode!==undefined ?this.state.placecode:"",
+      consigoruser : user.userName,
+    };
+    dispatch({
+      type: 'applicant/searchPlaceByPlaceCode',
+      payload: values,
+      callback: (response) => {
+        this.setState({placeName: response})
+      }
+    });
+  };
+
 
   cargoSearch = value => {
     const {dispatch} = this.props;
@@ -825,7 +845,7 @@ class CopyApplication extends PureComponent {
                   {getFieldDecorator('inspplace1', {
                     rules: [],
                   })(
-                    <Cascader options={areaOptions} placeholder="请选择检验地点" />
+                    <Cascader options={areaOptions} placeholder="请选择检验地点" onChange={this.onChangeInspplace} />
                   )}
                 </Form.Item>
               </Col>

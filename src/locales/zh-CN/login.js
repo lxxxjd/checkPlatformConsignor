@@ -16,7 +16,7 @@ export default {
     '验证码已发送到您手机上，注意查收',
   'app.login.verification-code-warning.noExist':'手机未正确填写或错误',
   'app.register.sign-in': '使用已有账户登录',
-  'app.register-result.msg': '你的账户：{email} 注册成功',
+  'app.register-result.msg': '您注册的账户：{userName}，密码：{password}，注册成功',
   'app.register-result.activation-email':
     '激活邮件已发送到你的邮箱中，邮件有效期为24小时。请及时登录邮箱，点击邮件中的链接激活帐户。',
   'app.register-result.back-home': '返回首页',

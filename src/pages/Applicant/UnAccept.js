@@ -55,7 +55,7 @@ class UnAccept extends PureComponent {
     },
     {
       title: '货名',
-      dataIndex: 'cargoname',
+      dataIndex: 'chineselocalname',
     },
     {
       title: '状态',

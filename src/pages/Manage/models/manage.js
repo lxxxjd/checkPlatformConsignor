@@ -1,4 +1,5 @@
-import {getConfigorPlaceList, deleteConfigorPlace, addConfigorPlace,updateContact, getConfigorCargoList, addConfigorCargo, deleteConfigorCargo} from '@/services/Manage';
+import {getConfigorPlaceList, deleteConfigorPlace,updateConfigorCargo,updateConfigorPlace,
+  addConfigorPlace,updateContact, getConfigorCargoList, addConfigorCargo, deleteConfigorCargo,searchCargos} from '@/services/manage';
 import {getBusiness} from '@/services/Applicant'
 
 export default {
@@ -11,6 +12,15 @@ export default {
 
   effects: {
 
+
+
+    // 货物接口
+    *searchCargos({ payload ,callback}, { call, put }) {
+      const response = yield call(searchCargos, payload);
+      if (callback) callback(response.data);
+    },
+
+    // 工商接口
     *getBusiness({ payload ,callback}, { call, put }) {
       const response = yield call(getBusiness, payload);
       if (callback) callback(response.data);
@@ -29,7 +39,7 @@ export default {
         type: 'getPlaceList',
         payload:response,
       });
-      if (callback) callback(response.data);
+      if (callback) callback(response);
     },
     *deleteConfigorPlace({ payload ,callback}, { call, put }) {
       const response = yield call(deleteConfigorPlace, payload);
@@ -39,6 +49,15 @@ export default {
       const response = yield call(addConfigorPlace, payload);
       if (callback) callback(response.data);
     },
+    *updateConfigorCargo({ payload ,callback}, { call, put }) {
+      const response = yield call(updateConfigorCargo, payload);
+      if (callback) callback(response.data);
+    },
+    *updateConfigorPlace({ payload ,callback}, { call, put }) {
+      const response = yield call(updateConfigorPlace, payload);
+      if (callback) callback(response.data);
+    },
+
     *deleteConfigorCargo({ payload ,callback}, { call, put }) {
       const response = yield call(deleteConfigorCargo, payload);
       if (callback) callback(response.data);

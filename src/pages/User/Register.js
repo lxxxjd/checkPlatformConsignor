@@ -47,6 +47,7 @@ class Register extends Component {
     help: '',
     prefix: '86',
     businessName:[],
+
   };
 
 
@@ -138,9 +139,12 @@ class Register extends Component {
                     if(response2){
                       // 请求服务成功
                       if(response2 === "success"){
-                        message.success(`用户名：${values.userName}，密码为：${values.password}，注册成功`);
                         router.push({
-                          pathname:'/user/login',
+                          pathname:'/user/register-result',
+                          state: {
+                            userName:values.userName,
+                            password:values.password,
+                          },
                         });
                       }else if(response2 === "手机号未验证"){
                         message.success("手机号未验证，注册失败");

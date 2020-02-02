@@ -3,6 +3,7 @@ import {getAllClientName,getCheckProject,getCargos,getContacts,
   deletePreRecord,getReportByRandomCode,follow,unfollow, getOssPdf, updatePremaininfo, getReportInfo ,
   getRecordInfo,getCnasInfo,getAllMan,getConfigorPlaceList, addEvaluation, getCertFiles, getPdfByOssPath,
   addReadRecord, getApplyReason, returnReadRecord,getBusiness, getConfigorCargoList} from '@/services/Applicant';
+import{searchPlaceByPlaceCode} from '@/services/manage'
 
 export default {
   namespace: 'applicant',
@@ -25,6 +26,14 @@ export default {
   },
 
   effects: {
+
+    // 按地区编码搜索货物
+    *searchPlaceByPlaceCode({ payload ,callback}, { call, put }) {
+      const response = yield call(searchPlaceByPlaceCode, payload);
+      if (callback) callback(response.data);
+    },
+
+
     *getBusiness({ payload ,callback}, { call, put }) {
       const response = yield call(getBusiness, payload);
       if (callback) callback(response.data);

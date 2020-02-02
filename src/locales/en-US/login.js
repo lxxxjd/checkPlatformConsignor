@@ -16,7 +16,7 @@ export default {
     'The verification-code has been send ',
   'app.login.verification-code-warning.noExist':'tel is not right',
   'app.register.sign-in': 'Already have an account?',
-  'app.register-result.msg': 'Account：registered at {email}',
+  'app.register-result.msg': 'Account：registered at {userName}，Password：register at {password}',
   'app.register-result.activation-email':
     'The activation email has been sent to your email address and is valid for 24 hours. Please log in to the email in time and click on the link in the email to activate the account.',
   'app.register-result.back-home': 'Back to home',

@@ -15,7 +15,7 @@ export default {
   'app.login.verification-code-warning':
     '此項目為演示項目，並不會真的給您發送驗證碼。請切換到賬戶密碼登錄界面按提示登錄。',
   'app.register.sign-in': '使用已有賬戶登錄',
-  'app.register-result.msg': '妳的賬戶：{email} 註冊成功',
+  'app.register-result.msg': '妳的賬戶：{userName},妳的密碼：{password} 註冊成功',
   'app.register-result.activation-email':
     '激活郵件已發送到妳的郵箱中，郵件有效期為24小時。請及時登錄郵箱，點擊郵件中的鏈接激活帳戶。',
   'app.register-result.back-home': '返回首頁',
