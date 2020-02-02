@@ -130,6 +130,9 @@ export async function getReportByRandomCode(params) {
   return request(`/api/report/getReportByRandomCode?reportno=${params.reportno}&&randomcode=${params.randomcode}`);
 }
 
+export async function getCerFilesByRandomCode(params) {
+  return request(`/api/cert_report/getCerFilesByRandomCode?reportno=${params.reportno}&&randomcode=${params.randomcode}`);
+}
 
 export async function getAllMan(params) {
   return request(`/api/task_info/getAllMan?reportno=${params.reportno}&&certcode=${params.certcode}`);

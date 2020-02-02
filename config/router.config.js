@@ -117,6 +117,11 @@ export default [
             component: './Applicant/CertificateDetail',
             hideInMenu: 'true',//添加页不需要在menu上显示
           },
+          {
+            path: '/Applicant/SearchCert',
+            name: 'SearchCert',
+            component: './Applicant/SearchCert',
+          },
         ],
       },
 

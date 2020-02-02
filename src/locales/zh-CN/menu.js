@@ -23,6 +23,7 @@ export default {
   'menu.Applicant.ModifyRecord':'附件编辑',
   'menu.Applicant.DetailForAccept':'受理订单详情',
   'menu.Applicant.CertificateDetail':'查看证书',
+  'menu.Applicant.SearchCert':'证书查询',
   'menu.Manage':'我的设置',
   'menu.Manage.ManagePlace':'地址管理',
   'menu.Manage.ManageCargo':'货物管理',
