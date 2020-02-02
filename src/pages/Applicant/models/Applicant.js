@@ -2,7 +2,7 @@ import {getAllClientName,getCheckProject,getCargos,getContacts,
   searchCargos,getCompanyList,upload,getPremaininfoList, addPremaininfo,getPremaininfo,deletePremaininfo,getReportByConfigor,getPreRecord,
   deletePreRecord,getReportByRandomCode,follow,unfollow, getOssPdf, updatePremaininfo, getReportInfo ,
   getRecordInfo,getCnasInfo,getAllMan,getConfigorPlaceList, addEvaluation, getCertFiles, getPdfByOssPath,
-  addReadRecord, getApplyReason, returnReadRecord,getBusiness, getConfigorCargoList} from '@/services/Applicant';
+  addReadRecord, getApplyReason, returnReadRecord,getBusiness, getConfigorCargoList, getCerFilesByRandomCode} from '@/services/Applicant';
 
 export default {
   namespace: 'applicant',
@@ -36,6 +36,10 @@ export default {
     *getConfigorCargoList({ payload ,callback}, { call, put }) {
       const response = yield call(getConfigorCargoList, payload);
       if (callback) callback(response.data);
+    },
+    *getCerFilesByRandomCode({ payload ,callback}, { call, put }) {
+      const response = yield call(getCerFilesByRandomCode, payload);
+      if (callback) callback(response);
     },
     *getApplyReason({ payload ,callback}, { call, put }) {
       const response = yield call(getApplyReason, payload);
