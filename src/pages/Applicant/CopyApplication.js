@@ -69,7 +69,7 @@ const fieldLabels = {
   inspdate: '预报日期',
   cargoname: '货名',
   cargosort: '货物类别',
-  quantityD: '申报数量',
+  quantityd: '申报数量',
   unit: '单位',
   ChineseName: '型号/俗称',
   inspplace1: '检验地点',
@@ -143,28 +143,37 @@ class CopyApplication extends PureComponent {
       callback: (response) => {
         if(response.code === 200){
           const report = response.data;
-          form.setFieldsValue({['unit']: report.unit});
-          form.setFieldsValue({['certcode']: report.certcode});
-          form.setFieldsValue({['applicant']: report.applicant});
-          form.setFieldsValue({['payer']: report.payer});
-          form.setFieldsValue({['applicantname']: report.applicantname});
-          form.setFieldsValue({['applicanttel']: report.applicanttel});
-          form.setFieldsValue({['shipname']: report.shipname});
-          form.setFieldsValue({['inspway']: report.inspway.split(" ")});
-          form.setFieldsValue({['agent']: report.agent});
-          form.setFieldsValue({['agentname']: report.agentname});
-          form.setFieldsValue({['agenttel']: report.agenttel});
-          form.setFieldsValue({['chineselocalname']: report.cargoname});
-          form.setFieldsValue({['quantityD']: report.quantityD});
-          form.setFieldsValue({['price']: report.price});
-          form.setFieldsValue({['inspwaymemo1']: report.inspwaymemo1});
+          const placecodes=[];
+          placecodes.push(`${response.data.inspplace1.substring(0,2)}0000`);
+          placecodes.push(`${response.data.inspplace1.substring(0,4)}00`);
+          placecodes.push(response.data.inspplace1);
+          form.setFieldsValue({
+            'certcode': response.data.certcode,
+            'unit': response.data.unit,
+            'applicant': response.data.applicant,
+            'applicanttel': response.data.applicanttel,
+            'agent': response.data.agent,
+            'agentname': response.data.agentname,
+            'agenttel': response.data.agenttel,
+            'payer': response.data.payer,
+            'price': response.data.price,
+            'shipname': response.data.shipname,
+            'inspdate': moment(response.data.inspdate, "YYYY-MM-DD"),
+            'quantityd': response.data.quantityd,
+            'chineselocalname': response.data.chineselocalname,
+            'inspplace1': placecodes,
+            'inspplace2': response.data.inspplace2,
+            'applicantname':response.data.applicantname,
+            'inspway': response.data.inspway.split(" "),
+            'inspwaymemo1': response.data.inspwaymemo1,
+          });
           dispatch({
             type: 'applicant/getCheckProject',
             payload: {
               certCode : report.certcode,
             },
-            callback: (response) => {
-              this.setState({checkProject: response})
+            callback: (response2) => {
+              this.setState({checkProject: response2})
             }
           });
         }
@@ -514,6 +523,10 @@ class CopyApplication extends PureComponent {
     });
   };
 
+  back = () => {
+    this.props.history.goBack();
+  };
+
   render() {
     const parentMethods = {
       handleOk:this.handleOk,
@@ -547,8 +560,10 @@ class CopyApplication extends PureComponent {
             <Col span={2}>
               <Button type="primary" onClick={this.validate}>提交</Button>
             </Col>
-            <Col span={22}>
+            <Col span={2}>
+              <Button type="primary" onClick={this.back}>返回</Button>
             </Col>
+            <Col span={20} />
           </Row>
         </Card>
         <Card title="检验机构" className={styles.card} bordered={false}>
@@ -776,12 +791,12 @@ class CopyApplication extends PureComponent {
               </Col>
               <Col span={6}>
                 <Form.Item
-                  label={fieldLabels.quantityD}
+                  label={fieldLabels.quantityd}
                   labelCol={{span: 8}}
                   wrapperCol={{span: 16}}
                   colon={false}
                 >
-                  {getFieldDecorator('quantityD', {
+                  {getFieldDecorator('quantityd', {
                     rules: [{
                       whitespace: true,
                       type: 'number',

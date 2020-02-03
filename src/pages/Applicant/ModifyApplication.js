@@ -73,7 +73,7 @@ const fieldLabels = {
   inspdate: '预报日期',
   cargoname: '货名',
   cargosort: '货物类别',
-  quantityD: '申报数量',
+  quantityd: '申报数量',
   unit: '单位',
   ChineseName: '型号/俗称',
   inspplace1: '检验地点',
@@ -144,24 +144,38 @@ class ModifyApplication extends PureComponent {
       },
       callback : response =>{
         if(response.code === 200){
-          form.setFieldsValue({
-            'certcode': response.data.certcode,
-            'unit': response.data.unit,
-            'applicant': response.data.applicant,
-            'applicanttel': response.data.applicanttel,
-            'agent': response.data.agent,
-            'agentname': response.data.agentname,
-            'agenttel': response.data.agenttel,
-            'payer': response.data.payer,
-            'price': response.data.price,
-            'shipname': response.data.shipname,
-            'inspdate': moment(response.data.inspdate, "YYYY-MM-DD"),
-            'quantityD': response.data.quantityD,
-            'unit': response.data.unit,
-            'chineselocalname': response.data.chineselocalname,
-            inspplace1: response.data.inspplace1,
-            inspway: response.data.inspway.split(" "),
-            inspwaymemo1: response.data.inspwaymemo1,
+          dispatch({
+            type: 'applicant/getCheckProject',
+            payload: {
+              certCode : response.data.certcode,
+            },
+            callback: (response2) => {
+              this.setState({checkProject: response2});
+              const placecodes=[];
+              placecodes.push(`${response.data.inspplace1.substring(0,2)}0000`);
+              placecodes.push(`${response.data.inspplace1.substring(0,4)}00`);
+              placecodes.push(response.data.inspplace1);
+              form.setFieldsValue({
+                'certcode': response.data.certcode,
+                'unit': response.data.unit,
+                'applicant': response.data.applicant,
+                'applicanttel': response.data.applicanttel,
+                'agent': response.data.agent,
+                'agentname': response.data.agentname,
+                'agenttel': response.data.agenttel,
+                'payer': response.data.payer,
+                'price': response.data.price,
+                'shipname': response.data.shipname,
+                'inspdate': moment(response.data.inspdate, "YYYY-MM-DD"),
+                'quantityd': response.data.quantityd,
+                'chineselocalname': response.data.chineselocalname,
+                'inspplace1': placecodes,
+                'inspplace2': response.data.inspplace2,
+                'applicantname':response.data.applicantname,
+                'inspway': response.data.inspway.split(" "),
+                'inspwaymemo1': response.data.inspwaymemo1,
+              });
+            }
           });
         }
       }
@@ -182,15 +196,6 @@ class ModifyApplication extends PureComponent {
       },
       callback: (response) => {
         this.setState({placeName: response})
-      }
-    });
-    dispatch({
-      type: 'applicant/getCheckProject',
-      payload: {
-        certCode : user.certCode,
-      },
-      callback: (response) => {
-        this.setState({checkProject: response})
       }
     });
     dispatch({
@@ -236,11 +241,11 @@ class ModifyApplication extends PureComponent {
           callback: (response) => {
             if (response.code === 200) {
               notification.open({
-                message: '添加成功',
+                message: '修改成功',
               });
             } else {
               notification.open({
-                message: '添加失败',
+                message: '修改失败',
                 description: response.data,
               });
             }
@@ -481,6 +486,23 @@ class ModifyApplication extends PureComponent {
     });
   };
 
+  back = () => {
+    this.props.history.goBack();
+  };
+
+  onCertCodeChange = value => {
+    const {dispatch} = this.props;
+    dispatch({
+      type: 'applicant/getCheckProject',
+      payload: {
+        certCode : value,
+      },
+      callback: (response) => {
+        this.setState({checkProject: response})
+      }
+    });
+  };
+
 
   render() {
     const parentMethods = {
@@ -506,7 +528,7 @@ class ModifyApplication extends PureComponent {
     const agentContactsOptions = agentContacts.map(d =><Option key={d.contactName} value={d.contactName}>{d.contactName}</Option>);
     const companyOptions = company.map(d =><Option key={d.certcode} value={d.certcode}>{d.namec}</Option>);
     const placeOptions = placeName.map(d => d.placename);
-    //申请人选项
+    // 申请人选项
     return (
       <PageHeaderWrapper
       >
@@ -515,8 +537,10 @@ class ModifyApplication extends PureComponent {
             <Col span={2}>
               <Button type="primary" onClick={this.validate}>提交</Button>
             </Col>
-            <Col span={22}>
+            <Col span={2}>
+              <Button type="primary" onClick={this.back}>返回</Button>
             </Col>
+            <Col span={20} />
           </Row>
         </Card>
         <Card title="检验机构" className={styles.card} bordered={false}>
@@ -536,8 +560,7 @@ class ModifyApplication extends PureComponent {
                       // showSearch
                       placeholder="请选择检验机构"
                       filterOption={false}
-                      // onSearch={this.handleApplicantSearch}
-                      // onChange={this.onAppliantChange}
+                      onChange={this.onCertCodeChange}
                     >
                       {companyOptions}
                     </Select>
@@ -744,12 +767,12 @@ class ModifyApplication extends PureComponent {
               </Col>
               <Col span={6}>
                 <Form.Item
-                  label={fieldLabels.quantityD}
+                  label={fieldLabels.quantityd}
                   labelCol={{span: 8}}
                   wrapperCol={{span: 16}}
                   colon={false}
                 >
-                  {getFieldDecorator('quantityD', {
+                  {getFieldDecorator('quantityd', {
                     rules: [{
                       whitespace: true,
                       type: 'number',

@@ -200,6 +200,41 @@ class Application extends PureComponent {
     });
   }
 
+  componentWillUnmount(){
+    // Modal.success({
+    //   title: 'test',
+    // });
+  }
+
+  saveFormInfo =()=>{
+    const {form} = this.props;
+    const formValues = form.getFieldsValue();
+    sessionStorage.setItem("applicationFormValues",formValues);
+  };
+
+  setFormInfo =()=>{
+    const {form} = this.props;
+    const formValues = sessionStorage.getItem("applicationFormValues");
+    form.setFieldsValue({
+      'certcode': formValues.certcode,
+      'applicant': formValues.applicant,
+      'applicanttel': formValues.applicanttel,
+      'agent': formValues.agent,
+      'agentname': formValues.agentname,
+      'agenttel': formValues.agenttel,
+      'payer': formValues.payer,
+      'price': formValues.price,
+      'shipname': formValues.shipname,
+      'inspdate': moment(formValues.inspdate, "YYYY-MM-DD"),
+      'quantityD': formValues.quantityD,
+      'unit': formValues.unit,
+      'chineselocalname': formValues.chineselocalname,
+      inspplace1: formValues.inspplace1,
+      inspway: formValues.inspway.split(" "),
+      inspwaymemo1: formValues.inspwaymemo1,
+    });
+  };
+
   validate = () => {
     const {
       form: {validateFieldsAndScroll},
@@ -298,6 +333,8 @@ class Application extends PureComponent {
       }
     });
   };
+
+
 
   onCertCodeChange = value => {
     const {dispatch} = this.props;
@@ -530,17 +567,18 @@ class Application extends PureComponent {
     const applicantContactsOptions = applicantContacts.map(d => <Option key={d.contactName} value={d.contactName}>{d.contactName}</Option>);
     const agentContactsOptions = agentContacts.map(d =><Option key={d.contactName} value={d.contactName}>{d.contactName}</Option>);
     const companyOptions = company.map(d =><Option key={d.certcode} value={d.certcode}>{d.namec}</Option>);
-    //申请人选项
+    // 申请人选项
     return (
-      <PageHeaderWrapper
-      >
+      <PageHeaderWrapper>
         <Card bordered={false} className={styles.card}>
           <Row gutter={16}>
             <Col span={2}>
               <Button type="primary" onClick={this.validate}>提交</Button>
             </Col>
-            <Col span={22}>
+            <Col span={2}>
+              <Button type="primary" onClick={this.saveFormInfo}>暂存</Button>
             </Col>
+            <Col span={20} />
           </Row>
         </Card>
         <Card title="检验机构" className={styles.card} bordered={false}>

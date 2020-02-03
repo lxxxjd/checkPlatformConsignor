@@ -30,13 +30,16 @@ class LoginPage extends Component {
         } else {
           const { dispatch } = this.props;
           dispatch({
-            type: 'login/getCaptcha',
-            payload: values.mobile,
+            type: 'login/sendVerify',
+            payload: {
+              tel:values.mobile
+            },
           })
             .then(resolve)
             .catch(reject);
 
           Modal.info({
+            okText:"关闭",
             title: formatMessage({ id: 'app.login.verification-code-warning' }),
           });
         }
@@ -45,10 +48,21 @@ class LoginPage extends Component {
 
   handleSubmit = (err, values) => {
     const { type } = this.state;
-    if (!err) {
+    if(type==="account"){
+      if (!err) {
+        const { dispatch } = this.props;
+        dispatch({
+          type: 'login/login',
+          payload: {
+            ...values,
+            type,
+          },
+        });
+      }
+    }else if(type === "mobile"){
       const { dispatch } = this.props;
       dispatch({
-        type: 'login/login',
+        type: 'login/loginContactByTel',
         payload: {
           ...values,
           type,

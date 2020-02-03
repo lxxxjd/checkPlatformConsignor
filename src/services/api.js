@@ -128,3 +128,14 @@ export async function queryNotices(params = {}) {
 export async function getFakeCaptcha(mobile) {
   return request(`/api/captcha?mobile=${mobile}`);
 }
+
+
+// 验证码登录
+export async function loginContactByTel(params) {
+  return request('/api/login/loginContactByTel', {
+    method: 'POST',
+    data: {
+      ...params
+    },
+  });
+}
