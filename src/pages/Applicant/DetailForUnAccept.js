@@ -4,6 +4,8 @@ import { Card, Divider ,Descriptions,Row, Col,  Button,Typography ,Modal,Icon,Ta
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
 import styles from './style.less';
 import moment from 'moment'
+import areaOptions from './areaOptions'
+
 const { Title} = Typography;
 @connect(({ applicant, loading }) => ({
   applicant,
@@ -123,7 +125,23 @@ class DetailForUnAccept extends Component {
 
   showCancel = () =>{
     this.setState({showVisible:false});
-  }
+  };
+
+
+
+  getPlaceFromCode =(val)=>{
+    const onelevel = `${val.substring(0,2)}0000`;
+    const twolevel = `${val.substring(0,4)}00`;
+    const threelevel = val;
+    const oneitem = areaOptions.find(item => item.value === onelevel );
+    if(oneitem===undefined){
+      return <span>{threelevel}</span>;
+    }
+    const twoitem = oneitem.children.find(item => item.value === twolevel );
+    const threeitem = twoitem.children.find(item => item.value === threelevel );
+    return <span>{oneitem.label }/{  twoitem.label}/{   threeitem.label}</span>;
+  };
+
   render() {
     const {
       applicant:{preRecordData},
@@ -146,16 +164,26 @@ class DetailForUnAccept extends Component {
             </Col>
           </Row>
           <Modal
-          title="确认"
-          visible={this.state.visible}
-          onOk={this.handleOk}
-          onCancel={this.handleCancel}
+            title="确认"
+            visible={this.state.visible}
+            onOk={this.handleOk}
+            onCancel={this.handleCancel}
           >
             <p>是否撤销</p>
           </Modal>
+          <Modal
+            title="记录详情"
+            visible={showVisible}
+            onCancel={this.showCancel}
+            footer={null}
+            style={{ top: 10 }}
+            width={800}
+          >
+            <embed src={url} width="700" height="700" type="application/pdf" />
+          </Modal>
           <Divider style={{ marginBottom: 32 }} />
           <Descriptions size="large" title="业务信息" style={{ marginBottom: 32 }} bordered>
-            <Descriptions.Item label="委托编号">{preMainInfo.preMainInfono}</Descriptions.Item>
+            <Descriptions.Item label="委托编号">{preMainInfo.reportno20}</Descriptions.Item>
             <Descriptions.Item label="查询密码">{preMainInfo.randomcode}</Descriptions.Item>
             <Descriptions.Item label="委托日期">{moment(preMainInfo.preMainInfodate).format('YYYY-MM-DD')}</Descriptions.Item>
             <Descriptions.Item label="申请人">{preMainInfo.applicant}</Descriptions.Item>
@@ -170,19 +198,19 @@ class DetailForUnAccept extends Component {
           </Descriptions>
           <Divider style={{ marginBottom: 32 }} />
           <Descriptions size="large" title="检查对象" style={{ marginBottom: 32 }} bordered>
-            <Descriptions.Item label="检验机构">{preMainInfo.certcode}</Descriptions.Item>
+            <Descriptions.Item label="检验机构">{preMainInfo.namec}</Descriptions.Item>
             <Descriptions.Item label="货名">{preMainInfo.chineselocalname}</Descriptions.Item>
-            <Descriptions.Item label="申报数量和单位">{((preMainInfo.quantityd === undefined || preMainInfo.quantityd === null ) ? "":preMainInfo.quantityd  )+preMainInfo.unit }</Descriptions.Item>
-            <Descriptions.Item label="到达地点">{preMainInfo.inspplace1}</Descriptions.Item>
+            <Descriptions.Item label="申报数量和单位">{((preMainInfo.quantityd === undefined || preMainInfo.quantityd === null ) ? "":preMainInfo.quantityd+preMainInfo.unit ) }</Descriptions.Item>
+            <Descriptions.Item label="到达地点">{(preMainInfo.inspplace1===undefined||preMainInfo.inspplace1===null)?"":this.getPlaceFromCode(preMainInfo.inspplace1)}</Descriptions.Item>
             <Descriptions.Item label="详细地址">{preMainInfo.inspplace2}</Descriptions.Item>
             <Descriptions.Item label="预报日期">{moment(preMainInfo.inspdate).format('YYYY-MM-DD')}</Descriptions.Item>
           </Descriptions>
           <Descriptions size="large" title="申请项目" style={{ marginBottom: 32 }} bordered>
-            <Descriptions.Item label="申请项目">{preMainInfo.inspway}</Descriptions.Item>
-            <Descriptions.Item label="检验备注">{preMainInfo.inspwaymemo1}</Descriptions.Item>
+            <Descriptions.Item label="申请项目" span={3}>{preMainInfo.inspway}</Descriptions.Item>
+            <Descriptions.Item label="检验备注" span={3}>{preMainInfo.inspwaymemo1}</Descriptions.Item>
           </Descriptions>
         </Card>
-        <Card bordered={false}  title="附件">
+        <Card bordered={false} title="附件">
           <div>
             <Table
               size="middle"
@@ -194,15 +222,6 @@ class DetailForUnAccept extends Component {
             />
           </div>
         </Card>
-        <Modal
-          title="记录详情"
-          visible={showVisible}
-          onCancel={this.showCancel}
-          footer={null}
-          width={800}
-        >
-          <embed src={url} width="700" height="700"/>
-        </Modal>
       </PageHeaderWrapper>
     );
   }

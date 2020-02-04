@@ -205,23 +205,17 @@ class Application extends PureComponent {
   }
 
   resetform =()=>{
-    const {form} = this.props;
-    form.resetFields();
-    this.setState({
-      value: 1,
-      applicantName: [],
-      agentName:[],
-      payerName:[],
-      checkProject: [],
-      cargos: [],
-      applicantContacts: [],
-      agentContacts: [],
-      visible:false,
-      fileList:[],
-      tempFileList:[],
-      company:[],
-      placeName:[],
-      placecode:undefined,
+    Modal.confirm({
+      title: '确定要刷新页面吗？',
+      okText: '确认',
+      cancelText: '取消',
+      onOk: () => {
+        const {form} = this.props;
+        form.resetFields();
+        this.setState({
+          checkProject: [],
+        });
+      }
     });
   };
 
@@ -305,62 +299,72 @@ class Application extends PureComponent {
     }
   };
 
+
   validate = () => {
-    const {
-      form: {validateFieldsAndScroll},
-      dispatch,
-    } = this.props;
-    const { tempFileList } = this.state;
-    validateFieldsAndScroll((error, values) => {
-      const user = JSON.parse(localStorage.getItem("userinfo"));
-      if(values.inspplace1 !== null && values.inspplace1 !== undefined){
-         values.inspplace1 = values.inspplace1[2];
-      }
-      if (!error) {
-        // submit the values
-        dispatch({
-          type: 'applicant/addPremaininfo',
-          payload: {
-            ...values,
-            consigoruser: user.userName,
-          },
-          callback: (response) => {
-            if (response.code === 200) {
-              let formData = new FormData();
-              const user = JSON.parse(localStorage.getItem("userinfo"));
-              tempFileList.forEach(file => {
-                formData.append('files', file.originFileObj);
-              });
-              formData.append('prereportno', response.data);
-              formData.append('creator', user.userName);
-              dispatch({
-                type: 'applicant/upload',
-                payload:formData,
-                callback: (response2) =>{
-                  if (response2.code === 200) {
-                    notification.open({
-                      message: '添加成功',
-                    });
-                  }else {
-                    notification.open({
-                      message: '添加失败',
-                      description: response.data,
-                    });
-                  }
+    Modal.confirm({
+      title: '确定提交此委托吗？',
+      okText: '确认',
+      cancelText: '取消',
+      onOk: () => {
+        message.success("正在提交数据...");
+        const {
+          form: {validateFieldsAndScroll},
+          dispatch,
+        } = this.props;
+        const { tempFileList } = this.state;
+        validateFieldsAndScroll((error, values) => {
+          const user = JSON.parse(localStorage.getItem("userinfo"));
+          if(values.inspplace1 !== null && values.inspplace1 !== undefined){
+            values.inspplace1 = values.inspplace1[2];
+          }
+          if (!error) {
+            // submit the values
+            dispatch({
+              type: 'applicant/addPremaininfo',
+              payload: {
+                ...values,
+                consigoruser: user.userName,
+              },
+              callback: (response) => {
+                if (response.code === 200) {
+                  let formData = new FormData();
+                  const user = JSON.parse(localStorage.getItem("userinfo"));
+                  tempFileList.forEach(file => {
+                    formData.append('files', file.originFileObj);
+                  });
+                  formData.append('prereportno', response.data);
+                  formData.append('creator', user.userName);
+                  dispatch({
+                    type: 'applicant/upload',
+                    payload:formData,
+                    callback: (response2) =>{
+                      if (response2.code === 200) {
+                        notification.open({
+                          message: '添加成功',
+                        });
+                      }else {
+                        notification.open({
+                          message: '添加失败',
+                          description: response.data,
+                        });
+                      }
+                    }
+                  });
+                } else {
+                  notification.open({
+                    message: '添加失败',
+                    description: response.data,
+                  });
                 }
-              });
-            } else {
-              notification.open({
-                message: '添加失败',
-                description: response.data,
-              });
-            }
+              }
+            });
+          }
+          else{
           }
         });
-      }
-      else{
-      }
+      },
     });
+
   };
 
   deleteItem = text =>{
@@ -989,7 +993,7 @@ class Application extends PureComponent {
                   colon={false}
                 >
                   {getFieldDecorator('inspway', {
-                    rules:visible ? []: [{required: true, message: '请输入申请人'}]
+                    rules:visible ? []: [{required: true, message: '请选择申请项目'}]
                   })(
                     <CheckboxGroup
                       options={checkProject}
