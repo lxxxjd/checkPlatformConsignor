@@ -19,6 +19,7 @@ import {
   Divider,
   Modal,
   Upload,
+  message
 } from 'antd';
 
 import {connect} from 'dva';
@@ -102,7 +103,6 @@ function getBase64(file) {
 @Form.create()
 class Application extends PureComponent {
   state = {
-    width: '100%',
     value: 1,
     applicantName: [],
     agentName:[],
@@ -118,9 +118,7 @@ class Application extends PureComponent {
     tempFileList:[],
     company:[],
     placeName:[],
-
     placecode:undefined,
-
   };
   columns = [
     {
@@ -198,41 +196,113 @@ class Application extends PureComponent {
         this.setState({company : response.data})
       }
     });
+
+    this.setFormInfo();
   }
 
   componentWillUnmount(){
-    // Modal.success({
-    //   title: 'test',
-    // });
+    this.saveFormInfo();
   }
+
+  resetform =()=>{
+    const {form} = this.props;
+    form.resetFields();
+    this.setState({
+      value: 1,
+      applicantName: [],
+      agentName:[],
+      payerName:[],
+      checkProject: [],
+      cargos: [],
+      applicantContacts: [],
+      agentContacts: [],
+      visible:false,
+      fileList:[],
+      tempFileList:[],
+      company:[],
+      placeName:[],
+      placecode:undefined,
+    });
+  };
 
   saveFormInfo =()=>{
     const {form} = this.props;
-    const formValues = form.getFieldsValue();
-    sessionStorage.setItem("applicationFormValues",formValues);
+    const formValues ={
+      ...form.getFieldsValue(),
+    };
+    sessionStorage.setItem("applicationFormValues",JSON.stringify(formValues));
   };
 
   setFormInfo =()=>{
-    const {form} = this.props;
-    const formValues = sessionStorage.getItem("applicationFormValues");
-    form.setFieldsValue({
-      'certcode': formValues.certcode,
-      'applicant': formValues.applicant,
-      'applicanttel': formValues.applicanttel,
-      'agent': formValues.agent,
-      'agentname': formValues.agentname,
-      'agenttel': formValues.agenttel,
-      'payer': formValues.payer,
-      'price': formValues.price,
-      'shipname': formValues.shipname,
-      'inspdate': moment(formValues.inspdate, "YYYY-MM-DD"),
-      'quantityD': formValues.quantityD,
-      'unit': formValues.unit,
-      'chineselocalname': formValues.chineselocalname,
-      inspplace1: formValues.inspplace1,
-      inspway: formValues.inspway.split(" "),
-      inspwaymemo1: formValues.inspwaymemo1,
-    });
+    const {form,dispatch} = this.props;
+    const applicationFormValues = sessionStorage.getItem("applicationFormValues");
+    if(applicationFormValues!==undefined &&applicationFormValues!==null){
+      const formValues = JSON.parse(applicationFormValues);
+      if(!(formValues.certcode===undefined || formValues.certcode===null)){
+        form.setFieldsValue({'certcode': formValues.certcode});
+        dispatch({
+          type: 'applicant/getCheckProject',
+          payload: {
+            certCode: formValues.certcode,
+          },
+          callback: (response2) => {
+            this.setState({ checkProject: response2 });
+          }
+        });
+      }
+      if(!(formValues.unit===undefined || formValues.unit===null)){
+        form.setFieldsValue({'unit': formValues.unit});
+      }
+      if(!(formValues.applicant===undefined || formValues.applicant===null)){
+        form.setFieldsValue({'applicant': formValues.applicant});
+      }
+      if(!(formValues.applicanttel===undefined || formValues.applicanttel===null)){
+        form.setFieldsValue({'applicanttel': formValues.applicanttel});
+      }
+      if(!(formValues.agent===undefined|| formValues.agent===null )){
+        form.setFieldsValue({'agent': formValues.agent});
+      }
+      if(!(formValues.applicantname===undefined|| formValues.applicantname===null )){
+        form.setFieldsValue({'applicantname': formValues.applicantname});
+      }
+      if(!(formValues.agentname===undefined || formValues.agentname===null )){
+        form.setFieldsValue({'agentname': formValues.agentname});
+      }
+      if(!(formValues.agenttel===undefined || formValues.agenttel===null )){
+        form.setFieldsValue({'agenttel': formValues.agenttel});
+      }
+      if(!(formValues.payer===undefined || formValues.payer===null )){
+        form.setFieldsValue({'payer': formValues.payer});
+      }
+      if(!(formValues.price===undefined || formValues.price===null )){
+        form.setFieldsValue({'price': formValues.price});
+      }
+      if(!(formValues.shipname===undefined || formValues.shipname===null)){
+        form.setFieldsValue({'shipname': formValues.shipname});
+      }
+      if(!(formValues.inspdate===undefined || formValues.inspdate===null )){
+        form.setFieldsValue({'inspdate': moment(formValues.inspdate, "YYYY-MM-DD") });
+      }
+      if(!(formValues.quantityd===undefined || formValues.quantityd===null)){
+        form.setFieldsValue({'quantityd': formValues.quantityd});
+      }
+      if(!(formValues.chineselocalname===undefined || formValues.chineselocalname===null )){
+        form.setFieldsValue({'chineselocalname': formValues.chineselocalname});
+      }
+      if(!(formValues.inspplace1===undefined || formValues.inspplace1===null )){
+        form.setFieldsValue({'inspplace1': formValues.inspplace1});
+      }
+      if(!(formValues.inspplace2===undefined || formValues.inspplace2===null)){
+        form.setFieldsValue({'inspplace2': formValues.inspplace2});
+      }
+      if(!(formValues.inspway===undefined  || formValues.inspway===null)){
+        form.setFieldsValue({'inspway': formValues.inspway});
+      }
+      if(!(formValues.inspwaymemo1===undefined || formValues.inspwaymemo1===null)){
+        form.setFieldsValue({'inspwaymemo1': formValues.inspwaymemo1});
+      }
+      this.forceUpdate();
+    }
   };
 
   validate = () => {
@@ -266,8 +336,8 @@ class Application extends PureComponent {
               dispatch({
                 type: 'applicant/upload',
                 payload:formData,
-                callback: (response) =>{
-                  if (response.code === 200) {
+                callback: (response2) =>{
+                  if (response2.code === 200) {
                     notification.open({
                       message: '添加成功',
                     });
@@ -576,9 +646,9 @@ class Application extends PureComponent {
               <Button type="primary" onClick={this.validate}>提交</Button>
             </Col>
             <Col span={2}>
-              <Button type="primary" onClick={this.saveFormInfo}>暂存</Button>
+              <Button type="primary" onClick={this.resetform}>重置</Button>
             </Col>
-            <Col span={20} />
+            <Col span={18} />
           </Row>
         </Card>
         <Card title="检验机构" className={styles.card} bordered={false}>
@@ -823,7 +893,7 @@ class Application extends PureComponent {
                       }, message: '请输入数字'
                     }],
                   })(
-                    <Input placeholder="0"/>
+                    <Input placeholder="0" />
                   )}
                 </Form.Item>
               </Col>
@@ -900,8 +970,7 @@ class Application extends PureComponent {
                       onSearch={this.placeSearch}
                       placeholder="请输入详细地址"
                     >
-                      <Input
-                      />
+                      <Input />
                     </AutoComplete>
                   )}
                 </Form.Item>

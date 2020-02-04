@@ -70,9 +70,13 @@ class Accept extends PureComponent {
         moment(val).format('YYYY-MM-DD')
       }</span>
     },
+    // {
+    //   title: '委托人',
+    //   dataIndex: 'applicant',
+    // },
     {
-      title: '委托人',
-      dataIndex: 'applicant',
+      title: '检验机构',
+      dataIndex: 'namec',
     },
     {
       title: '船名标识',
