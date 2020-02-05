@@ -146,14 +146,12 @@ class SearchCert extends PureComponent {
         if (response.code === 200) {
           notification.open({
             message: '关注成功',
-            description: response.data,
           });
           this.setState({visible:false});
           this.componentDidMount();
         }else {
           notification.open({
             message: '关注失败',
-            description: response.data,
           });
         }
       }

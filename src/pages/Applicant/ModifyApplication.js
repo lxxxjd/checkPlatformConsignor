@@ -18,7 +18,7 @@ import {
   Table,
   Divider,
   Modal,
-  Upload,
+  Upload, message,
 } from 'antd';
 
 import {connect} from 'dva';
@@ -117,6 +117,7 @@ class ModifyApplication extends PureComponent {
     company:[],
     placeName:[],
   };
+
   columns = [
     {
       title: '记录名',
@@ -219,41 +220,49 @@ class ModifyApplication extends PureComponent {
   }
 
   validate = () => {
-    const {
-      form: {validateFieldsAndScroll},
-      dispatch,
-    } = this.props;
-    validateFieldsAndScroll((error, values) => {
-      const user = JSON.parse(localStorage.getItem("userinfo"));
-      const prereportno = sessionStorage.getItem("prereportno");
-      if(values.inspplace1 !== null && values.inspplace1 !== undefined){
-         values.inspplace1 = values.inspplace1[2];
-      }
-      if (!error) {
-        // submit the values
-        dispatch({
-          type: 'applicant/updatePremaininfo',
-          payload: {
-            ...values,
-            prereportno,
-            consigoruser: user.userName,
-          },
-          callback: (response) => {
-            if (response.code === 200) {
-              notification.open({
-                message: '修改成功',
-              });
-            } else {
-              notification.open({
-                message: '修改失败',
-                description: response.data,
-              });
-            }
+    Modal.confirm({
+      title: '确定提交此委托吗？',
+      okText: '确认',
+      cancelText: '取消',
+      onOk: () => {
+        message.success("正在提交数据...");
+        const {
+          form: {validateFieldsAndScroll},
+          dispatch,
+        } = this.props;
+        validateFieldsAndScroll((error, values) => {
+          const user = JSON.parse(localStorage.getItem("userinfo"));
+          const prereportno = sessionStorage.getItem("prereportno");
+          if(values.inspplace1 !== null && values.inspplace1 !== undefined){
+            values.inspplace1 = values.inspplace1[2];
+          }
+          if (!error) {
+            // submit the values
+            dispatch({
+              type: 'applicant/updatePremaininfo',
+              payload: {
+                ...values,
+                prereportno,
+                consigoruser: user.userName,
+              },
+              callback: (response) => {
+                if (response.code === 200) {
+                  notification.open({
+                    message: '修改成功',
+                  });
+                } else {
+                  notification.open({
+                    message: '修改失败',
+                    description: response.data,
+                  });
+                }
+              }
+            });
+          }
+          else{
+            console.log(error);
           }
         });
-      }
-      else{
-        console.log(error);
       }
     });
   };

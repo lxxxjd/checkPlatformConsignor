@@ -2,8 +2,10 @@ import React, { Component,Fragment } from 'react';
 import { connect } from 'dva';
 import { Card, Divider ,Descriptions,Row, Col,  Button,Typography ,Modal,Icon,Table} from 'antd';
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
-import styles from './style.less';
 import moment from 'moment'
+import areaOptions from './areaOptions';
+import styles from './style.less';
+
 const { Title} = Typography;
 @connect(({ applicant, loading }) => ({
   applicant,
@@ -72,6 +74,7 @@ class DetailForAccept extends Component {
       }
     });
   }
+
   componentDidMount(){
     const {
       applicant:{ report },
@@ -150,7 +153,21 @@ class DetailForAccept extends Component {
 
   showCancel = () =>{
     this.setState({showVisible:false});
-  }
+  };
+
+  getPlaceFromCode =(val)=>{
+    const onelevel = `${val.substring(0,2)}0000`;
+    const twolevel = `${val.substring(0,4)}00`;
+    const threelevel = val;
+    const oneitem = areaOptions.find(item => item.value === onelevel );
+    if(oneitem===undefined){
+      return <span>{threelevel}</span>;
+    }
+    const twoitem = oneitem.children.find(item => item.value === twolevel );
+    const threeitem = twoitem.children.find(item => item.value === threelevel );
+    return <span>{oneitem.label }/{  twoitem.label}/{   threeitem.label}</span>;
+  };
+
   render() {
     const {
       applicant:{report,records},
@@ -206,10 +223,10 @@ class DetailForAccept extends Component {
             <Descriptions.Item label="货名">{report.cargoname}</Descriptions.Item>
             <Descriptions.Item label="中文俗名">{report.chineselocalname}</Descriptions.Item>
             <Descriptions.Item label="船名标识">{report.shipname}</Descriptions.Item>
-            <Descriptions.Item label="申报数量和单位">{((report.quantityd === undefined || report.quantityd === null ) ? "":report.quantityd  )+report.unit }</Descriptions.Item>
+            <Descriptions.Item label="申报数量和单位">{((report.quantityd === undefined || report.quantityd === null ) ? "":report.quantityd+report.unit ) }</Descriptions.Item>
             <Descriptions.Item label="检验时间">{moment(report.inspdate).format('YYYY-MM-DD')}</Descriptions.Item>
             <Descriptions.Item label="检查港口">{report.inspplace2}</Descriptions.Item>
-            <Descriptions.Item label="到达地点">{report.inspplace1}</Descriptions.Item>
+            <Descriptions.Item label="到达地点">{(report.inspplace1===undefined||report.inspplace1===null)?"":this.getPlaceFromCode(report.inspplace1)}</Descriptions.Item>
           </Descriptions>
         </Card>
         <Card title="检查项目" className={styles.card} bordered={false}>
