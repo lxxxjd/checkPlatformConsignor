@@ -16,6 +16,7 @@ class DetailForAccept extends Component {
     visible: false ,
     showVisible:false,
     url:"",
+    report:{},
     cnasInfo: {
       checkcode: '',
       checkname: '',
@@ -24,6 +25,7 @@ class DetailForAccept extends Component {
       subdomaincode: '',
       subdomainname: '',
     },
+    records:[],
   };
 
   columns = [
@@ -64,6 +66,25 @@ class DetailForAccept extends Component {
       type: 'applicant/getReportInfo',
       payload: {
         reportno : reportnNo,
+      },
+      callback:response=>{
+        const report = response.data;
+        this.setState({report: response.data});
+        if(report.cnasCode !==undefined && report.cnasCode !==null  ){
+          if(report.iscnas === "1"){
+            dispatch({
+              type: 'applicant/getCnasInfo',
+              payload: {
+                checkCode:report.cnasCode,
+              },
+              callback: (response2) => {
+                if (response2.code === 200) {
+                  this.setState({cnasInfo: response2.data});
+                }
+              }
+            });
+          }
+        }
       }
     });
     dispatch({
@@ -71,6 +92,11 @@ class DetailForAccept extends Component {
       payload:{
          reportno : reportnNo,
          source : '委托',
+      },
+      callback: (response2) => {
+        if (response2.code === 200) {
+          this.setState({records: response2.data});
+        }
       }
     });
   }
@@ -96,8 +122,8 @@ class DetailForAccept extends Component {
         });
       }
     }
-
   }
+
   previewItem = text => {
     const { dispatch } = this.props;
     dispatch({
@@ -170,10 +196,9 @@ class DetailForAccept extends Component {
 
   render() {
     const {
-      applicant:{report,records},
       loading
     } = this.props;
-    const { showVisible ,url, cnasInfo} = this.state;
+    const { showVisible ,url, cnasInfo,report,records} = this.state;
     return (
       <PageHeaderWrapper loading={loading}>
         <Card bordered={false}>
@@ -215,7 +240,7 @@ class DetailForAccept extends Component {
             <Descriptions.Item label="自编号">{report.reportno20}</Descriptions.Item>
             <Descriptions.Item label="业务分类">{report.businesssort}</Descriptions.Item>
             <Descriptions.Item label="执行部门">{report.section}</Descriptions.Item>
-            <Descriptions.Item label="海关部门">{report.costomsName}</Descriptions.Item>
+            <Descriptions.Item label="海关部门">{report.customsName}</Descriptions.Item>
 
           </Descriptions>
           <Divider style={{ marginBottom: 32 }} />

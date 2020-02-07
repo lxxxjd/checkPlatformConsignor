@@ -143,10 +143,16 @@ class CopyApplication extends PureComponent {
       callback: (response) => {
         if(response.code === 200){
           const report = response.data;
-          const placecodes=[];
-          placecodes.push(`${response.data.inspplace1.substring(0,2)}0000`);
-          placecodes.push(`${response.data.inspplace1.substring(0,4)}00`);
-          placecodes.push(response.data.inspplace1);
+          if(report.inspplace1!==undefined && report.inspplace1!==null){
+            const placecodes=[];
+            placecodes.push(`${report.inspplace1.substring(0,2)}0000`);
+            placecodes.push(`${report.inspplace1.substring(0,4)}00`);
+            placecodes.push(report.inspplace1);
+            form.setFieldsValue({
+              'inspplace1':placecodes
+            });
+          }
+          console.log(report);
           form.setFieldsValue({
             'certcode': response.data.certcode,
             'unit': response.data.unit,
@@ -158,10 +164,9 @@ class CopyApplication extends PureComponent {
             'payer': response.data.payer,
             'price': response.data.price,
             'shipname': response.data.shipname,
-            'inspdate': moment(response.data.inspdate, "YYYY-MM-DD"),
+           // 'inspdate': moment(response.data.inspdate, "YYYY-MM-DD"),
             'quantityd': response.data.quantityd,
             'chineselocalname': response.data.chineselocalname,
-            'inspplace1': placecodes,
             'inspplace2': response.data.inspplace2,
             'applicantname':response.data.applicantname,
             'inspway': response.data.inspway.split(" "),

@@ -35,6 +35,8 @@ class UnAccept extends PureComponent {
   state = {
     visible:false,
     prereportno:null,
+    kindValue:"p.certcode",
+    company:[],
   };
 
   columns = [
@@ -46,8 +48,8 @@ class UnAccept extends PureComponent {
       }</span>
     },
     {
-      title: '委托人',
-      dataIndex: 'applicant',
+      title: '检验机构',
+      dataIndex: 'namec',
     },
     {
       title: '船名标识',
@@ -84,6 +86,15 @@ class UnAccept extends PureComponent {
     dispatch({
       type: 'applicant/getPremaininfoList',
       payload: params,
+    });
+    dispatch({
+      type: 'applicant/getCompanyList',
+      payload: {
+        // certCode: user.certCode,
+      },
+      callback: (response) => {
+        this.setState({company : response.data})
+      }
     });
   }
 
@@ -128,6 +139,7 @@ class UnAccept extends PureComponent {
       type: 'applicant/getPremaininfoList',
       payload: params,
     });
+    this.setState({kindValue:"p.certcode"});
   };
 
 
@@ -181,12 +193,18 @@ class UnAccept extends PureComponent {
     });
     this.setState({visible:false});
     this.setState({prereportno:null});
-  }
+  };
+
+  onChangeKind =(value) =>{
+    this.setState({kindValue:value});
+  };
 
   renderSimpleForm() {
     const {
       form: { getFieldDecorator },
     } = this.props;
+    const {kindValue,company} = this.state;
+    const companyOptions = company.map(d =><Option key={d.certcode} value={d.certcode}>{d.namec}</Option>);
     return (
       <Form onSubmit={this.handleSearch} layout="inline">
         <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
@@ -197,21 +215,35 @@ class UnAccept extends PureComponent {
               colon={false}
             >
               {getFieldDecorator('kind', {
+                initialValue:"p.certcode",
                 rules: [{  message: '搜索类型' }],
               })(
-                <Select placeholder="搜索类型">
-                  <Option value="applicant">委托人</Option>
+                <Select placeholder="搜索类型" onChange={this.onChangeKind}>
+                  <Option value="p.certcode">检验机构</Option>
                   <Option value="shipname">船名标识</Option>
-                  <Option value="cargoname">货名</Option>
+                  <Option value="chineselocalname">货名</Option>
                   <Option value="overallstate">状态</Option>
                 </Select>
               )}
             </Form.Item>
           </Col>
-          <Col md={6} sm={20}>
-            <FormItem>
-              {getFieldDecorator('value',{rules: [{ message: '搜索数据' }],})(<Input placeholder="请输入" />)}
-            </FormItem>
+          <Col md={8} sm={20}>
+            {kindValue === "p.certcode" ?
+              [
+                <FormItem>
+                  {getFieldDecorator('value', { rules: [{ message: '搜索数据' }], })(
+                    <Select placeholder="请选择检验机构">
+                      {companyOptions}
+                    </Select>
+                    )}
+                </FormItem>
+              ] : [
+                <FormItem>
+                  {getFieldDecorator('value', { rules: [{ message: '搜索数据' }], })(
+                    <Input placeholder="请输入" />)}
+                </FormItem>
+              ]
+            }
           </Col>
 
           <Col md={8} sm={20}>

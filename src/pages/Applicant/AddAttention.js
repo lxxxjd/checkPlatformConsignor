@@ -13,13 +13,11 @@ import {
   Table,
   Modal,
   Descriptions,
-  notification
+  notification, Rate,
 } from 'antd';
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
 import styles from './AddAttention.less';
 import moment from 'moment';
-
-
 
 
 const FormItem = Form.Item;
@@ -30,13 +28,34 @@ const { Option } = Select;
   applicant,
   loading: loading.models.applicant,
 }))
-
 @Form.create()
 class AddAttention extends PureComponent {
   state = {
     preMainInfo:{},
     visible:false,
+    man:[],
+    reports:[],
+    reportno:null,
+    certVisible:false,
+    cert:{},
+    ratevisible:false,
   };
+
+  columns1 = [
+    {
+      title: '检验人员',
+      dataIndex: 'inspman',
+    },
+
+    {
+      title: '联系方式',
+      dataIndex: 'tel',
+    },
+    {
+      title: '任务',
+      dataIndex: 'inspway',
+    },
+  ];
 
   columns = [
     {
@@ -46,14 +65,8 @@ class AddAttention extends PureComponent {
     {
       title: '委托日期',
       dataIndex: 'reportdate',
-      render: val => <span>{
-        moment(val).format('YYYY-MM-DD')
-      }</span>
+      render: val =>this.isValidDate(val),
     },
-    // {
-    //   title: '委托人',
-    //   dataIndex: 'applicant',
-    // },
     {
       title: '检验机构',
       dataIndex: 'namec',
@@ -74,8 +87,12 @@ class AddAttention extends PureComponent {
       title: '操作',
       render: (text, record) => (
         <Fragment>
-          <a onClick={() => this.deleteItem(text, record)}>取消关注</a>
-          &nbsp;&nbsp;
+          <a onClick={() => this.peopleItem(text, record)}>人员&nbsp;&nbsp;</a>
+          <a onClick={() => this.fileItem(text, record)}>查看证书&nbsp;&nbsp;</a>
+          <a onClick={() => this.deleteItemApply(text, record)}>退回证书&nbsp;&nbsp;</a>
+          <a onClick={() => this.rateItem(text, record)}>评价&nbsp;&nbsp;</a>
+          <a onClick={() => this.copyItem(text, record)}>复制&nbsp;&nbsp;</a>
+          <a onClick={() => this.deleteItem(text, record)}>取消关注&nbsp;&nbsp;</a>
           <a onClick={() => this.previewItem(text, record)}>委托详情</a>
         </Fragment>
       ),
@@ -84,6 +101,10 @@ class AddAttention extends PureComponent {
 
 
   componentDidMount() {
+   this.init();
+  }
+
+  init =()=>{
     const user = JSON.parse(localStorage.getItem("userinfo"));
     const { dispatch } = this.props;
     const params = {
@@ -93,8 +114,19 @@ class AddAttention extends PureComponent {
     dispatch({
       type: 'applicant/getReportByConfigor',
       payload: params,
+      callback: (response) => {
+        console.log(response.data)
+        this.setState({reports : response.data})
+      }
     });
-  }
+  };
+
+  isValidDate =date=> {
+    if(date !==undefined && date !==null ){
+      return <span>{moment(date).format('YYYY-MM-DD')}</span>;
+    }
+    return [];
+  };
 
   previewItem = text => {
     sessionStorage.setItem('reportno',text.reportno);
@@ -128,9 +160,69 @@ class AddAttention extends PureComponent {
     });
   };
 
+  deleteItemApply = text =>{
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'applicant/getApplyReason',
+      payload: {
+        reportno:text.reportno,
+      },
+      callback:response =>{
+        if (response.code === 200) {
+          this.setState({reportno:text.reportno});
+          this.setState({cert:response.data});
+          this.setState({certVisible:true});
+        }else{
+          notification.open({
+            message: '不存在申请作废证书!',
+            description: response.data,
+          });
+        }
+      }
+    });
+  };
+
+  rateItem = text =>{
+    this.setState({reportno:text.reportno});
+    this.setState({ratevisible:true});
+  };
+
+  copyItem = text => {
+    sessionStorage.setItem('reportno',text.reportno);
+    router.push({
+      pathname:'/Applicant/CopyApplication',
+    });
+  };
+
+  peopleItem = text =>{
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'applicant/getAllMan',
+      payload: {
+        reportno:text.reportno,
+        certcode:text.certcode,
+      },
+      callback:response =>{
+        if (response.code === 200) {
+          this.setState({man:response.data});
+        }
+      }
+    });
+    this.setState({peopleVisible:true});
+  };
+
+  fileItem = text =>{
+    sessionStorage.setItem('reportno',text.reportno);
+    router.push({
+      pathname:'/Applicant/CertificateDetail',
+    });
+  };
+
+
   handleFormReset = () => {
     const { form } = this.props;
     form.resetFields();
+    this.init();
   };
 
 
@@ -163,6 +255,71 @@ class AddAttention extends PureComponent {
     });
   };
 
+  handleCancel = () =>{
+    this.setState({visible:false});
+    this.setState({peopleVisible:false});
+    this.setState({certVisible:false});
+    this.setState({ratevisible:false});
+  };
+
+  handleEvaluationOk = (fieldsValue) => {
+    const { dispatch} = this.props;
+    const {reportno} = this.state;
+    const user = JSON.parse(localStorage.getItem("userinfo"));
+    const values = {
+      ...fieldsValue,
+      consigoruser:user.userName,
+      reportno,
+    };
+    dispatch({
+      type: 'applicant/addEvaluation',
+      payload: values,
+      callback: (response) =>{
+        if (response.code === 200) {
+          notification.open({
+            message: '评分成功',
+          });
+          this.init();
+        }else {
+          notification.open({
+            message: '评分失败',
+            description: response.data,
+          });
+        }
+      }
+    });
+    this.setState({ratevisible:false});
+  };
+
+
+  handleCertOk = value =>{
+    const { reportno } = this.state;
+    const { dispatch } = this.props;
+    const user = JSON.parse(localStorage.getItem("userinfo"));
+    dispatch({
+      type: 'applicant/returnReadRecord',
+      payload: {
+        reportno:reportno,
+        organization:"委托人",
+        reader:user.userName,
+        company:user.companyName
+      },
+      callback:response =>{
+        if (response.code === 200) {
+          notification.open({
+            message: "同意成功",
+          });
+          this.setState({certVisible:false});
+        }else{
+          notification.open({
+            message: '同意失败',
+            description: response.data,
+          });
+        }
+      }
+    });
+  };
+
   handleOk = () =>{
     const user = JSON.parse(localStorage.getItem("userinfo"));
     const { dispatch } = this.props;
@@ -178,22 +335,24 @@ class AddAttention extends PureComponent {
         if (response.code === 200) {
           notification.open({
             message: '关注成功',
-            description: response.data,
           });
           this.setState({visible:false});
           this.componentDidMount();
         }else {
           notification.open({
             message: '关注失败',
-            description: response.data,
           });
         }
       }
     });
   };
 
-  handleCancel = ()=>{
+
+  handleCancel = () =>{
     this.setState({visible:false});
+    this.setState({peopleVisible:false});
+    this.setState({certVisible:false});
+    this.setState({ratevisible:false});
   };
 
   renderSimpleForm() {
@@ -248,10 +407,16 @@ class AddAttention extends PureComponent {
 
   render() {
     const {
-      applicant: {reports},
       loading,
     } = this.props;
-    const { selectedRows, preMainInfo,visible} = this.state;
+    const { preMainInfo,visible,peopleVisible , man, certVisible, cert,ratevisible,reports} = this.state;
+    const parentMethods = {
+      handleCertOk:this.handleCertOk,
+      handleCancel:this.handleCancel,
+      handleOk:this.handleOk,
+      handleEvaluationOk:this.handleEvaluationOk,
+
+    };
     return (
       <PageHeaderWrapper>
         <Card size='small' bordered={false}>
@@ -269,6 +434,9 @@ class AddAttention extends PureComponent {
             />
           </div>
         </Card>
+        <CertBackFrom {...parentMethods} certVisible={certVisible} cert={cert} />
+        <PersonFrom {...parentMethods} peopleVisible={peopleVisible} loading={loading} man={man} columns1={this.columns1} />
+        <RateFrom {...parentMethods} ratevisible={ratevisible} />
         <Modal
           title="加关注"
           visible={visible}
@@ -294,5 +462,135 @@ class AddAttention extends PureComponent {
     );
   }
 }
+
+
+
+
+// 查看框
+const CertBackFrom = (props => {
+  const { certVisible, handleCertOk,handleCancel,cert  } = props;
+  return (
+    <Modal
+      title="退回证书"
+      visible={certVisible}
+      onOk={handleCertOk}
+      onCancel={handleCancel}
+      okText="同意"
+      cancelText="返回"
+    >
+      <Descriptions
+        bordered
+        column={2}
+      >
+        <Descriptions.Item label="请求人">{cert.applyman}</Descriptions.Item>
+        <Descriptions.Item label="请求日期">{moment(cert.applydate).format('YYYY-MM-DD')}</Descriptions.Item>
+        <Descriptions.Item label="证书退回原因">{cert.applyreason}</Descriptions.Item>
+      </Descriptions>
+    </Modal>
+  );
+});
+
+// 查看框
+const PersonFrom = (props => {
+  const { peopleVisible,handleCancel,loading ,man,columns1} = props;
+  return (
+    <Modal
+      title="人员"
+      visible={peopleVisible}
+      onOk={handleCancel}
+      onCancel={handleCancel}
+    >
+      <Table
+        size="middle"
+        loading={loading}
+        rowKey='inspman'
+        dataSource={man}
+        columns={columns1}
+        pagination={{showQuickJumper:true,showSizeChanger:true}}
+      />
+    </Modal>
+  );
+});
+
+
+// 查看框
+const RateFrom = Form.create()(props => {
+  const { ratevisible,handleCancel,handleEvaluationOk ,form} = props;
+  const okHandle = () => {
+    form.validateFields((err, fieldsValue) => {
+      if (err) return;
+      form.resetFields();
+      handleEvaluationOk(fieldsValue);
+    });
+  };
+  return (
+    <Modal
+      title="评分"
+      visible={ratevisible}
+      onOk={okHandle}
+      onCancel={handleCancel}
+    >
+      <Form layout='horizontal'>
+        <Form.Item
+          label="客户服务"
+          labelCol={{span: 6}}
+          wrapperCol={{span: 18}}
+        >
+          {form.getFieldDecorator('customerService', {
+            rules: [{required: true, message: '请选择评分'}],
+          })(
+            <Rate />
+          )}
+        </Form.Item>
+        <FormItem
+          label="现场检查"
+          labelCol={{span: 6}}
+          wrapperCol={{span: 18}}
+        >
+          {form.getFieldDecorator('inspect', {
+            rules: [{required: true, message: '请选择评分'}],
+          })(
+            <Rate />
+          )}
+        </FormItem>
+        <FormItem
+          label="分析测试"
+          labelCol={{span: 6}}
+          wrapperCol={{span: 18}}
+        >
+          {form.getFieldDecorator('test', {
+            rules: [{required: true, message: '请选择评分'}],
+          })(
+            <Rate />
+          )}
+        </FormItem>
+        <FormItem
+          label="流程时效"
+          labelCol={{span: 6}}
+          wrapperCol={{span: 18}}
+        >
+          {form.getFieldDecorator('cost', {
+            rules: [{required: true, message: '请选择评分'}],
+          })(
+            <Rate />
+          )}
+        </FormItem>
+        <FormItem
+          label="检验费用"
+          labelCol={{span: 6}}
+          wrapperCol={{span: 18}}
+        >
+          {form.getFieldDecorator('process', {
+            rules: [{required: true, message: '请选择评分'}],
+          })(
+            <Rate tooltips={['昂贵','较昂贵','适中','较低廉','低廉']} />
+          )}
+        </FormItem>
+      </Form>
+    </Modal>
+  );
+});
+
+
 
 export default AddAttention;

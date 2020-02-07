@@ -74,7 +74,8 @@ class CertificateDetail extends PureComponent {
       title: '操作',
       render: (text, record) => (
         <Fragment>
-          <a onClick={() => this.ViewItem(text, record)}>查看&nbsp;&nbsp;</a>
+          {(text.status==="已作废")?[<a onClick={() => this.viewAbandonItem(text, record)}>作废原因&nbsp;&nbsp;</a>]:[]}
+          {(text.status==="已签署"|| text.status==="已发布"|| text.status==="已作废")?[<a onClick={() => this.ViewItem(text, record)}>查看&nbsp;&nbsp;</a>]:[<div>查看&nbsp;&nbsp;</div>]}
         </Fragment>
       ),
     },
@@ -91,6 +92,19 @@ class CertificateDetail extends PureComponent {
       },
     });
   }
+
+  viewAbandonItem =text =>{
+    Modal.info({
+      title: '作废原因',
+      okText:"知道了",
+      content: (
+        <div>
+          <p>{text.abandonreason}</p>
+        </div>
+      ),
+      onOk() {},
+    });
+  };
 
 
   ViewItem = text =>{

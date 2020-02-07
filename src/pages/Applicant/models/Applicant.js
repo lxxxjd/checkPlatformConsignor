@@ -100,10 +100,6 @@ export default {
     },
     *getReportByConfigor({ payload ,callback}, { call, put }) {
       const response = yield call(getReportByConfigor, payload);
-      yield put({
-        type: 'getReports',
-        payload: response,
-      });
       if (callback) callback(response);
     },
     *getPreRecord({ payload ,callback}, { call, put }) {

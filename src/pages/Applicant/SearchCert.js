@@ -46,31 +46,81 @@ class SearchCert extends PureComponent {
     {
       title: '签署日期',
       dataIndex: 'signdate',
-      render: val => <span>{
-        moment(val).format('YYYY-MM-DD')
-      }</span>
-    },
-    {
-      title: '签署人 ',
-      dataIndex: 'signer',
-    },
-    {
-      title: '状态',
-      dataIndex: 'status',
-    },
-    {
-      title: '操作',
-      render: (text, record) => (
-        <Fragment>
-          <a onClick={() => this.previewItem(text, record)}>查看</a>
-        </Fragment>
-      ),
-    },
-  ];
+      render: val => this.isValidDate(val)
+},
+{
+  title: '签署人 ',
+    dataIndex: 'signNameC',
+},
+{
+  title: '状态',
+    dataIndex: 'status',
+},
+{
+  title: '操作',
+    render: (text, record) => (
+  <Fragment>
+    {(text.status==="已签署"|| text.status==="已发布"|| text.status==="已作废"|| text.status==="申请作废")?[<a onClick={() => this.ViewItem(text, record)}>查看&nbsp;&nbsp;</a>]:[<div>查看&nbsp;&nbsp;</div>]}
+    {(text.status==="已作废")?[<a onClick={() => this.viewAbandonItem(text, record)}>作废原因&nbsp;&nbsp;</a>]:[]}
+  </Fragment>
+),
+},
+];
 
 
-  componentDidMount() {
+componentDidMount() {
+}
+
+isValidDate =date=> {
+  if(date !==undefined && date !==null ){
+    return <span>{moment(date).format('YYYY-MM-DD')}</span>;
   }
+  return [];
+};
+
+  viewAbandonItem =text =>{
+    Modal.info({
+      title: '作废原因',
+      okText:"知道了",
+      content: (
+        <div>
+          <p>{text.abandonreason}</p>
+        </div>
+      ),
+      onOk() {},
+    });
+  };
+
+  ViewItem = text =>{
+    const { dispatch } = this.props;
+
+    let path ;
+    if (text.status === "已拟制") {
+      path = text.pdfeditorpath;
+    }else if(text.status === "已复核"){
+      path = text.pdfpath;
+    }else if(text.status === "已缮制"){
+      path = text.titlepdfpath;
+    }else if(text.status === "已签署" || text.status === "已发布"){
+      path = text.certpdfpath;
+    }else if (text.status === "已作废"){
+      path = text.abandonpdfpath;
+    }else if(path ===undefined && (text.filepath ===undefined || text.filepath ===null)){   // 此证书通过上传产生;
+      path = text.certpdfpath;
+    }
+
+    dispatch({
+      type: 'applicant/getPdfByOssPath',
+      payload:{osspath:path},
+      callback: (response) => {
+        if(response.code === 200){
+          window.open(response.data);
+        }else {
+          message.success("打开文件失败");
+        }
+      }
+    });
+  };
 
   previewItem = text => {
     const { dispatch } = this.props;
