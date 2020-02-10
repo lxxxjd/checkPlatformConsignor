@@ -301,30 +301,7 @@ class Register extends Component {
           <FormattedMessage id="app.register.register" />
         </h3>
         <Form onSubmit={this.handleSubmit}>
-          <FormItem>
-            <Row gutter={4}>
-              <Col span={5}><div>公司名：</div></Col>
-              <Col span={19}>
-                {getFieldDecorator('companyName', {
-                  rules: [
-                    {
-                      required: true,
-                      message: formatMessage({ id: 'validation.company.required' }),
-                    },
-                  ],
-                })(
-                  <AutoComplete
-                    className="global-search"
-                    dataSource={businessNameOptions}
-                    onChange={this.handleCompanySearch}
-                    placeholder="公司名"
-                  >
-                    <Input />
-                  </AutoComplete>
-                )}
-              </Col>
-            </Row>
-          </FormItem>
+
           <FormItem>
             <Row gutter={4}>
               <Col span={5}><div>用户名：</div></Col>
@@ -418,6 +395,30 @@ class Register extends Component {
                   ],
                 })(
                   <Input size="large" placeholder={formatMessage({ id: 'form.contact.placeholder' })} />
+                )}
+              </Col>
+            </Row>
+          </FormItem>
+          <FormItem>
+            <Row gutter={4}>
+              <Col span={5}><div>所在公司：</div></Col>
+              <Col span={19}>
+                {getFieldDecorator('companyName', {
+                  rules: [
+                    {
+                      required: true,
+                      message: formatMessage({ id: 'validation.company.required' }),
+                    },
+                  ],
+                })(
+                  <AutoComplete
+                    className="global-search"
+                    dataSource={businessNameOptions}
+                    onChange={this.handleCompanySearch}
+                    placeholder="公司名"
+                  >
+                    <Input />
+                  </AutoComplete>
                 )}
               </Col>
             </Row>

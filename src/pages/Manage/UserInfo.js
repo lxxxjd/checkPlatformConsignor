@@ -454,56 +454,56 @@ class UserInfo extends PureComponent {
           				visible={passwordVisible}
           				onOk={this.modifyPassword}
           				onCancel={this.handleCancel}>
-          				<Form.Item label='密码:' help={help}>
-			                <Popover
-			                  getPopupContainer={node => node.parentNode}
-			                  content={
-			                    <div style={{ padding: '4px 0' }}>
-			                      {passwordStatusMap[this.getPasswordStatus()]}
-			                      {this.renderPasswordProgress()}
-			                      <div style={{ marginTop: 10 }}>
-			                        <FormattedMessage id="validation.password.strength.msg" />
-			                      </div>
-			                    </div>
-			                  }
-			                  overlayStyle={{ width: 240 }}
-			                  placement="right"
-			                  visible={visible}
-			                >
-			                  {getFieldDecorator('password', {
-			                    rules: [
-			                      {
-			                        validator: this.checkPassword,
-			                      },
-			                    ],
-			                  })(
-			                    <Input
-			                      size="large"
-			                      type="password"
-			                      placeholder={formatMessage({ id: 'form.password.placeholder' })}
-			                    />
-			                  )}
-			                </Popover>
-				        </Form.Item>
-          				<Form.Item label='确认密码:'>
-							{getFieldDecorator('confirm', {
-			                  rules: [
-			                   passwordVisible ?[{
-			                      required: true,
-			                      message: '请输入密码',
-			                    }]:[],
-			                    {
-			                      validator: this.checkConfirm,
-			                    },
-			                  ],
-			                })(
-			                  <Input
-			                    size="large"
-			                    type="password"
-			                    placeholder='请输入密码'
-			                  />
-			                )}
-				          </Form.Item>
+                  <Form.Item label='密码:' help={help}>
+                      <Popover
+                        getPopupContainer={node => node.parentNode}
+                        content={
+                          <div style={{ padding: '4px 0' }}>
+                            {passwordStatusMap[this.getPasswordStatus()]}
+                            {this.renderPasswordProgress()}
+                            <div style={{ marginTop: 10 }}>
+                              <FormattedMessage id="validation.password.strength.msg" />
+                            </div>
+                          </div>
+                        }
+                        overlayStyle={{ width: 240 }}
+                        placement="right"
+                        visible={visible}
+                      >
+                        {getFieldDecorator('password', {
+                          rules: [
+                            {
+                              validator: this.checkPassword,
+                            },
+                          ],
+                        })(
+                          <Input
+                            size="large"
+                            type="password"
+                            placeholder={formatMessage({ id: 'form.password.placeholder' })}
+                          />
+                        )}
+                      </Popover>
+                </Form.Item>
+                  <Form.Item label='确认密码:'>
+              {getFieldDecorator('confirm', {
+                        rules: [
+                         passwordVisible ?[{
+                            required: true,
+                            message: '请输入密码',
+                          }]:[],
+                          {
+                            validator: this.checkConfirm,
+                          },
+                        ],
+                      })(
+                        <Input
+                          size="large"
+                          type="password"
+                          placeholder='请输入密码'
+                        />
+                      )}
+                  </Form.Item>
 			        </Modal>
 			        <Modal
 			        	title="修改手机"

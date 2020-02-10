@@ -75,7 +75,7 @@ class CertificateDetail extends PureComponent {
       render: (text, record) => (
         <Fragment>
           {(text.status==="已作废")?[<a onClick={() => this.viewAbandonItem(text, record)}>作废原因&nbsp;&nbsp;</a>]:[]}
-          {(text.status==="已签署"|| text.status==="已发布"|| text.status==="已作废")?[<a onClick={() => this.ViewItem(text, record)}>查看&nbsp;&nbsp;</a>]:[<div>查看&nbsp;&nbsp;</div>]}
+          {(text.status==="已发布"|| text.status==="已作废")?[<a onClick={() => this.ViewItem(text, record)}>查看&nbsp;&nbsp;</a>]:[<div>查看&nbsp;&nbsp;</div>]}
         </Fragment>
       ),
     },
