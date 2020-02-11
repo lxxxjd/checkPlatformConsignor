@@ -426,7 +426,7 @@ class UserInfo extends PureComponent {
                   <span className="ant-form-text">{user.contactPhone}</span>
 		              <Fragment><a onClick={() => this.showModifyPhone()}>&nbsp;&nbsp;修改手机</a></Fragment>
 			          </Form.Item>
-			          <Form.Item label='联系方式:'>
+			          <Form.Item label='手机:'>
 			                {getFieldDecorator('isvisible', {
 			                  rules: [
 			                    {

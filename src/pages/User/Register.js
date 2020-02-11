@@ -495,7 +495,7 @@ class Register extends Component {
           </FormItem>
           <FormItem>
             <Row gutter={4}>
-              <Col span={5}><div>联系方式：</div></Col>
+              <Col span={5}><div>手机：</div></Col>
               <Col span={19}>
                 {getFieldDecorator('isvisible', {
                   initialValue: '可见',

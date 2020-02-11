@@ -5,7 +5,7 @@ import { connect } from 'dva';
 import { ContainerQuery } from 'react-container-query';
 import classNames from 'classnames';
 import Media from 'react-media';
-import logo from '../assets/logo.svg';
+import logo from '../assets/logo.png';
 import Footer from './Footer';
 import Header from './Header';
 import Context from './MenuContext';
@@ -114,6 +114,7 @@ class BasicLayout extends React.Component {
 
     const isTop = PropsLayout === 'topmenu';
     const contentStyle = !fixedHeader ? { paddingTop: 0 } : {};
+    const user = JSON.parse(localStorage.getItem("userinfo"));
     const layout = (
       <Layout>
         {isTop && !isMobile ? null : (
@@ -123,6 +124,8 @@ class BasicLayout extends React.Component {
             onCollapse={this.handleMenuCollapse}
             menuData={menuData}
             isMobile={isMobile}
+            username={user.contactName}
+            company={user.companyName===undefined||user.companyName===null?"":user.companyName}
             {...this.props}
           />
         )}

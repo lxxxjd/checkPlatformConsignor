@@ -53,7 +53,7 @@ class Accept extends PureComponent {
     },
 
     {
-      title: '联系方式',
+      title: '手机',
       dataIndex: 'tel',
     },
     {
