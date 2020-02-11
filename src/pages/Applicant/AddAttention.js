@@ -1,6 +1,7 @@
 import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
 import router from 'umi/router';
+import { formatMessage, FormattedMessage } from 'umi-plugin-react/locale';
 
 import {
   Row,
@@ -245,9 +246,14 @@ class AddAttention extends PureComponent {
             this.setState({visible:true});
             this.setState({preMainInfo:response.data});
           }else {
-            notification.open({
-              message: '查询错误',
-              description: response.data,
+            // notification.open({
+            //   message: '查询错误',
+            //   description: response.data,
+            // });
+            Modal.error({
+              title: '委托编号或密码错误，未查询到结果！',
+              okText:"关闭",
+              onOk() {},
             });
           }
         }

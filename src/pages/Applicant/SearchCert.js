@@ -171,10 +171,15 @@ isValidDate =date=> {
             const { form } = this.props;
             form.resetFields();
           }else {
-            notification.open({
-              message: '查询错误',
-              description: response.data,
+            Modal.error({
+              title: '该证书查询错误，可能伪造！',
+              okText:"关闭",
+              onOk() {},
             });
+            // notification.open({
+            //   message: '查询错误',
+            //   description: response.data,
+            // });
           }
         }
       });
