@@ -27,6 +27,7 @@ import PageHeaderWrapper from '@/components/PageHeaderWrapper';
 import moment from 'moment'
 import styles from './style.less';
 import areaOptions from './areaOptions'
+import router from 'umi/router';
 
 const CheckboxGroup = Checkbox.Group;
 const {Option} = Select;
@@ -333,7 +334,7 @@ class Application extends PureComponent {
                     formData.append('files', file.originFileObj);
                   });
                   formData.append('prereportno', response.data);
-                  formData.append('creator', user.userName);
+                  formData.append('creator', user.contactName);
                   dispatch({
                     type: 'applicant/upload',
                     payload:formData,
@@ -341,6 +342,10 @@ class Application extends PureComponent {
                       if (response2.code === 200) {
                         notification.open({
                           message: '添加成功',
+                        });
+                        sessionStorage.setItem('prereportno',response.data);
+                        router.push({
+                          pathname:'/Applicant/DetailForUnAccept',
                         });
                       }else {
                         notification.open({

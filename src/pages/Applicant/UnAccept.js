@@ -70,7 +70,7 @@ class UnAccept extends PureComponent {
           {text.overallstate === '未受理' ? [<a onClick={() => this.modifyItem(text, record)}>修改&nbsp;&nbsp;</a>]:[]}
           {text.overallstate === '未受理' ? [<a onClick={() => this.deleteItem(text, record)}>撤回&nbsp;&nbsp;</a>]:[]}
           {text.overallstate === '未受理' ? [<a onClick={() => this.uploadItem(text, record)}>附件编辑&nbsp;&nbsp;</a>]:[]}
-          <a onClick={() => this.previewItem(text, record)}>委托详情</a>
+          <a onClick={() => this.previewItem(text, record)}>申请详情</a>
         </Fragment>
       ),
     },

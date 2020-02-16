@@ -130,8 +130,8 @@ class CopyApplication extends PureComponent {
   componentDidMount() {
     const {form} = this.props;
     form.setFieldsValue({['unit']: "公吨"});
-    const now = moment().format("YYYY-MM-DD HH:mm:ss");
-    form.setFieldsValue({['inspdate']: moment(now, "YYYY-MM-DD HH:mm:ss")});
+    // const now = moment().format("YYYY-MM-DD HH:mm:ss");
+    // form.setFieldsValue({['inspdate']: moment(now, "YYYY-MM-DD HH:mm:ss")});
     const user = JSON.parse(localStorage.getItem("userinfo"));
     const {dispatch} = this.props;
     const reportno = sessionStorage.getItem("reportno");
@@ -163,9 +163,9 @@ class CopyApplication extends PureComponent {
             'agenttel': response.data.agenttel,
             'payer': response.data.payer,
             'price': response.data.price,
-            'shipname': response.data.shipname,
+           // 'shipname': response.data.shipname,
            // 'inspdate': moment(response.data.inspdate, "YYYY-MM-DD"),
-            'quantityd': response.data.quantityd,
+            //'quantityd': response.data.quantityd,
             'chineselocalname': response.data.chineselocalname,
             'inspplace2': response.data.inspplace2,
             'applicantname':response.data.applicantname,

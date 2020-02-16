@@ -153,7 +153,7 @@ class DetailForUnAccept extends Component {
         <Card bordered={false}>
           <Row gutter={16}>
             <Col span={3}>
-              <Title level={3}>委托详情</Title>
+              <Title level={3}>申请详情</Title>
             </Col>
             <Col span={19}>
             </Col>
