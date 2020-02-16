@@ -130,8 +130,8 @@ class CopyApplication extends PureComponent {
   componentDidMount() {
     const {form} = this.props;
     form.setFieldsValue({['unit']: "公吨"});
-    // const now = moment().format("YYYY-MM-DD HH:mm:ss");
-    // form.setFieldsValue({['inspdate']: moment(now, "YYYY-MM-DD HH:mm:ss")});
+    const now = moment().format("YYYY-MM-DD HH:mm:ss");
+    form.setFieldsValue({['inspdate']: moment(now, "YYYY-MM-DD HH:mm:ss")});
     const user = JSON.parse(localStorage.getItem("userinfo"));
     const {dispatch} = this.props;
     const reportno = sessionStorage.getItem("reportno");
