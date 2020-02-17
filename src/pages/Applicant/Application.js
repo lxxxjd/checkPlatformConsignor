@@ -343,9 +343,9 @@ class Application extends PureComponent {
                         notification.open({
                           message: '添加成功',
                         });
-                        sessionStorage.setItem('prereportno',response.data);
+                        //sessionStorage.setItem('prereportno',response.data);
                         router.push({
-                          pathname:'/Applicant/DetailForUnAccept',
+                          pathname:'/Applicant/UnAccept',
                         });
                       }else {
                         notification.open({
