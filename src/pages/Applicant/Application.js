@@ -21,13 +21,14 @@ import {
   Upload,
   message
 } from 'antd';
-
+import { formatMessage } from 'umi-plugin-react/locale';
 import {connect} from 'dva';
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
 import moment from 'moment'
-import styles from './style.less';
 import areaOptions from './areaOptions'
 import router from 'umi/router';
+import styles from '../table.less';
+
 
 const CheckboxGroup = Checkbox.Group;
 const {Option} = Select;
@@ -85,7 +86,10 @@ const fieldLabels = {
   inspwaymemo1: '检验备注',
   certstyle: '证书要求',
   section:'执行部门',
-  customsName:'海关部门'
+  customsName:'隶属关',
+  customsNo:"报关号",
+  iscostoms:"是否需要向海关推送报告？"
+
 };
 
 function getBase64(file) {
@@ -96,6 +100,61 @@ function getBase64(file) {
     reader.onerror = error => reject(error);
   });
 }
+
+
+const renderSimpleForm = Form.create()(props => {
+  const { handleSearch, form, handleFormReset } = props;
+
+  const okHandle = () => {
+    form.validateFields((err, fieldsValue) => {
+      if (err) return;
+      handleSearch(fieldsValue);
+    });
+  };
+
+  return (
+    <Form onSubmit={okHandle} layout="inline">
+      <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
+        <Col md={4} sm={20}>
+          <Form.Item
+            labelCol={{ span: 5 }}
+            wrapperCol={{ span: 6 }}
+            colon={false}
+          >
+            {form.getFieldDecorator('kind', {
+              initialValue:"namec",
+              rules: [{  message: '搜索类型' }],
+            })(
+              <Select placeholder="搜索类型">
+                <Option value="namec">检验机构</Option>
+                <Option value="adres">注册地址</Option>
+                <Option value="tel">咨询电话</Option>
+              </Select>
+            )}
+          </Form.Item>
+        </Col>
+        <Col md={6} sm={20}>
+          <Form.Item>
+            {form.getFieldDecorator('value',{rules: [{ message: '搜索数据' }],})(<Input placeholder="请输入" />)}
+          </Form.Item>
+        </Col>
+
+        <Col span={7}>
+            <span className={styles.submitButtons}>
+              <Button type="primary" htmlType="submit">
+                查询
+              </Button>
+              <Button style={{ marginLeft: 8 }} onClick={handleFormReset}>
+                重置
+              </Button>
+            </span>
+        </Col>
+      </Row>
+    </Form>
+  );
+});
+
+
 
 @connect(({applicant, loading}) => ({
   applicant,
@@ -120,7 +179,11 @@ class Application extends PureComponent {
     company:[],
     placeName:[],
     placecode:undefined,
+    customsOption: [],
+    isCustoms: false,
+    dataSource:[],
   };
+
   columns = [
     {
       title: '记录名',
@@ -131,6 +194,39 @@ class Application extends PureComponent {
       render: (text, record) => (
         <Fragment>
           <a onClick={() => this.deleteItem(text, record)}>删除</a>
+        </Fragment>
+      ),
+    },
+  ];
+
+  columnsCompany = [
+    {
+      title: '商标',
+      dataIndex: 'photourl',
+    },
+    {
+      title: '检验机构',
+      dataIndex: 'namec',
+    },
+    {
+      title: '注册地址',
+      dataIndex: 'adres',
+    },
+    {
+      title: '电话',
+      dataIndex: 'tel',
+    },
+
+    {
+      title: '能力说明',
+      dataIndex: 'explanation',
+    },
+
+    {
+      title: '操作',
+      render: (text, record) => (
+        <Fragment>
+          <a onClick={() => this.setInitSet(text, record)}>选取</a>&nbsp;&nbsp;
         </Fragment>
       ),
     },
@@ -198,6 +294,14 @@ class Application extends PureComponent {
       }
     });
 
+    dispatch({
+      type: 'applicant/getCustomInfos',
+      payload: {},
+      callback: (response) => {
+        this.setState({customsOption: response})
+      }
+    });
+
     this.setFormInfo();
   }
 
@@ -219,6 +323,15 @@ class Application extends PureComponent {
       }
     });
   };
+
+  changeIsCustoms = e => {
+    if (e.target.value === 1) {
+      this.setState({isCustoms: true});
+    } else {
+      this.setState({isCustoms: false});
+    }
+  };
+
 
   saveFormInfo =()=>{
     const {form} = this.props;
@@ -622,16 +735,69 @@ class Application extends PureComponent {
     });
   };
 
+  getRepeatCustomsNo = (rule, value, callback) => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'applicant/getRepeatCustomsNo',
+      payload:{customsNo:value},
+      callback: (response) => {
+        if(response === "repeat"){
+          callback(formatMessage({ id: 'validation.customsNo.repeat' }));
+        }else if(response ==="success") {
+          callback();
+        }else{
+          callback(formatMessage({ id: 'validation.customsNo.error' }));
+        }
+      }
+    });
+  };
+
+  handleSearch =(fieldsValue)=> {
+    const { dispatch } = this.props;
+    const values = {
+      kind :fieldsValue.kind.trim(),
+      value: fieldsValue.value.trim(),
+    };
+    dispatch({
+      type: 'applicant/getCompanyList',
+      payload: values,
+      callback: (response) => {
+        if (response){
+          this.setState({company : response.data})
+        }
+      }
+    });
+  };
+
+  handleFormReset = () => {
+    const {dispatch} = this.props;
+    dispatch({
+      type: 'applicant/getCompanyList',
+      payload: {
+        // certCode: user.certCode,
+      },
+      callback: (response) => {
+        this.setState({company : response.data})
+      }
+    });
+  };
+
+
+
+
+
   render() {
     const parentMethods = {
       handleOk:this.handleOk,
-      handleCancel:this.handleCancel
+      handleCancel:this.handleCancel,
+      handleSearch:this.handleSearch,
+      handleFormReset:this.handleFormReset()
     };
     const {
       form: {getFieldDecorator},
       loading,
     } = this.props;
-    const {applicantName, agentName, payerName  , checkProject, cargos, agentContacts, applicantContacts, visible, company , fileList,tempFileList,placeName} = this.state;
+    const {applicantName, agentName, payerName  , checkProject, cargos, agentContacts, applicantContacts, visible, company , isCustoms,customsOption,fileList,tempFileList,placeName} = this.state;
     const uploadButton = (
       <div>
         <Icon type="plus" />
@@ -688,7 +854,67 @@ class Application extends PureComponent {
               <Col span={12}>
               </Col>
             </Row>
+            <Row gutter={16}>
+              <Col span={10}>
+                <Form.Item
+                  label={fieldLabels.iscostoms}
+                  labelCol={{span: 10}}
+                  wrapperCol={{span: 14}}
+                  colon={false}
+                >
+                  {getFieldDecorator('iscostoms', {
+                    initialValue:0,
+                    rules: [],
+                  })(
+                    <Radio.Group onChange={this.changeIsCustoms}>
+                      <Radio value={1}>需要</Radio>
+                      <Radio value={0}>不需要</Radio>
+                    </Radio.Group>
+                  )}
+                </Form.Item>
+              </Col>
+              <Col span={7}>
+                <Form.Item
+                  label={fieldLabels.customsName}
+                  labelCol={{span: 4}}
+                  wrapperCol={{span: 19}}
+                  colon={false}
+                >
+                  {getFieldDecorator('customsName', {
+                  })(
+                    <Cascader options={customsOption} disabled={!isCustoms} placeholder="请选择隶属关名称" />
+                  )}
+                </Form.Item>
+              </Col>
+              <Col span={7}>
+                <Form.Item
+                  label={fieldLabels.customsNo}
+                  labelCol={{span: 6}}
+                  wrapperCol={{span: 18}}
+                  colon={false}
+                >
+                  {getFieldDecorator('customsNo', {
+                    rules: [
+                      {
+                        validator: this.getRepeatCustomsNo,
+                      },
+                    ],
+                  })(<Input disabled={!isCustoms} placeholder="请输入报告号" />)}
+                </Form.Item>
+              </Col>
+            </Row>
+
+            <renderSimpleForm {...parentMethods} />
+            <Table
+              size="middle"
+              loading={loading}
+              dataSource={company}
+              columns={this.columnsCompany}
+              rowKey="keyno"
+              pagination={{showQuickJumper:true,showSizeChanger:true}}
+            />
           </Form>
+
         </Card>
         <Card title="业务信息" className={styles.card} bordered={false}>
           <Form hideRequiredMark labelAlign="left">
@@ -790,7 +1016,7 @@ class Application extends PureComponent {
                   wrapperCol={{span: 18}}
                   colon={false}
                 >
-                  {getFieldDecorator('agenttel', {})(<Input style={{width: '100%'}} placeholder="请输入手机"/>)}
+                  {getFieldDecorator('agenttel', {})(<Input style={{width: '100%'}} placeholder="请输入手机" />)}
                 </Form.Item>
               </Col>
             </Row>
@@ -838,7 +1064,7 @@ class Application extends PureComponent {
                       message: '请输入检验费'
                     }],
                   })
-                  (<Input style={{width: '100%'}} placeholder="请输入"/>)
+                  (<Input style={{width: '100%'}} placeholder="请输入" />)
                   }
                 </Form.Item>
               </Col>

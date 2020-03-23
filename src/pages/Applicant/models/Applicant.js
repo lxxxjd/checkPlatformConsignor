@@ -2,7 +2,7 @@ import {getAllClientName,getCheckProject,getCargos,getContacts,
   searchCargos,getCompanyList,upload,getPremaininfoList, addPremaininfo,getPremaininfo,deletePremaininfo,getReportByConfigor,getPreRecord,
   deletePreRecord,getReportByRandomCode,follow,unfollow, getOssPdf, updatePremaininfo, getReportInfo ,
   getRecordInfo,getCnasInfo,getAllMan,getConfigorPlaceList, addEvaluation, getCertFiles, getPdfByOssPath,
-  addReadRecord, getApplyReason, returnReadRecord,getBusiness, getConfigorCargoList, getCerFilesByRandomCode} from '@/services/Applicant';
+  addReadRecord, getApplyReason, returnReadRecord,getBusiness, getConfigorCargoList, getCerFilesByRandomCode,getCustomInfos,getRepeatCustomsNo} from '@/services/Applicant';
 import{searchPlaceByPlaceCode} from '@/services/manage'
 
 export default {
@@ -33,7 +33,16 @@ export default {
       if (callback) callback(response.data);
     },
 
+    // 报关号查重
+    *getRepeatCustomsNo({ payload , callback}, { call, put }) {
+      const response = yield call(getRepeatCustomsNo, payload);
+      if (callback) callback(response.data);
+    },
 
+    *getCustomInfos({ payload ,callback}, { call, put }) {
+      const response = yield call(getCustomInfos, payload);
+      if (callback) callback(response.data);
+    },
     *getBusiness({ payload ,callback}, { call, put }) {
       const response = yield call(getBusiness, payload);
       if (callback) callback(response.data);

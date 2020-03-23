@@ -74,6 +74,16 @@ export async function addReadRecord(params) {
   });
 }
 
+export async function getCustomInfos(params) {
+  return request(`/api/Customs/getCustomInfos`);
+}
+
+// 报关号查重
+export async function getRepeatCustomsNo(params) {
+  return request(`/api/report/getRepeatCustomsNo?customsNo=${params.customsNo}`);
+}
+
+
 
 export async function updatePremaininfo(params) {
   const inspway = params.inspway.join(' ');
