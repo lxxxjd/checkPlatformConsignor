@@ -3,8 +3,8 @@ import {getAllClientName,getCheckProject,getCargos,getContacts,
   deletePreRecord,getReportByRandomCode,follow,unfollow, getOssPdf, updatePremaininfo, getReportInfo ,
   getRecordInfo,getCnasInfo,getAllMan,getConfigorPlaceList, addEvaluation, getCertFiles, getPdfByOssPath,
   addReadRecord, getApplyReason, returnReadRecord,getBusiness, getConfigorCargoList, getCerFilesByRandomCode,getCustomInfos,getRepeatCustomsNo} from '@/services/Applicant';
-import{searchPlaceByPlaceCode} from '@/services/manage'
-
+import{searchPlaceByPlaceCode} from '@/services/manage';
+import{searchCompanyList} from '@/services/company';
 export default {
   namespace: 'applicant',
   state: {
@@ -119,10 +119,16 @@ export default {
       });
       if (callback) callback(response);
     },
+    *searchCompanyList({ payload ,callback}, { call, put }) {
+      const response = yield call(searchCompanyList, payload);
+      if (callback) callback(response);
+    },
+
     *getCompanyList({ payload ,callback}, { call, put }) {
       const response = yield call(getCompanyList, payload);
       if (callback) callback(response);
     },
+
     *getCnasInfo({ payload ,callback}, { call, put }) {
       const response = yield call(getCnasInfo, payload);
       if (callback) callback(response);

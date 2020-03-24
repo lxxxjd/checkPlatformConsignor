@@ -19,7 +19,8 @@ import {
   Divider,
   Modal,
   Upload,
-  message
+  message,
+  Tooltip
 } from 'antd';
 import { formatMessage } from 'umi-plugin-react/locale';
 import {connect} from 'dva';
@@ -101,61 +102,6 @@ function getBase64(file) {
   });
 }
 
-
-const renderSimpleForm = Form.create()(props => {
-  const { handleSearch, form, handleFormReset } = props;
-
-  const okHandle = () => {
-    form.validateFields((err, fieldsValue) => {
-      if (err) return;
-      handleSearch(fieldsValue);
-    });
-  };
-
-  return (
-    <Form onSubmit={okHandle} layout="inline">
-      <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
-        <Col md={4} sm={20}>
-          <Form.Item
-            labelCol={{ span: 5 }}
-            wrapperCol={{ span: 6 }}
-            colon={false}
-          >
-            {form.getFieldDecorator('kind', {
-              initialValue:"namec",
-              rules: [{  message: '搜索类型' }],
-            })(
-              <Select placeholder="搜索类型">
-                <Option value="namec">检验机构</Option>
-                <Option value="adres">注册地址</Option>
-                <Option value="tel">咨询电话</Option>
-              </Select>
-            )}
-          </Form.Item>
-        </Col>
-        <Col md={6} sm={20}>
-          <Form.Item>
-            {form.getFieldDecorator('value',{rules: [{ message: '搜索数据' }],})(<Input placeholder="请输入" />)}
-          </Form.Item>
-        </Col>
-
-        <Col span={7}>
-            <span className={styles.submitButtons}>
-              <Button type="primary" htmlType="submit">
-                查询
-              </Button>
-              <Button style={{ marginLeft: 8 }} onClick={handleFormReset}>
-                重置
-              </Button>
-            </span>
-        </Col>
-      </Row>
-    </Form>
-  );
-});
-
-
-
 @connect(({applicant, loading}) => ({
   applicant,
   loading: loading.models.applicant,
@@ -165,23 +111,23 @@ class Application extends PureComponent {
   state = {
     value: 1,
     applicantName: [],
-    agentName:[],
-    payerName:[],
+    agentName: [],
+    payerName: [],
     checkProject: [],
     cargos: [],
     applicantContacts: [],
     agentContacts: [],
-    visible:false,
-    departments:[],
-    cargoname:"",
-    fileList:[],
-    tempFileList:[],
-    company:[],
-    placeName:[],
-    placecode:undefined,
+    visible: false,
+    departments: [],
+    cargoname: "",
+    fileList: [],
+    tempFileList: [],
+    company: [],
+    placeName: [],
+    placecode: undefined,
     customsOption: [],
     isCustoms: false,
-    dataSource:[],
+    dataSource: [],
   };
 
   columns = [
@@ -203,6 +149,8 @@ class Application extends PureComponent {
     {
       title: '商标',
       dataIndex: 'photourl',
+      align: 'center',  // 设置文本居中的属性
+      render: val => this.getImageSource(val)
     },
     {
       title: '检验机构',
@@ -213,66 +161,80 @@ class Application extends PureComponent {
       dataIndex: 'adres',
     },
     {
-      title: '电话',
+      title: '咨询电话',
       dataIndex: 'tel',
     },
 
-    {
-      title: '能力说明',
+
+    { title: '能力说明',
       dataIndex: 'explanation',
+      key:"desc",
+      width:'25%',
+      // onCell: () => {
+      //   return {
+      //     style: {
+      //       maxWidth: 200,
+      //       overflow: 'hidden',
+      //       whiteSpace: 'nowrap',
+      //       textOverflow:'ellipsis',
+      //       cursor:'pointer'
+      //     }
+      //   }
+      // },
+      // render: (text) => <Tooltip placement="topLeft" arrowPointAtCenter title={text}>{text}</Tooltip>
     },
 
     {
       title: '操作',
       render: (text, record) => (
         <Fragment>
-          <a onClick={() => this.setInitSet(text, record)}>选取</a>&nbsp;&nbsp;
+          <a onClick={() => this.setCompany(text, record)}>选取</a>&nbsp;&nbsp;
         </Fragment>
       ),
     },
   ];
 
   componentDidMount() {
-    const {form} = this.props;
-    form.setFieldsValue({['unit']: "公吨"});
+    const { form } = this.props;
+    form.setFieldsValue({ ['unit']: "公吨" });
     const now = moment().format("YYYY-MM-DD HH:mm:ss");
-    form.setFieldsValue({['inspdate']: moment(now, "YYYY-MM-DD HH:mm:ss")});
+    form.setFieldsValue({ ['inspdate']: moment(now, "YYYY-MM-DD HH:mm:ss") });
     const user = JSON.parse(localStorage.getItem("userinfo"));
-    const {dispatch} = this.props;
+    const { dispatch } = this.props;
     dispatch({
       type: 'applicant/getClientName',
       payload: {},
       callback: (response) => {
-        this.setState({applicantName: response});
-        this.setState({agentName: response});
-        this.setState({payerName:response});
+        this.setState({ applicantName: response });
+        this.setState({ agentName: response });
+        this.setState({ payerName: response });
       }
     });
     dispatch({
       type: 'applicant/getCheckProject',
       payload: {
-        certCode : user.certCode,
+        certCode: user.certCode,
       },
       callback: (response) => {
-        this.setState({checkProject: response})
+        this.setState({ checkProject: response })
       }
     });
     dispatch({
       type: 'applicant/getConfigorPlaceList',
       payload: {
-        consigoruser : user.userName,
+        consigoruser: user.userName,
       },
       callback: (response) => {
-        this.setState({placeName: response})
+        this.setState({ placeName: response })
       }
     });
     dispatch({
       type: 'applicant/getConfigorCargoList',
       payload: {
-        consigoruser : user.userName,
+        consigoruser: user.userName,
       },
       callback: (response) => {
-        this.setState({cargos: response})
+        this.setState({ cargos: response })
       }
     });
     // dispatch({
@@ -290,7 +252,7 @@ class Application extends PureComponent {
         // certCode: user.certCode,
       },
       callback: (response) => {
-        this.setState({company : response.data})
+        this.setState({ company: response.data })
       }
     });
 
@@ -298,56 +260,96 @@ class Application extends PureComponent {
       type: 'applicant/getCustomInfos',
       payload: {},
       callback: (response) => {
-        this.setState({customsOption: response})
+        this.setState({ customsOption: response })
       }
     });
 
     this.setFormInfo();
   }
 
-  componentWillUnmount(){
+  componentWillUnmount() {
     this.saveFormInfo();
   }
 
-  resetform =()=>{
+  getImageSource =val=> {
+    let imgpath = "https://checkplatform2.oss-cn-hangzhou.aliyuncs.com/platform/publiclogo/defaultlogo.png";
+    if(val !==undefined && val !==null ){
+      imgpath=`https://checkplatform2.oss-cn-hangzhou.aliyuncs.com/${val}`;
+    }
+    return <img src={imgpath} height={40} />;
+  };
+
+  setCompany=(text)=>{
+    const {form} = this.props;
+    form.setFieldsValue({  'certcode':text.certcode,});
+    message.success("选取成功");
+    // Modal.confirm({
+    //   title: '确认选取该检验机构吗？',
+    //   okText: '确认',
+    //   cancelText: '取消',
+    //   onOk: () => {
+    //     form.setFieldsValue({  'certcode':text.certcode,});
+    //   },
+    // });
+  };
+
+
+  resetform = () => {
     Modal.confirm({
       title: '确定要刷新页面吗？',
       okText: '确认',
       cancelText: '取消',
       onOk: () => {
-        const {form} = this.props;
+        const { form } = this.props;
         form.resetFields();
         this.setState({
           checkProject: [],
         });
+        const { dispatch} = this.props;
+        dispatch({
+          type: 'applicant/getCompanyList',
+          payload: {
+            // certCode: user.certCode,
+          },
+          callback: (response) => {
+            this.setState({ company: response.data });
+          }
+        });
+        this.setState({ isCustoms: false });
       }
     });
   };
 
   changeIsCustoms = e => {
+    const{form} = this.props;
     if (e.target.value === 1) {
-      this.setState({isCustoms: true});
+      this.setState({ isCustoms: true });
+      form.resetFields(`iscostoms`,1);
     } else {
-      this.setState({isCustoms: false});
+      this.setState({ isCustoms: false });
+      form.resetFields(`iscostoms`,0);
     }
+    form.resetFields(`customsName`,undefined);
+    form.resetFields(`customsNo`,undefined);
+    this.okHandle();
   };
 
 
-  saveFormInfo =()=>{
-    const {form} = this.props;
-    const formValues ={
+  saveFormInfo = () => {
+    const { form } = this.props;
+    const formValues = {
       ...form.getFieldsValue(),
     };
-    sessionStorage.setItem("applicationFormValues",JSON.stringify(formValues));
+    sessionStorage.setItem("applicationFormValues", JSON.stringify(formValues));
   };
 
-  setFormInfo =()=>{
-    const {form,dispatch} = this.props;
+  setFormInfo = () => {
+    const { form, dispatch } = this.props;
     const applicationFormValues = sessionStorage.getItem("applicationFormValues");
-    if(applicationFormValues!==undefined &&applicationFormValues!==null){
+    if (applicationFormValues !== undefined && applicationFormValues !== null) {
       const formValues = JSON.parse(applicationFormValues);
-      if(!(formValues.certcode===undefined || formValues.certcode===null)){
-        form.setFieldsValue({'certcode': formValues.certcode});
+      if (!(formValues.certcode === undefined || formValues.certcode === null)) {
+        form.setFieldsValue({ 'certcode': formValues.certcode });
         dispatch({
           type: 'applicant/getCheckProject',
           payload: {
@@ -358,56 +360,56 @@ class Application extends PureComponent {
           }
         });
       }
-      if(!(formValues.unit===undefined || formValues.unit===null)){
-        form.setFieldsValue({'unit': formValues.unit});
+      if (!(formValues.unit === undefined || formValues.unit === null)) {
+        form.setFieldsValue({ 'unit': formValues.unit });
       }
-      if(!(formValues.applicant===undefined || formValues.applicant===null)){
-        form.setFieldsValue({'applicant': formValues.applicant});
+      if (!(formValues.applicant === undefined || formValues.applicant === null)) {
+        form.setFieldsValue({ 'applicant': formValues.applicant });
       }
-      if(!(formValues.applicanttel===undefined || formValues.applicanttel===null)){
-        form.setFieldsValue({'applicanttel': formValues.applicanttel});
+      if (!(formValues.applicanttel === undefined || formValues.applicanttel === null)) {
+        form.setFieldsValue({ 'applicanttel': formValues.applicanttel });
       }
-      if(!(formValues.agent===undefined|| formValues.agent===null )){
-        form.setFieldsValue({'agent': formValues.agent});
+      if (!(formValues.agent === undefined || formValues.agent === null)) {
+        form.setFieldsValue({ 'agent': formValues.agent });
       }
-      if(!(formValues.applicantname===undefined|| formValues.applicantname===null )){
-        form.setFieldsValue({'applicantname': formValues.applicantname});
+      if (!(formValues.applicantname === undefined || formValues.applicantname === null)) {
+        form.setFieldsValue({ 'applicantname': formValues.applicantname });
       }
-      if(!(formValues.agentname===undefined || formValues.agentname===null )){
-        form.setFieldsValue({'agentname': formValues.agentname});
+      if (!(formValues.agentname === undefined || formValues.agentname === null)) {
+        form.setFieldsValue({ 'agentname': formValues.agentname });
       }
-      if(!(formValues.agenttel===undefined || formValues.agenttel===null )){
-        form.setFieldsValue({'agenttel': formValues.agenttel});
+      if (!(formValues.agenttel === undefined || formValues.agenttel === null)) {
+        form.setFieldsValue({ 'agenttel': formValues.agenttel });
       }
-      if(!(formValues.payer===undefined || formValues.payer===null )){
-        form.setFieldsValue({'payer': formValues.payer});
+      if (!(formValues.payer === undefined || formValues.payer === null)) {
+        form.setFieldsValue({ 'payer': formValues.payer });
       }
-      if(!(formValues.price===undefined || formValues.price===null )){
-        form.setFieldsValue({'price': formValues.price});
+      if (!(formValues.price === undefined || formValues.price === null)) {
+        form.setFieldsValue({ 'price': formValues.price });
       }
-      if(!(formValues.shipname===undefined || formValues.shipname===null)){
-        form.setFieldsValue({'shipname': formValues.shipname});
+      if (!(formValues.shipname === undefined || formValues.shipname === null)) {
+        form.setFieldsValue({ 'shipname': formValues.shipname });
       }
-      if(!(formValues.inspdate===undefined || formValues.inspdate===null )){
-        form.setFieldsValue({'inspdate': moment(formValues.inspdate, "YYYY-MM-DD") });
+      if (!(formValues.inspdate === undefined || formValues.inspdate === null)) {
+        form.setFieldsValue({ 'inspdate': moment(formValues.inspdate, "YYYY-MM-DD") });
       }
-      if(!(formValues.quantityd===undefined || formValues.quantityd===null)){
-        form.setFieldsValue({'quantityd': formValues.quantityd});
+      if (!(formValues.quantityd === undefined || formValues.quantityd === null)) {
+        form.setFieldsValue({ 'quantityd': formValues.quantityd });
       }
-      if(!(formValues.chineselocalname===undefined || formValues.chineselocalname===null )){
-        form.setFieldsValue({'chineselocalname': formValues.chineselocalname});
+      if (!(formValues.chineselocalname === undefined || formValues.chineselocalname === null)) {
+        form.setFieldsValue({ 'chineselocalname': formValues.chineselocalname });
       }
-      if(!(formValues.inspplace1===undefined || formValues.inspplace1===null )){
-        form.setFieldsValue({'inspplace1': formValues.inspplace1});
+      if (!(formValues.inspplace1 === undefined || formValues.inspplace1 === null)) {
+        form.setFieldsValue({ 'inspplace1': formValues.inspplace1 });
       }
-      if(!(formValues.inspplace2===undefined || formValues.inspplace2===null)){
-        form.setFieldsValue({'inspplace2': formValues.inspplace2});
+      if (!(formValues.inspplace2 === undefined || formValues.inspplace2 === null)) {
+        form.setFieldsValue({ 'inspplace2': formValues.inspplace2 });
       }
-      if(!(formValues.inspway===undefined  || formValues.inspway===null)){
-        form.setFieldsValue({'inspway': formValues.inspway});
+      if (!(formValues.inspway === undefined || formValues.inspway === null)) {
+        form.setFieldsValue({ 'inspway': formValues.inspway });
       }
-      if(!(formValues.inspwaymemo1===undefined || formValues.inspwaymemo1===null)){
-        form.setFieldsValue({'inspwaymemo1': formValues.inspwaymemo1});
+      if (!(formValues.inspwaymemo1 === undefined || formValues.inspwaymemo1 === null)) {
+        form.setFieldsValue({ 'inspwaymemo1': formValues.inspwaymemo1 });
       }
       this.forceUpdate();
     }
@@ -422,13 +424,13 @@ class Application extends PureComponent {
       onOk: () => {
         message.success("正在提交数据...");
         const {
-          form: {validateFieldsAndScroll},
+          form: { validateFieldsAndScroll },
           dispatch,
         } = this.props;
         const { tempFileList } = this.state;
         validateFieldsAndScroll((error, values) => {
           const user = JSON.parse(localStorage.getItem("userinfo"));
-          if(values.inspplace1 !== null && values.inspplace1 !== undefined){
+          if (values.inspplace1 !== null && values.inspplace1 !== undefined) {
             values.inspplace1 = values.inspplace1[2];
           }
           if (!error) {
@@ -450,17 +452,17 @@ class Application extends PureComponent {
                   formData.append('creator', user.contactName);
                   dispatch({
                     type: 'applicant/upload',
-                    payload:formData,
-                    callback: (response2) =>{
+                    payload: formData,
+                    callback: (response2) => {
                       if (response2.code === 200) {
                         notification.open({
                           message: '添加成功',
                         });
                         //sessionStorage.setItem('prereportno',response.data);
                         router.push({
-                          pathname:'/Applicant/UnAccept',
+                          pathname: '/Applicant/UnAccept',
                         });
-                      }else {
+                      } else {
                         notification.open({
                           message: '添加失败',
                           description: response.data,
@@ -476,8 +478,7 @@ class Application extends PureComponent {
                 }
               }
             });
-          }
-          else{
+          } else {
           }
         });
       },
@@ -485,15 +486,15 @@ class Application extends PureComponent {
 
   };
 
-  deleteItem = text =>{
+  deleteItem = text => {
     let files = this.state.tempFileList;
-    for(let file in files){
-      if(files[file].name === text.name){
-        files.splice(file,1);
+    for (let file in files) {
+      if (files[file].name === text.name) {
+        files.splice(file, 1);
         break;
       }
     }
-    this.setState({tempFileList:files});
+    this.setState({ tempFileList: files });
     this.forceUpdate();
   };
 
@@ -501,19 +502,17 @@ class Application extends PureComponent {
     this.setState({
       value: e.target.value,
     });
-    const {form} = this.props;
+    const { form } = this.props;
     if (this.state.value === 1) {
-      form.setFieldsValue({['payer']: form.getFieldValue('applicant')});
+      form.setFieldsValue({ ['payer']: form.getFieldValue('applicant') });
     } else {
-      form.setFieldsValue({['payer']: form.getFieldValue('agent')});
+      form.setFieldsValue({ ['payer']: form.getFieldValue('agent') });
     }
   };
 
 
-
-
   handleAgentSearch = value => {
-    const {dispatch} = this.props;
+    const { dispatch } = this.props;
     dispatch({
       type: 'applicant/getBusiness',
       payload: {
@@ -521,28 +520,27 @@ class Application extends PureComponent {
       },
       callback: (response) => {
 
-        this.setState({agentName: response})
+        this.setState({ agentName: response })
       }
     });
   };
 
 
-
   onCertCodeChange = value => {
-    const {dispatch} = this.props;
+    const { dispatch } = this.props;
     dispatch({
       type: 'applicant/getCheckProject',
       payload: {
-        certCode : value,
+        certCode: value,
       },
       callback: (response) => {
-        this.setState({checkProject: response})
+        this.setState({ checkProject: response })
       }
     });
   };
 
   handleApplicantSearch = value => {
-    const {dispatch} = this.props;
+    const { dispatch } = this.props;
     dispatch({
       type: 'applicant/getBusiness',
       payload: {
@@ -550,13 +548,13 @@ class Application extends PureComponent {
       },
       callback: (response) => {
 
-        this.setState({applicantName: response})
+        this.setState({ applicantName: response })
       }
     });
   };
 
   handlePayerSearch = value => {
-    const {dispatch} = this.props;
+    const { dispatch } = this.props;
     dispatch({
       type: 'applicant/getBusiness',
       payload: {
@@ -564,80 +562,80 @@ class Application extends PureComponent {
       },
       callback: (response) => {
 
-        this.setState({payerName: response})
+        this.setState({ payerName: response })
       }
     });
   };
 
-  onChangeInspplace = value =>{
-    this.setState({placecode:value[2]});
-    const {dispatch} = this.props;
+  onChangeInspplace = value => {
+    this.setState({ placecode: value[2] });
+    const { dispatch } = this.props;
     const user = JSON.parse(localStorage.getItem("userinfo"));
-    const values={
-      placename:"",
-      placecode:value[2]!==undefined?value[2]:"",
-      consigoruser : user.userName,
+    const values = {
+      placename: "",
+      placecode: value[2] !== undefined ? value[2] : "",
+      consigoruser: user.userName,
     };
     dispatch({
       type: 'applicant/searchPlaceByPlaceCode',
       payload: values,
       callback: (response) => {
-        this.setState({placeName: response})
+        this.setState({ placeName: response })
       }
     });
   };
 
-  placeSearch = value =>{
-    const {dispatch} = this.props;
+  placeSearch = value => {
+    const { dispatch } = this.props;
     const user = JSON.parse(localStorage.getItem("userinfo"));
-    const values={
-      placename:value,
-      placecode:this.state.placecode!==undefined ?this.state.placecode:"",
-      consigoruser : user.userName,
+    const values = {
+      placename: value,
+      placecode: this.state.placecode !== undefined ? this.state.placecode : "",
+      consigoruser: user.userName,
     };
     dispatch({
       type: 'applicant/searchPlaceByPlaceCode',
       payload: values,
       callback: (response) => {
-        this.setState({placeName: response})
+        this.setState({ placeName: response })
       }
     });
   };
 
   cargoSearch = value => {
-    const {dispatch} = this.props;
+    const { dispatch } = this.props;
     const user = JSON.parse(localStorage.getItem("userinfo"));
     dispatch({
       type: 'applicant/getConfigorCargoList',
       payload: {
-        kind:'cargoname',
+        kind: 'cargoname',
         value,
-        consigoruser : user.userName,
+        consigoruser: user.userName,
       },
       callback: (response) => {
-        this.setState({cargos: response})
+        this.setState({ cargos: response })
       }
     });
   };
 
   handleChangeCargo = value => {
-    this.setState({cargoname:value});
+    this.setState({ cargoname: value });
   };
 
   onAppliantChange = value => {
-    const {dispatch} = this.props;
+    const { dispatch } = this.props;
     dispatch({
       type: 'applicant/getContacts',
       payload: {
         value
       },
       callback: (response) => {
-        this.setState({applicantContacts: response.data});
+        this.setState({ applicantContacts: response.data });
       }
     });
   };
 
-  handleChange = ({ file,fileList }) => {
+  handleChange = ({ file, fileList }) => {
     // 限制图片 格式、size、分辨率
     const isJPG = file.type === 'image/jpg';
     const isJPEG = file.type === 'image/jpeg';
@@ -664,73 +662,73 @@ class Application extends PureComponent {
     const {
       form
     } = this.props;
-    form.setFieldsValue({['filename']: val});
-    this.setState({ fileList});
+    form.setFieldsValue({ ['filename']: val });
+    this.setState({ fileList });
   };
 
   onAgentChange = value => {
-    const {dispatch} = this.props;
+    const { dispatch } = this.props;
     dispatch({
       type: 'applicant/getContacts',
       payload: {
         value
       },
       callback: (response) => {
-        this.setState({agentContacts: response.data})
+        this.setState({ agentContacts: response.data })
       }
     });
   };
 
   onAppliantNameChange = value => {
-    const {form} = this.props;
-    const {applicantContacts} = this.state;
+    const { form } = this.props;
+    const { applicantContacts } = this.state;
     for (const applicantContact in applicantContacts) {
       if (applicantContacts[applicantContact].contactName === value) {
-        form.setFieldsValue({'applicanttel': applicantContacts[applicantContact].contactPhone});
+        form.setFieldsValue({ 'applicanttel': applicantContacts[applicantContact].contactPhone });
         break;
       }
     }
   };
 
   onAgentNameChange = value => {
-    const {form} = this.props;
-    const {agentContacts} = this.state;
+    const { form } = this.props;
+    const { agentContacts } = this.state;
     for (const agentContact in agentContacts) {
       if (agentContacts[agentContact].contactName === value) {
-        form.setFieldsValue({'agenttel': agentContacts[agentContact].contactPhone});
+        form.setFieldsValue({ 'agenttel': agentContacts[agentContact].contactPhone });
         break;
       }
     }
   };
 
-  show = value =>{
-    this.setState({visible:true});
+  show = value => {
+    this.setState({ visible: true });
   };
 
-  handleCancel = () =>{
+  handleCancel = () => {
     const {
       form
     } = this.props;
-    form.setFieldsValue({'filename': null});
-    this.setState({fileList:[]});
+    form.setFieldsValue({ 'filename': null });
+    this.setState({ fileList: [] });
     this.setState({ visible: false });
   };
 
-  handleOk =() =>{
+  handleOk = () => {
     const {
-      form: {validateFieldsAndScroll},
+      form: { validateFieldsAndScroll },
       dispatch,
     } = this.props;
     validateFieldsAndScroll((error, values) => {
-      if(!error){
+      if (!error) {
         values.MultipartFile.fileList[0].name = values.filename;
         this.state.tempFileList.push(values.MultipartFile.fileList[0]);
-        this.setState({visible:false});
+        this.setState({ visible: false });
         const {
           form
         } = this.props;
-        form.setFieldsValue({'filename':null});
-        this.setState({fileList:[]});
+        form.setFieldsValue({ 'filename': null });
+        this.setState({ fileList: [] });
       }
     });
   };
@@ -739,50 +737,157 @@ class Application extends PureComponent {
     const { dispatch } = this.props;
     dispatch({
       type: 'applicant/getRepeatCustomsNo',
-      payload:{customsNo:value},
+      payload: { customsNo: value },
       callback: (response) => {
-        if(response === "repeat"){
+        if (response === "repeat") {
           callback(formatMessage({ id: 'validation.customsNo.repeat' }));
-        }else if(response ==="success") {
+        } else if (response === "success") {
           callback();
-        }else{
+        } else {
           callback(formatMessage({ id: 'validation.customsNo.error' }));
         }
       }
     });
   };
 
-  handleSearch =(fieldsValue)=> {
-    const { dispatch } = this.props;
-    const values = {
-      kind :fieldsValue.kind.trim(),
-      value: fieldsValue.value.trim(),
-    };
-    dispatch({
-      type: 'applicant/getCompanyList',
-      payload: values,
-      callback: (response) => {
-        if (response){
-          this.setState({company : response.data})
+  handleSearch = (values)=> {
+    const{dispatch} = this.props;
+    if(values.iscostoms===1 && values.customsCompany!==undefined && values.customsCompany.length!==0){
+      dispatch({
+        type: 'applicant/searchCompanyList',
+        payload: values,
+        callback: (response) => {
+          if (response) {
+            this.setState({ company: response.data })
+          }
         }
+      });
+    } else{
+        dispatch({
+          type: 'applicant/getCompanyList',
+          payload: values,
+          callback: (response) => {
+            if (response) {
+              this.setState({ company: response.data })
+            }
+          }
+        });
       }
-    });
   };
 
   handleFormReset = () => {
-    const {dispatch} = this.props;
+    const { dispatch,form} = this.props;
     dispatch({
       type: 'applicant/getCompanyList',
       payload: {
         // certCode: user.certCode,
       },
       callback: (response) => {
-        this.setState({company : response.data})
+        this.setState({ company: response.data });
       }
     });
+    form.resetFields(`value`,undefined);
+    form.resetFields(`iscostoms`,0);
+    form.resetFields(`customsName`,undefined);
+    this.setState({ isCustoms: false });
   };
 
+  onChangeCustomsNameValue = e => {
+    const{form} = this.props;
+    const kind =  form.getFieldValue('kind');
+    const value =  form.getFieldValue('value');
+    const iscostoms =  form.getFieldValue('iscostoms');
+    const customsNameItem =  e;
+    console.log(e);
+    if(iscostoms===1&&customsNameItem!==undefined && customsNameItem.length!==0){
+      const values={
+        kind,
+        value,
+        iscostoms,
+        customsCompany:customsNameItem[1],
+      };
+      this.handleSearch(values);
+    }else{
+      const values={
+        kind,
+        value,
+        iscostoms,
+      };
+      this.handleSearch(values);
+    }
+  };
 
+  okHandle = () => {
+    const{form} = this.props;
+    const kind =  form.getFieldValue('kind');
+    const value =  form.getFieldValue('value');
+    const iscostoms =  form.getFieldValue('iscostoms');
+    const customsNameItem =  form.getFieldValue('customsName');
+    if(iscostoms===1&&customsNameItem!==undefined && customsNameItem.length!==0){
+      const values={
+        kind,
+        value,
+        iscostoms,
+        customsCompany:customsNameItem[1],
+      };
+      this.handleSearch(values);
+    }else{
+      const values={
+        kind,
+        value,
+        iscostoms,
+      };
+      this.handleSearch(values);
+    }
+  };
+
+  renderSimpleForm() {
+    const simple = Form.create()
+    {
+      const {
+        form
+      } = this.props;
+      return (
+        <Form onSubmit={this.okHandle} layout="inline">
+          <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
+            <Col md={4} sm={20}>
+              <Form.Item
+                labelCol={{ span: 5 }}
+                wrapperCol={{ span: 6 }}
+                colon={false}
+              >
+                {form.getFieldDecorator('kind', {
+                  initialValue: "namec",
+                  rules: [{ message: '搜索类型' }],
+                })(
+                  <Select placeholder="搜索类型">
+                    <Option value="namec">检验机构</Option>
+                    <Option value="adres">注册地址</Option>
+                    <Option value="tel">咨询电话</Option>
+                  </Select>
+                )}
+              </Form.Item>
+            </Col>
+            <Col md={6} sm={20}>
+              <Form.Item>
+                {form.getFieldDecorator('value', { rules: [{ message: '搜索数据' }], })(<Input placeholder="请输入"/>)}
+              </Form.Item>
+            </Col>
+
+            <Col span={7}>
+            <span className={styles.submitButtons}>
+              <Button type="primary" htmlType="submit">
+                查询
+              </Button>
+              <Button style={{ marginLeft: 12 }} onClick={this.handleFormReset}>重置查询</Button>
+            </span>
+            </Col>
+          </Row>
+        </Form>
+      );
+    }
+    return simple();
+  }
 
 
 
@@ -791,7 +896,6 @@ class Application extends PureComponent {
       handleOk:this.handleOk,
       handleCancel:this.handleCancel,
       handleSearch:this.handleSearch,
-      handleFormReset:this.handleFormReset()
     };
     const {
       form: {getFieldDecorator},
@@ -811,7 +915,7 @@ class Application extends PureComponent {
     const placeOptions = placeName.map(d => d.placename);
     const applicantContactsOptions = applicantContacts.map(d => <Option key={d.contactName} value={d.contactName}>{d.contactName}</Option>);
     const agentContactsOptions = agentContacts.map(d =><Option key={d.contactName} value={d.contactName}>{d.contactName}</Option>);
-    const companyOptions = company.map(d =><Option key={d.certcode} value={d.certcode}>{d.namec}</Option>);
+    const companyOptions = company.map(d =><Option key={d.certcode} value={d.certcode}>{d.namec} {d.tel}</Option>);
     // 申请人选项
     return (
       <PageHeaderWrapper>
@@ -852,6 +956,7 @@ class Application extends PureComponent {
                 </Form.Item>
               </Col>
               <Col span={12}>
+                <Form.Item> <div style={{color:'grey',paddingLeft:10}}>说明：可在下面列表搜索后选取</div></Form.Item>
               </Col>
             </Row>
             <Row gutter={16}>
@@ -867,8 +972,8 @@ class Application extends PureComponent {
                     rules: [],
                   })(
                     <Radio.Group onChange={this.changeIsCustoms}>
-                      <Radio value={1}>需要</Radio>
                       <Radio value={0}>不需要</Radio>
+                      <Radio value={1}>需要</Radio>
                     </Radio.Group>
                   )}
                 </Form.Item>
@@ -882,7 +987,7 @@ class Application extends PureComponent {
                 >
                   {getFieldDecorator('customsName', {
                   })(
-                    <Cascader options={customsOption} disabled={!isCustoms} placeholder="请选择隶属关名称" />
+                    <Cascader options={customsOption} disabled={!isCustoms} placeholder="请选择隶属关名称" onChange={this.onChangeCustomsNameValue} />
                   )}
                 </Form.Item>
               </Col>
@@ -904,7 +1009,7 @@ class Application extends PureComponent {
               </Col>
             </Row>
 
-            <renderSimpleForm {...parentMethods} />
+            <div className={styles.tableListForm}>{this.renderSimpleForm()}</div>
             <Table
               size="middle"
               loading={loading}
