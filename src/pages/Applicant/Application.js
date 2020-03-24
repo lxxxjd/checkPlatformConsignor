@@ -247,7 +247,7 @@ class Application extends PureComponent {
     //   }
     // });
     dispatch({
-      type: 'applicant/getCompanyList',
+      type: 'applicant/searchAllCompanyListForContact',
       payload: {
         // certCode: user.certCode,
       },
@@ -307,7 +307,7 @@ class Application extends PureComponent {
         });
         const { dispatch} = this.props;
         dispatch({
-          type: 'applicant/getCompanyList',
+          type: 'applicant/searchAllCompanyListForContact',
           payload: {
             // certCode: user.certCode,
           },
@@ -764,7 +764,7 @@ class Application extends PureComponent {
       });
     } else{
         dispatch({
-          type: 'applicant/getCompanyList',
+          type: 'applicant/searchAllCompanyListForContact',
           payload: values,
           callback: (response) => {
             if (response) {
@@ -778,7 +778,7 @@ class Application extends PureComponent {
   handleFormReset = () => {
     const { dispatch,form} = this.props;
     dispatch({
-      type: 'applicant/getCompanyList',
+      type: 'applicant/searchAllCompanyListForContact',
       payload: {
         // certCode: user.certCode,
       },

@@ -4,7 +4,8 @@ import {getAllClientName,getCheckProject,getCargos,getContacts,
   getRecordInfo,getCnasInfo,getAllMan,getConfigorPlaceList, addEvaluation, getCertFiles, getPdfByOssPath,
   addReadRecord, getApplyReason, returnReadRecord,getBusiness, getConfigorCargoList, getCerFilesByRandomCode,getCustomInfos,getRepeatCustomsNo} from '@/services/Applicant';
 import{searchPlaceByPlaceCode} from '@/services/manage';
-import{searchCompanyList} from '@/services/company';
+import{searchCompanyList,searchAllCompanyListForContact} from '@/services/company';
+
 export default {
   namespace: 'applicant',
   state: {
@@ -121,6 +122,12 @@ export default {
     },
     *searchCompanyList({ payload ,callback}, { call, put }) {
       const response = yield call(searchCompanyList, payload);
+      if (callback) callback(response);
+    },
+
+
+    *searchAllCompanyListForContact({ payload ,callback}, { call, put }) {
+      const response = yield call(searchAllCompanyListForContact, payload);
       if (callback) callback(response);
     },
 

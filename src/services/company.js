@@ -59,6 +59,15 @@ export async function getCompanyList(params) {
   });
 }
 
+export async function searchAllCompanyListForContact(params) {
+  return request(`/api/company/searchAllCompanyListForContact`,{
+    method: 'POST',
+    data: {
+      ...params,
+    },
+  });
+}
+
 export async function searchCompanyList(params) {
   return request(`/api/company/searchCompanyList`,{
     method: 'POST',
