@@ -283,6 +283,7 @@ class Application extends PureComponent {
     const {form} = this.props;
     form.setFieldsValue({  'certcode':text.certcode,});
     message.success("选取成功");
+    this.onCertCodeChange(text.certcode);
     // Modal.confirm({
     //   title: '确认选取该检验机构吗？',
     //   okText: '确认',
