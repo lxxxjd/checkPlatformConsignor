@@ -180,7 +180,7 @@ class ManagePlace extends PureComponent {
   };
 
   init =()=>{
-    const user = JSON.parse(localStorage.getItem("userinfo"));
+    const user = JSON.parse(localStorage.getItem("consignor_userinfo"));
     const { dispatch } = this.props;
     const params = {
       consigoruser:user.userName
@@ -208,7 +208,7 @@ class ManagePlace extends PureComponent {
     const { dispatch, form } = this.props;
     form.validateFields((err, fieldsValue) => {
       if (err) return;
-      const user = JSON.parse(localStorage.getItem("userinfo"));
+      const user = JSON.parse(localStorage.getItem("consignor_userinfo"));
       let value;
       if(this.state==="placename"){
         value=fieldsValue.value.trim();
@@ -332,7 +332,7 @@ class ManagePlace extends PureComponent {
 
   handleAdd = (fields) => {
     const { dispatch } = this.props;
-    const user = JSON.parse(localStorage.getItem("userinfo"));
+    const user = JSON.parse(localStorage.getItem("consignor_userinfo"));
     const values = {
       placename : fields.placename,
       placecode : fields.placecodes[2],

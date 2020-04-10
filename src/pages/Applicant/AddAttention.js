@@ -106,7 +106,7 @@ class AddAttention extends PureComponent {
   }
 
   init =()=>{
-    const user = JSON.parse(localStorage.getItem("userinfo"));
+    const user = JSON.parse(localStorage.getItem("consignor_userinfo"));
     const { dispatch } = this.props;
     const params = {
       consigoruser:user.userName,
@@ -137,7 +137,7 @@ class AddAttention extends PureComponent {
   };
 
   deleteItem = text => {
-    const user = JSON.parse(localStorage.getItem("userinfo"));
+    const user = JSON.parse(localStorage.getItem("consignor_userinfo"));
     const { dispatch } = this.props;
     const params = {
       consigoruser:user.userName,
@@ -234,7 +234,7 @@ class AddAttention extends PureComponent {
     form.validateFields((err, fieldsValue) => {
       console.log(err);
       if (err) return;
-      const user = JSON.parse(localStorage.getItem("userinfo"));
+      const user = JSON.parse(localStorage.getItem("consignor_userinfo"));
       const values = {
         ...fieldsValue,
       };
@@ -271,7 +271,7 @@ class AddAttention extends PureComponent {
   handleEvaluationOk = (fieldsValue) => {
     const { dispatch} = this.props;
     const {reportno} = this.state;
-    const user = JSON.parse(localStorage.getItem("userinfo"));
+    const user = JSON.parse(localStorage.getItem("consignor_userinfo"));
     const values = {
       ...fieldsValue,
       consigoruser:user.userName,
@@ -301,7 +301,7 @@ class AddAttention extends PureComponent {
   handleCertOk = value =>{
     const { reportno } = this.state;
     const { dispatch } = this.props;
-    const user = JSON.parse(localStorage.getItem("userinfo"));
+    const user = JSON.parse(localStorage.getItem("consignor_userinfo"));
     dispatch({
       type: 'applicant/returnReadRecord',
       payload: {
@@ -327,7 +327,7 @@ class AddAttention extends PureComponent {
   };
 
   handleOk = () =>{
-    const user = JSON.parse(localStorage.getItem("userinfo"));
+    const user = JSON.parse(localStorage.getItem("consignor_userinfo"));
     const { dispatch } = this.props;
     const {preMainInfo} = this.state;
     const params = {

@@ -78,7 +78,7 @@ class UnAccept extends PureComponent {
 
 
   componentDidMount() {
-    const user = JSON.parse(localStorage.getItem("userinfo"));
+    const user = JSON.parse(localStorage.getItem("consignor_userinfo"));
     const { dispatch } = this.props;
     const params = {
       consigoruser:user.userName
@@ -128,7 +128,7 @@ class UnAccept extends PureComponent {
 
   handleFormReset = () => {
 
-    const user = JSON.parse(localStorage.getItem("userinfo"));
+    const user = JSON.parse(localStorage.getItem("consignor_userinfo"));
     const params = {
       consigoruser:user.userName
     };
@@ -151,7 +151,7 @@ class UnAccept extends PureComponent {
     form.validateFields((err, fieldsValue) => {
       console.log(err);
       if (err) return;
-      const user = JSON.parse(localStorage.getItem("userinfo"));
+      const user = JSON.parse(localStorage.getItem("consignor_userinfo"));
       const values = {
         ...fieldsValue,
         kind :fieldsValue.kind,

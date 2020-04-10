@@ -155,7 +155,7 @@ class ModifyRecord extends PureComponent {
     validateFieldsAndScroll((error, values) => {
       if (!error) {
         let formData = new FormData();
-        const user = JSON.parse(localStorage.getItem("userinfo"));
+        const user = JSON.parse(localStorage.getItem("consignor_userinfo"));
         values.MultipartFile.fileList.forEach(file => {
           formData.append('files', file.originFileObj);
         });

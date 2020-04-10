@@ -135,7 +135,7 @@ class ModifyApplication extends PureComponent {
 
   componentDidMount() {
     const {form} = this.props;
-    const user = JSON.parse(localStorage.getItem("userinfo"));
+    const user = JSON.parse(localStorage.getItem("consignor_userinfo"));
     const prereportno = sessionStorage.getItem("prereportno");
     const {dispatch} = this.props;
     dispatch({
@@ -231,7 +231,7 @@ class ModifyApplication extends PureComponent {
           dispatch,
         } = this.props;
         validateFieldsAndScroll((error, values) => {
-          const user = JSON.parse(localStorage.getItem("userinfo"));
+          const user = JSON.parse(localStorage.getItem("consignor_userinfo"));
           const prereportno = sessionStorage.getItem("prereportno");
           if(values.inspplace1 !== null && values.inspplace1 !== undefined){
             values.inspplace1 = values.inspplace1[2];
@@ -332,7 +332,7 @@ class ModifyApplication extends PureComponent {
   };
   cargoSearch = value => {
     const {dispatch} = this.props;
-   // const certCode = JSON.parse(localStorage.getItem("userinfo")).certCode;
+   // const certCode = JSON.parse(localStorage.getItem("consignor_userinfo")).certCode;
     dispatch({
       type: 'applicant/searchCargos',
       payload: {
@@ -463,7 +463,7 @@ class ModifyApplication extends PureComponent {
   onChangeInspplace = value =>{
     this.setState({placecode:value[2]});
     const {dispatch} = this.props;
-    const user = JSON.parse(localStorage.getItem("userinfo"));
+    const user = JSON.parse(localStorage.getItem("consignor_userinfo"));
     const values={
       placename:"",
       placecode:value[2]!==undefined?value[2]:"",
@@ -480,7 +480,7 @@ class ModifyApplication extends PureComponent {
 
   placeSearch = value =>{
     const {dispatch} = this.props;
-    const user = JSON.parse(localStorage.getItem("userinfo"));
+    const user = JSON.parse(localStorage.getItem("consignor_userinfo"));
     const values={
       placename:value,
       placecode:this.state.placecode!==undefined ?this.state.placecode:"",

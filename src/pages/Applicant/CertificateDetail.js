@@ -122,7 +122,7 @@ class CertificateDetail extends PureComponent {
       callback: (response) => {
         if(response.code === 200){
           window.open(response.data);
-          const user = JSON.parse(localStorage.getItem("userinfo"));
+          const user = JSON.parse(localStorage.getItem("consignor_userinfo"));
           const params ={
               reader:user.userName,
               organization:'委托人',

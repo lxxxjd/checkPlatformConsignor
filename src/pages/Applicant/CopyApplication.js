@@ -132,7 +132,7 @@ class CopyApplication extends PureComponent {
     form.setFieldsValue({['unit']: "公吨"});
     const now = moment().format("YYYY-MM-DD HH:mm:ss");
     form.setFieldsValue({['inspdate']: moment(now, "YYYY-MM-DD HH:mm:ss")});
-    const user = JSON.parse(localStorage.getItem("userinfo"));
+    const user = JSON.parse(localStorage.getItem("consignor_userinfo"));
     const {dispatch} = this.props;
     const reportno = sessionStorage.getItem("reportno");
     dispatch({
@@ -229,7 +229,7 @@ class CopyApplication extends PureComponent {
     } = this.props;
     const { tempFileList } = this.state;
     validateFieldsAndScroll((error, values) => {
-      const user = JSON.parse(localStorage.getItem("userinfo"));
+      const user = JSON.parse(localStorage.getItem("consignor_userinfo"));
       if(values.inspplace1 !== null && values.inspplace1 !== undefined){
          values.inspplace1 = values.inspplace1[2];
       }
@@ -244,7 +244,7 @@ class CopyApplication extends PureComponent {
           callback: (response) => {
             if (response.code === 200) {
               let formData = new FormData();
-              const user = JSON.parse(localStorage.getItem("userinfo"));
+              const user = JSON.parse(localStorage.getItem("consignor_userinfo"));
               tempFileList.forEach(file => {
                 formData.append('files', file.originFileObj);
               });
@@ -365,7 +365,7 @@ class CopyApplication extends PureComponent {
   onChangeInspplace = value =>{
     this.setState({placecode:value[2]});
     const {dispatch} = this.props;
-    const user = JSON.parse(localStorage.getItem("userinfo"));
+    const user = JSON.parse(localStorage.getItem("consignor_userinfo"));
     const values={
       placename:"",
       placecode:value[2]!==undefined?value[2]:"",
@@ -382,7 +382,7 @@ class CopyApplication extends PureComponent {
 
   placeSearch = value =>{
     const {dispatch} = this.props;
-    const user = JSON.parse(localStorage.getItem("userinfo"));
+    const user = JSON.parse(localStorage.getItem("consignor_userinfo"));
     const values={
       placename:value,
       placecode:this.state.placecode!==undefined ?this.state.placecode:"",
@@ -400,7 +400,7 @@ class CopyApplication extends PureComponent {
 
   cargoSearch = value => {
     const {dispatch} = this.props;
-   // const certCode = JSON.parse(localStorage.getItem("userinfo")).certCode;
+   // const certCode = JSON.parse(localStorage.getItem("consignor_userinfo")).certCode;
     dispatch({
       type: 'applicant/searchCargos',
       payload: {

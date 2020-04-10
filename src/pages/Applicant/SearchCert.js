@@ -187,7 +187,7 @@ isValidDate =date=> {
   };
 
   handleOk = () =>{
-    const user = JSON.parse(localStorage.getItem("userinfo"));
+    const user = JSON.parse(localStorage.getItem("consignor_userinfo"));
     const { dispatch } = this.props;
     const {preMainInfo} = this.state;
     const params = {

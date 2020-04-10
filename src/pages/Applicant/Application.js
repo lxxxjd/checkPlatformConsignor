@@ -199,7 +199,7 @@ class Application extends PureComponent {
     form.setFieldsValue({ ['unit']: "公吨" });
     const now = moment().format("YYYY-MM-DD HH:mm:ss");
     form.setFieldsValue({ ['inspdate']: moment(now, "YYYY-MM-DD HH:mm:ss") });
-    const user = JSON.parse(localStorage.getItem("userinfo"));
+    const user = JSON.parse(localStorage.getItem("consignor_userinfo"));
     const { dispatch } = this.props;
     dispatch({
       type: 'applicant/getClientName',
@@ -339,6 +339,7 @@ class Application extends PureComponent {
   saveFormInfo = () => {
     const { form } = this.props;
     const formValues = {
+      isCustoms:this.state.isCustoms,
       ...form.getFieldsValue(),
     };
     sessionStorage.setItem("applicationFormValues", JSON.stringify(formValues));
@@ -412,6 +413,19 @@ class Application extends PureComponent {
       if (!(formValues.inspwaymemo1 === undefined || formValues.inspwaymemo1 === null)) {
         form.setFieldsValue({ 'inspwaymemo1': formValues.inspwaymemo1 });
       }
+      if (!(formValues.iscostoms === undefined || formValues.iscostoms === null)) {
+        form.setFieldsValue({ 'iscostoms': formValues.iscostoms });
+      }
+      if (!(formValues.customsNo === undefined || formValues.customsNo === null)) {
+        form.setFieldsValue({ 'customsNo': formValues.customsNo });
+      }
+      if (!(formValues.customsName === undefined || formValues.customsName === null)) {
+        form.setFieldsValue({ 'customsName': formValues.customsName });
+      }
+      if (!(formValues.iscostoms === undefined || formValues.iscostoms === null)) {
+        this.setState({isCustoms:true})
+        form.setFieldsValue({ 'iscostoms': formValues.iscostoms });
+      }
       this.forceUpdate();
     }
   };
@@ -424,18 +438,18 @@ class Application extends PureComponent {
       cancelText: '取消',
       onOk: () => {
         message.success("正在提交数据...");
-        const {
-          form: { validateFieldsAndScroll },
-          dispatch,
-        } = this.props;
+        const {form,dispatch} = this.props;
         const { tempFileList } = this.state;
-        validateFieldsAndScroll((error, values) => {
-          const user = JSON.parse(localStorage.getItem("userinfo"));
+        form.validateFieldsAndScroll((error, values) => {
+          const user = JSON.parse(localStorage.getItem("consignor_userinfo"));
           if (values.inspplace1 !== null && values.inspplace1 !== undefined) {
             values.inspplace1 = values.inspplace1[2];
           }
+          const customsNameItem =  form.getFieldValue('customsName');
+          if (customsNameItem !== null && customsNameItem !== undefined && customsNameItem.length !== 0) {
+            values.customsName = customsNameItem[1];
+          }
           if (!error) {
-            // submit the values
             dispatch({
               type: 'applicant/addPremaininfo',
               payload: {
@@ -445,7 +459,7 @@ class Application extends PureComponent {
               callback: (response) => {
                 if (response.code === 200) {
                   let formData = new FormData();
-                  const user = JSON.parse(localStorage.getItem("userinfo"));
+                  const user = JSON.parse(localStorage.getItem("consignor_userinfo"));
                   tempFileList.forEach(file => {
                     formData.append('files', file.originFileObj);
                   });
@@ -571,7 +585,7 @@ class Application extends PureComponent {
   onChangeInspplace = value => {
     this.setState({ placecode: value[2] });
     const { dispatch } = this.props;
-    const user = JSON.parse(localStorage.getItem("userinfo"));
+    const user = JSON.parse(localStorage.getItem("consignor_userinfo"));
     const values = {
       placename: "",
       placecode: value[2] !== undefined ? value[2] : "",
@@ -588,7 +602,7 @@ class Application extends PureComponent {
 
   placeSearch = value => {
     const { dispatch } = this.props;
-    const user = JSON.parse(localStorage.getItem("userinfo"));
+    const user = JSON.parse(localStorage.getItem("consignor_userinfo"));
     const values = {
       placename: value,
       placecode: this.state.placecode !== undefined ? this.state.placecode : "",
@@ -605,7 +619,7 @@ class Application extends PureComponent {
 
   cargoSearch = value => {
     const { dispatch } = this.props;
-    const user = JSON.parse(localStorage.getItem("userinfo"));
+    const user = JSON.parse(localStorage.getItem("consignor_userinfo"));
     dispatch({
       type: 'applicant/getConfigorCargoList',
       payload: {
@@ -799,7 +813,6 @@ class Application extends PureComponent {
     const value =  form.getFieldValue('value');
     const iscostoms =  form.getFieldValue('iscostoms');
     const customsNameItem =  e;
-    console.log(e);
     if(iscostoms===1&&customsNameItem!==undefined && customsNameItem.length!==0){
       const values={
         kind,

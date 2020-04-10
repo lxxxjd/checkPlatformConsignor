@@ -39,7 +39,7 @@ export default {
           }
         }
         yield put(routerRedux.replace(redirect || '/'));
-        localStorage.setItem("userinfo",JSON.stringify(response.user));
+        localStorage.setItem("consignor_userinfo",JSON.stringify(response.user));
       }
 
     },
@@ -78,7 +78,7 @@ export default {
           }
         }
         yield put(routerRedux.replace(redirect || '/'));
-        localStorage.setItem("userinfo",JSON.stringify(response.user));
+        localStorage.setItem("consignor_userinfo",JSON.stringify(response.user));
       };
     },
 

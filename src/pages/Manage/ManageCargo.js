@@ -165,7 +165,7 @@ class ManageCargo extends PureComponent {
   }
 
   init =()=>{
-    const user = JSON.parse(localStorage.getItem("userinfo"));
+    const user = JSON.parse(localStorage.getItem("consignor_userinfo"));
     const { dispatch } = this.props;
     const params = {
       consigoruser : user.userName,
@@ -192,7 +192,7 @@ class ManageCargo extends PureComponent {
     const { dispatch, form } = this.props;
     form.validateFields((err, fieldsValue) => {
       if (err) return;
-      const user = JSON.parse(localStorage.getItem("userinfo"));
+      const user = JSON.parse(localStorage.getItem("consignor_userinfo"));
       const values = {
         kind :fieldsValue.kind.trim(),
         value: fieldsValue.value.trim(),
@@ -314,7 +314,7 @@ class ManageCargo extends PureComponent {
 
   handleAdd = (fields) => {
     const { dispatch } = this.props;
-    const user = JSON.parse(localStorage.getItem("userinfo"));
+    const user = JSON.parse(localStorage.getItem("consignor_userinfo"));
     const values = {
       ...fields,
       consigoruser : user.userName,

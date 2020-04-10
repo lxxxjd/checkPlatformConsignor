@@ -121,7 +121,7 @@ class Accept extends PureComponent {
 
 
   componentDidMount() {
-    const user = JSON.parse(localStorage.getItem("userinfo"));
+    const user = JSON.parse(localStorage.getItem("consignor_userinfo"));
     const { dispatch } = this.props;
     console.log(user);
     const params = {
@@ -224,7 +224,7 @@ class Accept extends PureComponent {
 
   handleFormReset = () => {
 
-    const user = JSON.parse(localStorage.getItem("userinfo"));
+    const user = JSON.parse(localStorage.getItem("consignor_userinfo"));
     const { form,dispatch } = this.props;
     form.resetFields();
     const params = {
@@ -249,7 +249,7 @@ class Accept extends PureComponent {
     form.validateFields((err, fieldsValue) => {
       console.log(fieldsValue);
       if (err) return;
-      const user = JSON.parse(localStorage.getItem("userinfo"));
+      const user = JSON.parse(localStorage.getItem("consignor_userinfo"));
       const values = {
         ...fieldsValue,
         consigoruser:user.userName,
@@ -274,7 +274,7 @@ class Accept extends PureComponent {
   handleEvaluationOk = (fieldsValue) => {
     const { dispatch} = this.props;
     const {reportno} = this.state;
-    const user = JSON.parse(localStorage.getItem("userinfo"));
+    const user = JSON.parse(localStorage.getItem("consignor_userinfo"));
     const values = {
       ...fieldsValue,
       consigoruser:user.userName,
@@ -304,7 +304,7 @@ class Accept extends PureComponent {
   handleCertOk = value =>{
     const { reportno } = this.state;
     const { dispatch } = this.props;
-    const user = JSON.parse(localStorage.getItem("userinfo"));
+    const user = JSON.parse(localStorage.getItem("consignor_userinfo"));
     dispatch({
       type: 'applicant/returnReadRecord',
       payload: {

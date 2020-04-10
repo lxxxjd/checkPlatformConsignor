@@ -73,7 +73,7 @@ class UserInfo extends PureComponent {
 	    	dispatch ,
 	    	form
 	    } = this.props;
-	    const user = JSON.parse(localStorage.getItem("userinfo"));
+	    const user = JSON.parse(localStorage.getItem("consignor_userinfo"));
 	    this.setState({user});
 	    form.setFieldsValue({
 			'companyName':user.companyName,
@@ -89,7 +89,7 @@ class UserInfo extends PureComponent {
 	      dispatch,
 	    } = this.props;
 	    const {validateFieldsAndScroll} = form;
-	    let user = JSON.parse(localStorage.getItem("userinfo"));
+	    let user = JSON.parse(localStorage.getItem("consignor_userinfo"));
 	    validateFieldsAndScroll((error, values) => {
 	      if (!error) {
 	        // submit the values
@@ -127,7 +127,7 @@ class UserInfo extends PureComponent {
 	      dispatch,
 	    } = this.props;
 	    const {validateFieldsAndScroll} = form;
-	    let user = JSON.parse(localStorage.getItem("userinfo"));
+	    let user = JSON.parse(localStorage.getItem("consignor_userinfo"));
 	    validateFieldsAndScroll((error, values) => {
 	      if (!error) {
 	        // submit the values
@@ -163,7 +163,7 @@ class UserInfo extends PureComponent {
 	      dispatch,
 	    } = this.props;
 	    const {validateFieldsAndScroll} = form;
-	    let user = JSON.parse(localStorage.getItem("userinfo"));
+	    let user = JSON.parse(localStorage.getItem("consignor_userinfo"));
 	    validateFieldsAndScroll((error, values) => {
 	      if (!error) {
 	        // submit the values
