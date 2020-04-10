@@ -20,7 +20,7 @@ import {
   Modal,
   Upload, message,
 } from 'antd';
-
+import { formatMessage } from 'umi-plugin-react/locale';
 import {connect} from 'dva';
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
 import moment from 'moment'
@@ -83,7 +83,9 @@ const fieldLabels = {
   inspwaymemo1: '检验备注',
   certstyle: '证书要求',
   section:'执行部门',
-  customsName:'海关部门'
+  customsName:'隶属关',
+  customsNo:"报关号",
+  iscostoms:"是否需要向海关推送报告？"
 };
 
 function getBase64(file) {
@@ -116,6 +118,8 @@ class ModifyApplication extends PureComponent {
     cargoname:"",
     company:[],
     placeName:[],
+    customsOption: [],
+    isCustoms: false,
   };
 
   columns = [
@@ -128,6 +132,55 @@ class ModifyApplication extends PureComponent {
       render: (text, record) => (
         <Fragment>
           <a onClick={() => this.deleteItem(text, record)}>删除</a>
+        </Fragment>
+      ),
+    },
+  ];
+
+  columnsCompany = [
+    {
+      title: '商标',
+      dataIndex: 'photourl',
+      align: 'center',  // 设置文本居中的属性
+      render: val => this.getImageSource(val)
+    },
+    {
+      title: '检验机构',
+      dataIndex: 'namec',
+    },
+    {
+      title: '注册地址',
+      dataIndex: 'adres',
+    },
+    {
+      title: '咨询电话',
+      dataIndex: 'tel',
+    },
+
+
+    { title: '能力说明',
+      dataIndex: 'explanation',
+      key:"desc",
+      width:'25%',
+      // onCell: () => {
+      //   return {
+      //     style: {
+      //       maxWidth: 200,
+      //       overflow: 'hidden',
+      //       whiteSpace: 'nowrap',
+      //       textOverflow:'ellipsis',
+      //       cursor:'pointer'
+      //     }
+      //   }
+      // },
+      // render: (text) => <Tooltip placement="topLeft" arrowPointAtCenter title={text}>{text}</Tooltip>
+    },
+
+    {
+      title: '操作',
+      render: (text, record) => (
+        <Fragment>
+          <a onClick={() => this.setCompany(text, record)}>选取</a>&nbsp;&nbsp;
         </Fragment>
       ),
     },
@@ -176,6 +229,19 @@ class ModifyApplication extends PureComponent {
                 'inspway': response.data.inspway.split(" "),
                 'inspwaymemo1': response.data.inspwaymemo1,
               });
+              if (!(response.data.customsNo === undefined || response.data.customsNo === null)) {
+                form.setFieldsValue({ 'customsNo': response.data.customsNo });
+              }
+              if (!(response.data.iscostoms === undefined || response.data.iscostoms === null)) {
+                this.setState({isCustoms:true});
+                if (!(response.data.customsName === undefined || response.data.customsName === null)) {
+                  form.setFieldsValue({
+                    'iscostoms': 1,
+                    'customsName': this.getCustomsArr(response.data.customsName),
+                  });
+                  this.okHandle();
+                }
+              }
             }
           });
         }
@@ -217,11 +283,20 @@ class ModifyApplication extends PureComponent {
         this.setState({company : response.data})
       }
     });
+
+    dispatch({
+      type: 'applicant/getCustomInfos',
+      payload: {},
+      callback: (response) => {
+        this.setState({ customsOption: response })
+      }
+    });
+
   }
 
   validate = () => {
     Modal.confirm({
-      title: '确定提交此委托吗？',
+      title: '确定保存此委托吗？',
       okText: '确认',
       cancelText: '取消',
       onOk: () => {
@@ -229,6 +304,7 @@ class ModifyApplication extends PureComponent {
         const {
           form: {validateFieldsAndScroll},
           dispatch,
+          form,
         } = this.props;
         validateFieldsAndScroll((error, values) => {
           const user = JSON.parse(localStorage.getItem("consignor_userinfo"));
@@ -236,15 +312,26 @@ class ModifyApplication extends PureComponent {
           if(values.inspplace1 !== null && values.inspplace1 !== undefined){
             values.inspplace1 = values.inspplace1[2];
           }
+
+          const customsNameItem =  values.customsName;
+          if(values.iscostoms ===0 ||customsNameItem === undefined  || customsNameItem.length === 0 ){
+            values.customsName = undefined;
+            values.customsNo = undefined;
+            values.iscostoms = "0";
+            form.resetFields(`customsName`,undefined);
+            form.resetFields(`customsNo`,undefined);
+          }else{
+            values.customsName = customsNameItem[1];
+          }
           if (!error) {
-            // submit the values
+            const params = {
+              ...values,
+              prereportno,
+              consigoruser: user.userName,
+            };
             dispatch({
               type: 'applicant/updatePremaininfo',
-              payload: {
-                ...values,
-                prereportno,
-                consigoruser: user.userName,
-              },
+              payload: params,
               callback: (response) => {
                 if (response.code === 200) {
                   notification.open({
@@ -512,6 +599,240 @@ class ModifyApplication extends PureComponent {
     });
   };
 
+  changeIsCustoms = e => {
+    const{form} = this.props;
+    if (e.target.value === 1) {
+      this.setState({ isCustoms: true });
+      form.resetFields(`iscostoms`,1);
+    } else {
+      this.setState({ isCustoms: false });
+      form.resetFields(`iscostoms`,0);
+    }
+    const kind =  form.getFieldValue('kind');
+    const value =  form.getFieldValue('value');
+    const iscostoms =  e.target.value;
+    const customsNameItem =  form.getFieldValue('customsName');
+    if(iscostoms===1&&customsNameItem!==undefined && customsNameItem.length!==0){
+      const values={
+        kind,
+        value,
+        iscostoms,
+        customsCompany:customsNameItem[1],
+      };
+      this.handleSearch(values);
+    }else{
+      const values={
+        kind,
+        value,
+        iscostoms,
+      };
+      this.handleSearch(values);
+    }
+    // form.resetFields(`customsName`,undefined);
+    // form.resetFields(`customsNo`,undefined);
+  };
+
+  onChangeCustomsNameValue = e => {
+    const{form} = this.props;
+    const kind =  form.getFieldValue('kind');
+    const value =  form.getFieldValue('value');
+    const iscostoms =  form.getFieldValue('iscostoms');
+    const customsNameItem =  e;
+    if(iscostoms===1&&customsNameItem!==undefined && customsNameItem.length!==0){
+      const values={
+        kind,
+        value,
+        iscostoms,
+        customsCompany:customsNameItem[1],
+      };
+      this.handleSearch(values);
+    }else{
+      const values={
+        kind,
+        value,
+        iscostoms,
+      };
+      this.handleSearch(values);
+    }
+  };
+
+
+  handleSearch = (values)=> {
+    const{dispatch} = this.props;
+    if(values.iscostoms===1 && values.customsCompany!==undefined && values.customsCompany.length!==0){
+      dispatch({
+        type: 'applicant/searchCompanyList',
+        payload: values,
+        callback: (response) => {
+          if (response) {
+            this.setState({ company: response.data })
+          }
+        }
+      });
+    } else{
+      dispatch({
+        type: 'applicant/searchAllCompanyListForContact',
+        payload: values,
+        callback: (response) => {
+          if (response) {
+            this.setState({ company: response.data })
+          }
+        }
+      });
+    }
+  };
+
+  okHandle = () => {
+    const{form} = this.props;
+    const kind =  form.getFieldValue('kind');
+    const value =  form.getFieldValue('value');
+    const iscostoms =  form.getFieldValue('iscostoms');
+    const customsNameItem =  form.getFieldValue('customsName');
+    if(iscostoms===1&&customsNameItem!==undefined && customsNameItem.length!==0){
+      const values={
+        kind,
+        value,
+        iscostoms,
+        customsCompany:customsNameItem[1],
+      };
+      this.handleSearch(values);
+    }else{
+      const values={
+        kind,
+        value,
+        iscostoms,
+      };
+      this.handleSearch(values);
+    }
+  };
+
+  getRepeatCustomsNo = (rule, value, callback) => {
+    const { dispatch } = this.props;
+    if(value===undefined || value==="" ){
+      callback();
+    }
+    dispatch({
+      type: 'applicant/getRepeatCustomsNo',
+      payload: { customsNo: value },
+      callback: (response) => {
+        if (response === "repeat") {
+          callback(formatMessage({ id: 'validation.customsNo.repeat' }));
+        } else if (response === "success") {
+          callback();
+        } else {
+          callback(formatMessage({ id: 'validation.customsNo.error' }));
+        }
+      }
+    });
+  };
+
+  renderSimpleForm() {
+    const simple = Form.create()
+    {
+      const {
+        form
+      } = this.props;
+      return (
+        <Form onSubmit={this.okHandle} layout="inline">
+          <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
+            <Col md={4} sm={20}>
+              <Form.Item
+                labelCol={{ span: 5 }}
+                wrapperCol={{ span: 6 }}
+                colon={false}
+              >
+                {form.getFieldDecorator('kind', {
+                  initialValue: "namec",
+                  rules: [{ message: '搜索类型' }],
+                })(
+                  <Select placeholder="搜索类型">
+                    <Option value="namec">检验机构</Option>
+                    <Option value="adres">注册地址</Option>
+                    <Option value="tel">咨询电话</Option>
+                  </Select>
+                )}
+              </Form.Item>
+            </Col>
+            <Col md={6} sm={20}>
+              <Form.Item>
+                {form.getFieldDecorator('value', { rules: [{ message: '搜索数据' }], })(<Input placeholder="请输入"/>)}
+              </Form.Item>
+            </Col>
+
+            <Col span={7}>
+            <span className={styles.submitButtons}>
+              <Button type="primary" htmlType="submit">
+                查询
+              </Button>
+              {/*<Button style={{ marginLeft: 12 }} onClick={this.handleFormReset}>重置查询</Button>*/}
+            </span>
+            </Col>
+          </Row>
+        </Form>
+      );
+    }
+    return simple();
+  }
+
+  getImageSource =val=> {
+    let imgpath = "https://checkplatform2.oss-cn-hangzhou.aliyuncs.com/platform/publiclogo/defaultlogo.png";
+    if(val !==undefined && val !==null ){
+      imgpath=`https://checkplatform2.oss-cn-hangzhou.aliyuncs.com/${val}`;
+    }
+    return <img src={imgpath} height={40} />;
+  };
+
+  handleFormReset = () => {
+    const { dispatch,form} = this.props;
+    dispatch({
+      type: 'applicant/searchAllCompanyListForContact',
+      payload: {
+        // certCode: user.certCode,
+      },
+      callback: (response) => {
+        this.setState({ company: response.data });
+      }
+    });
+    form.resetFields(`value`,undefined);
+    form.resetFields(`iscostoms`,0);
+    form.resetFields(`customsName`,undefined);
+    this.setState({ isCustoms: false });
+  };
+
+  setCompany=(text)=>{
+    const {form} = this.props;
+    form.setFieldsValue({  'certcode':text.certcode,});
+    message.success("选取成功");
+    this.onCertCodeChange(text.certcode);
+    // Modal.confirm({
+    //   title: '确认选取该检验机构吗？',
+    //   okText: '确认',
+    //   cancelText: '取消',
+    //   onOk: () => {
+    //     form.setFieldsValue({  'certcode':text.certcode,});
+    //   },
+    // });
+  };
+
+  getCustomsArr =(val)=>{
+    const res =[];
+    const {state} = this;
+    for(let i=0;state.customsOption.length!==undefined&&i<state.customsOption.length;i++){
+      const item = state.customsOption[i];
+      if(state.customsOption[i].children!==undefined && state.customsOption[i].children!==null
+        && state.customsOption[i].children.length !==undefined){
+        for(let j =0;j<state.customsOption[i].children.length;j++){
+          const subitem = state.customsOption[i].children[j];
+          if(subitem.value ===val){
+            res.push(item.value);
+            res.push(subitem.value);
+            return res;
+          }
+        }
+      }
+    }
+    return res;
+  };
 
   render() {
     const parentMethods = {
@@ -522,7 +843,7 @@ class ModifyApplication extends PureComponent {
       form: {getFieldDecorator},
       loading,
     } = this.props;
-    const {applicantName, agentName, payerName  , checkProject, cargos, agentContacts, applicantContacts, company ,placeName} = this.state;
+    const {applicantName, agentName, payerName  , checkProject, cargos, agentContacts, applicantContacts, company ,placeName,isCustoms,customsOption,} = this.state;
     const uploadButton = (
       <div>
         <Icon type="plus" />
@@ -544,7 +865,7 @@ class ModifyApplication extends PureComponent {
         <Card bordered={false} className={styles.card}>
           <Row gutter={16}>
             <Col span={2}>
-              <Button type="primary" onClick={this.validate}>提交</Button>
+              <Button type="primary" onClick={this.validate}>保存</Button>
             </Col>
             <Col span={2}>
               <Button type="primary" onClick={this.back}>返回</Button>
@@ -563,12 +884,13 @@ class ModifyApplication extends PureComponent {
                   colon={false}
                 >
                   {getFieldDecorator('certcode', {
-                    rules: [{required: true, message: '请选择检验机构'}]
+                    rules:[{required: true, message: '请选择检验机构'}]
                   })(
                     <Select
                       // showSearch
                       placeholder="请选择检验机构"
                       filterOption={false}
+                      // onSearch={this.handleApplicantSearch}
                       onChange={this.onCertCodeChange}
                     >
                       {companyOptions}
@@ -576,8 +898,69 @@ class ModifyApplication extends PureComponent {
                   )}
                 </Form.Item>
               </Col>
-              <Col span={12} />
+              <Col span={12}>
+                <Form.Item> <div style={{color:'grey',paddingLeft:10}}>说明：可在下面列表搜索后选取</div></Form.Item>
+              </Col>
             </Row>
+            <Row gutter={16}>
+              <Col span={10}>
+                <Form.Item
+                  label={fieldLabels.iscostoms}
+                  labelCol={{span: 10}}
+                  wrapperCol={{span: 14}}
+                  colon={false}
+                >
+                  {getFieldDecorator('iscostoms', {
+                    initialValue:0,
+                    rules: [],
+                  })(
+                    <Radio.Group onChange={this.changeIsCustoms}>
+                      <Radio value={0}>不需要</Radio>
+                      <Radio value={1}>需要</Radio>
+                    </Radio.Group>
+                  )}
+                </Form.Item>
+              </Col>
+              <Col span={7}>
+                <Form.Item
+                  label={fieldLabels.customsName}
+                  labelCol={{span: 4}}
+                  wrapperCol={{span: 19}}
+                  colon={false}
+                >
+                  {getFieldDecorator('customsName', {
+                  })(
+                    <Cascader options={customsOption} disabled={!isCustoms} placeholder="请选择隶属关名称" onChange={this.onChangeCustomsNameValue} />
+                  )}
+                </Form.Item>
+              </Col>
+              <Col span={7}>
+                <Form.Item
+                  label={fieldLabels.customsNo}
+                  labelCol={{span: 6}}
+                  wrapperCol={{span: 18}}
+                  colon={false}
+                >
+                  {getFieldDecorator('customsNo', {
+                    rules: [
+                      {
+                        validator: this.getRepeatCustomsNo,
+                      },
+                    ],
+                  })(<Input disabled={!isCustoms} placeholder="请输入报告号" />)}
+                </Form.Item>
+              </Col>
+            </Row>
+
+            <div className={styles.tableListForm}>{this.renderSimpleForm()}</div>
+            <Table
+              size="middle"
+              loading={loading}
+              dataSource={company}
+              columns={this.columnsCompany}
+              rowKey="keyno"
+              pagination={{showQuickJumper:true,showSizeChanger:true}}
+            />
           </Form>
         </Card>
         <Card title="业务信息" className={styles.card} bordered={false}>
@@ -630,7 +1013,7 @@ class ModifyApplication extends PureComponent {
                   wrapperCol={{span: 18}}
                   colon={false}
                 >
-                  {getFieldDecorator('applicanttel', {})(<Input style={{width: '100%'}} placeholder="请输入手机"/>)}
+                  {getFieldDecorator('applicanttel', {})(<Input style={{width: '100%'}} placeholder="请输入手机" />)}
                 </Form.Item>
               </Col>
             </Row>

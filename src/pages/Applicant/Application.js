@@ -413,9 +413,7 @@ class Application extends PureComponent {
       if (!(formValues.inspwaymemo1 === undefined || formValues.inspwaymemo1 === null)) {
         form.setFieldsValue({ 'inspwaymemo1': formValues.inspwaymemo1 });
       }
-      if (!(formValues.iscostoms === undefined || formValues.iscostoms === null)) {
-        form.setFieldsValue({ 'iscostoms': formValues.iscostoms });
-      }
+
       if (!(formValues.customsNo === undefined || formValues.customsNo === null)) {
         form.setFieldsValue({ 'customsNo': formValues.customsNo });
       }
@@ -855,6 +853,8 @@ class Application extends PureComponent {
     }
   };
 
+
+
   renderSimpleForm() {
     const simple = Form.create()
     {
@@ -1033,7 +1033,6 @@ class Application extends PureComponent {
               pagination={{showQuickJumper:true,showSizeChanger:true}}
             />
           </Form>
-
         </Card>
         <Card title="业务信息" className={styles.card} bordered={false}>
           <Form hideRequiredMark labelAlign="left">

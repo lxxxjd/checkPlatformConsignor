@@ -240,6 +240,7 @@ class DetailForAccept extends Component {
             <Descriptions.Item label="自编号">{report.reportno20}</Descriptions.Item>
             <Descriptions.Item label="业务分类">{report.businesssort}</Descriptions.Item>
             <Descriptions.Item label="执行部门">{report.section}</Descriptions.Item>
+            <Descriptions.Item label="报关号">{report.customsNo}</Descriptions.Item>
             <Descriptions.Item label="海关部门">{report.customsName}</Descriptions.Item>
 
           </Descriptions>
