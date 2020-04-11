@@ -1188,6 +1188,8 @@ class ModifyApplication extends PureComponent {
                   })(
                     <Select placeholder="请选择">
                       <Option value="公吨">公吨</Option>
+<Option value="立方米">立方米</Option>
+<Option value="桶">桶</Option>
                       <Option value="包">包</Option>
                       <Option value="千克">千克</Option>
                       <Option value="个">个</Option>

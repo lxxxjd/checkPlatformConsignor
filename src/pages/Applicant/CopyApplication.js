@@ -209,7 +209,6 @@ class CopyApplication extends PureComponent {
               'inspplace1':placecodes
             });
           }
-          console.log(report);
           form.setFieldsValue({
             'certcode': response.data.certcode,
             'unit': response.data.unit,
@@ -229,6 +228,19 @@ class CopyApplication extends PureComponent {
             'inspway': response.data.inspway.split(" "),
             'inspwaymemo1': response.data.inspwaymemo1,
           });
+          if (!(response.data.customsNo === undefined || response.data.customsNo === null)) {
+            form.setFieldsValue({ 'customsNo': response.data.customsNo });
+          }
+          if (!(response.data.iscostoms === undefined || response.data.iscostoms === null)) {
+            this.setState({isCustoms:true});
+            if (!(response.data.customsName === undefined || response.data.customsName === null)) {
+              form.setFieldsValue({
+                'iscostoms': 1,
+                'customsName': this.getCustomsArr(response.data.customsName),
+              });
+              this.okHandle();
+            }
+          }
           dispatch({
             type: 'applicant/getCheckProject',
             payload: {
@@ -1219,6 +1231,8 @@ class CopyApplication extends PureComponent {
                   })(
                     <Select placeholder="请选择">
                       <Option value="公吨">公吨</Option>
+<Option value="立方米">立方米</Option>
+<Option value="桶">桶</Option>
                       <Option value="包">包</Option>
                       <Option value="千克">千克</Option>
                       <Option value="个">个</Option>
