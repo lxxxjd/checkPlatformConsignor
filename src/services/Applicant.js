@@ -33,7 +33,12 @@ export async function getPremaininfoList(params) {
 }
 
 export async function returnReadRecord(params) {
-  return request(`/api/readrecord/returnReadRecord?reportno=${params.reportno}&reader=${params.reader}&company=${params.company}&organization=${params.organization}`);
+  return request(`/api/readrecord/returnReadRecordByCustoms`,{
+    method: 'POST',
+    data: {
+      ...params,
+    },
+  });
 }
 
 export async function addEvaluation(params) {
@@ -41,7 +46,6 @@ export async function addEvaluation(params) {
     method: 'POST',
     data: {
       ...params,
-      method: 'post',
     },
   });
 }
