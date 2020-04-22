@@ -338,7 +338,7 @@ class Accept extends PureComponent {
     return (
       <Form onSubmit={this.handleSearch} layout="inline">
         <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
-          <Col md={3} sm={20}>
+          <Col md={5} sm={20}>
             <Form.Item
               labelCol={{ span: 5 }}
               wrapperCol={{ span: 6 }}
@@ -357,7 +357,7 @@ class Accept extends PureComponent {
               )}
             </Form.Item>
           </Col>
-          <Col md={8} sm={20}>
+          <Col md={10} sm={20}>
             {kindValue === "certCode" ?
               [
                 <FormItem>
@@ -376,7 +376,7 @@ class Accept extends PureComponent {
             }
           </Col>
 
-          <Col md={8} sm={20}>
+          <Col md={6} sm={20}>
             <span className={styles.submitButtons}>
               <Button type="primary" htmlType="submit">
                 查询
