@@ -227,6 +227,7 @@ class UnAccept extends PureComponent {
               )}
             </Form.Item>
           </Col>
+
           <Col md={10} sm={20}>
             {kindValue === "p.certcode" ?
               [
