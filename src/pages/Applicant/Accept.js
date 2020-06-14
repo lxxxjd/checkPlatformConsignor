@@ -217,6 +217,7 @@ class Accept extends PureComponent {
 
   previewItem = text => {
     sessionStorage.setItem('reportno',text.reportno);
+    sessionStorage.setItem('accept_namec',text.namec);
     router.push({
       pathname:'/Applicant/DetailForAccept',
     });
@@ -350,6 +351,7 @@ class Accept extends PureComponent {
               })(
                 <Select placeholder="搜索类型" onChange={this.onChangeKind}>
                   <Option value="certCode">检验机构</Option>
+                  <Option value="applicant">委托人</Option>
                   <Option value="shipname">船名标识</Option>
                   <Option value="chineselocalname">货名</Option>
                   <Option value="overallstate">状态</Option>
