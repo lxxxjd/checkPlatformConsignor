@@ -806,6 +806,7 @@ class Application extends PureComponent {
   };
 
   onChangeCustomsNameValue = e => {
+    console.log("test");
     const{form} = this.props;
     const kind =  form.getFieldValue('kind');
     const value =  form.getFieldValue('value');

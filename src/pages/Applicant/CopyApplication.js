@@ -228,9 +228,9 @@ class CopyApplication extends PureComponent {
             'inspway': response.data.inspway.split(" "),
             'inspwaymemo1': response.data.inspwaymemo1,
           });
-          if (!(response.data.customsNo === undefined || response.data.customsNo === null)) {
-            form.setFieldsValue({ 'customsNo': response.data.customsNo });
-          }
+          // if (!(response.data.customsNo === undefined || response.data.customsNo === null)) {
+          //   form.setFieldsValue({ 'customsNo': response.data.customsNo });
+          // }
           if (!(response.data.iscostoms === undefined || response.data.iscostoms === null)) {
             this.setState({isCustoms:true});
             if (!(response.data.customsName === undefined || response.data.customsName === null)) {
