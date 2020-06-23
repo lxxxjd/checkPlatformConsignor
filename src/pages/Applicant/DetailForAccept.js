@@ -199,6 +199,7 @@ class DetailForAccept extends Component {
       loading
     } = this.props;
     const { showVisible ,url, cnasInfo,report,records} = this.state;
+    const accept_namec = sessionStorage.getItem('accept_namec');
     return (
       <PageHeaderWrapper loading={loading}>
         <Card bordered={false}>
@@ -234,14 +235,12 @@ class DetailForAccept extends Component {
             <Descriptions.Item label="联系人">{report.agentname}</Descriptions.Item>
             <Descriptions.Item label="联系电话">{report.agenttel}</Descriptions.Item>
             <Descriptions.Item label="付款人">{report.payer}</Descriptions.Item>
-            <Descriptions.Item label="业务来源">{report.businesssource}</Descriptions.Item>
-            <Descriptions.Item label="贸易方式">{report.tradeway}</Descriptions.Item>
             <Descriptions.Item label="证书要求" >{report.certstyle}</Descriptions.Item>
-            <Descriptions.Item label="自编号">{report.reportno20}</Descriptions.Item>
-            <Descriptions.Item label="业务分类">{report.businesssort}</Descriptions.Item>
             <Descriptions.Item label="执行部门">{report.section}</Descriptions.Item>
+            <Descriptions.Item label="检验机构">{accept_namec}</Descriptions.Item>
             <Descriptions.Item label="报关号">{report.customsNo}</Descriptions.Item>
             <Descriptions.Item label="海关部门">{report.customsName}</Descriptions.Item>
+
 
           </Descriptions>
           <Divider style={{ marginBottom: 32 }} />
@@ -249,7 +248,7 @@ class DetailForAccept extends Component {
             <Descriptions.Item label="货名">{report.cargoname}</Descriptions.Item>
             <Descriptions.Item label="中文俗名">{report.chineselocalname}</Descriptions.Item>
             <Descriptions.Item label="船名标识">{report.shipname}</Descriptions.Item>
-            <Descriptions.Item label="申报数量和单位">{((report.quantityd === undefined || report.quantityd === null ) ? "":report.quantityd+report.unit ) }</Descriptions.Item>
+            <Descriptions.Item label="申报数量">{((report.quantityd === undefined || report.quantityd === null ) ? "":report.quantityd+report.unit ) }</Descriptions.Item>
             <Descriptions.Item label="检验时间">{moment(report.inspdate).format('YYYY-MM-DD')}</Descriptions.Item>
             <Descriptions.Item label="检查港口">{report.inspplace2}</Descriptions.Item>
             <Descriptions.Item label="到达地点">{(report.inspplace1===undefined||report.inspplace1===null)?"":this.getPlaceFromCode(report.inspplace1)}</Descriptions.Item>
