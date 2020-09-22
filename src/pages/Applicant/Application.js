@@ -216,7 +216,18 @@ class Application extends PureComponent {
         certCode: user.certCode,
       },
       callback: (response) => {
-        this.setState({ checkProject: response })
+        if(response!==undefined){
+          const checkProjects = [];
+          for(var i=0;i<response.length;i++){
+            const result = checkProjects.find(item=>(item === response[i]));
+            if(result ===undefined){
+              checkProjects.push(response[i]);
+            }
+          }
+          this.setState({ checkProject: checkProjects })
+        }else{
+          this.setState({ checkProject: [] })
+        }
       }
     });
     dispatch({
@@ -358,7 +369,18 @@ class Application extends PureComponent {
             certCode: formValues.certcode,
           },
           callback: (response2) => {
-            this.setState({ checkProject: response2 });
+            if(response2!==undefined){
+              const checkProjects = [];
+              for(var i=0;i<response2.length;i++){
+                const result = checkProjects.find(item=>(item === response2[i]));
+                if(result ===undefined){
+                  checkProjects.push(response2[i]);
+                }
+              }
+              this.setState({ checkProject: checkProjects })
+            }else{
+              this.setState({ checkProject: [] })
+            }
           }
         });
       }
@@ -547,7 +569,18 @@ class Application extends PureComponent {
         certCode: value,
       },
       callback: (response) => {
-        this.setState({ checkProject: response })
+        if(response!==undefined){
+          const checkProjects = [];
+          for(var i=0;i<response.length;i++){
+            const result = checkProjects.find(item=>(item === response[i]));
+            if(result ===undefined){
+              checkProjects.push(response[i]);
+            }
+          }
+          this.setState({ checkProject: checkProjects })
+        }else{
+          this.setState({ checkProject: [] })
+        }
       }
     });
   };
