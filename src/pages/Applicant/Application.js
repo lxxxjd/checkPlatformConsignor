@@ -93,6 +93,70 @@ const fieldLabels = {
 
 };
 
+
+
+
+const RenderSimpleForm = Form.create()(props => {
+  let { form,mvalue,mkind,okHandle,handleFormReset} = props;
+
+  const mKindChange = value =>{
+    mvalue = value;
+  }
+
+  const mValueChange = e =>{
+    mkind = e.target.value;
+  }
+
+  let reset =()=>{
+    handleFormReset();
+    form.resetFields(`value`,"");
+    form.resetFields(`kind`,"namec");
+  }
+
+  return (
+    <Form onSubmit={okHandle} layout="inline">
+      <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
+        <Col md={4} sm={20}>
+          <Form.Item
+            labelCol={{ span: 5 }}
+            wrapperCol={{ span: 6 }}
+            colon={false}
+          >
+            {form.getFieldDecorator('kind', {
+              initialValue: mkind,
+              rules: [{ message: '搜索类型' }],
+            })(
+              <Select placeholder="搜索类型" onChange={mKindChange}>
+                <Option value="namec">检验机构</Option>
+                <Option value="adres">注册地址</Option>
+                <Option value="tel">咨询电话</Option>
+              </Select>
+            )}
+          </Form.Item>
+        </Col>
+        <Col md={6} sm={20}>
+          <Form.Item>
+            {form.getFieldDecorator('value', {
+              initialValue: mvalue,
+              rules: [{ message: '搜索数据' }],
+            })(<Input placeholder="请输入" onChange={mValueChange} />)}
+          </Form.Item>
+        </Col>
+
+        <Col span={7}>
+            <span className={styles.submitButtons}>
+              <Button type="primary" htmlType="submit">
+                查询
+              </Button>
+              <Button style={{ marginLeft: 12 }} onClick={reset()}>重置查询</Button>
+            </span>
+        </Col>
+      </Row>
+    </Form>
+  );
+});
+
+
 function getBase64(file) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
@@ -128,6 +192,8 @@ class Application extends PureComponent {
     customsOption: [],
     isCustoms: false,
     dataSource: [],
+    mkind:"namec",
+    mvalue:"",
   };
 
   columns = [
@@ -257,15 +323,6 @@ class Application extends PureComponent {
     //     this.setState({cargos: response})
     //   }
     // });
-    dispatch({
-      type: 'applicant/searchAllCompanyListForContact',
-      payload: {
-        // certCode: user.certCode,
-      },
-      callback: (response) => {
-        this.setState({ company: response.data })
-      }
-    });
 
     dispatch({
       type: 'applicant/getCustomInfos',
@@ -328,6 +385,8 @@ class Application extends PureComponent {
           }
         });
         this.setState({ isCustoms: false });
+        this.setState({ mvalue: "" });
+        this.setState({ mkind: "namec" });
       }
     });
   };
@@ -351,11 +410,12 @@ class Application extends PureComponent {
     const { form } = this.props;
     const formValues = {
       isCustoms:this.state.isCustoms,
+      mkind:this.state.mkind,
+      mvalue:this.state.mvalue,
       ...form.getFieldsValue(),
     };
     sessionStorage.setItem("applicationFormValues", JSON.stringify(formValues));
   };
-
   setFormInfo = () => {
     const { form, dispatch } = this.props;
     const applicationFormValues = sessionStorage.getItem("applicationFormValues");
@@ -438,14 +498,43 @@ class Application extends PureComponent {
 
       if (!(formValues.customsNo === undefined || formValues.customsNo === null)) {
         form.setFieldsValue({ 'customsNo': formValues.customsNo });
+        this.setState({ company: formValues.company })
       }
       if (!(formValues.customsName === undefined || formValues.customsName === null)) {
         form.setFieldsValue({ 'customsName': formValues.customsName });
       }
       if (!(formValues.iscostoms === undefined || formValues.iscostoms === null)) {
-        this.setState({isCustoms:true})
+        this.setState({ isCustoms: true })
         form.setFieldsValue({ 'iscostoms': formValues.iscostoms });
       }
+      if (!(formValues.mkind === undefined || formValues.mkind === null)) {
+        this.setState({ mkind: formValues.mkind })
+      }
+      if (!(formValues.mvalue === undefined || formValues.mvalue === null)) {
+        this.setState({ mvalue: formValues.mvalue })
+      }
+
+      const kind =  form.getFieldValue('kind');
+      const value =  form.getFieldValue('value');
+      const iscostoms =  form.getFieldValue('iscostoms');
+      const customsNameItem =   form.getFieldValue('customsName');
+      if(iscostoms===1&&customsNameItem!==undefined && customsNameItem.length!==0){
+        const values={
+          kind,
+          value,
+          iscostoms,
+          customsCompany:customsNameItem[1],
+        };
+        this.handleSearch(values);
+      }else{
+        const values={
+          kind,
+          value,
+          iscostoms,
+        };
+        this.handleSearch(values);
+      }
+
       this.forceUpdate();
     }
   };
@@ -844,25 +933,9 @@ class Application extends PureComponent {
       }
   };
 
-  handleFormReset = () => {
-    const { dispatch,form} = this.props;
-    dispatch({
-      type: 'applicant/searchAllCompanyListForContact',
-      payload: {
-        // certCode: user.certCode,
-      },
-      callback: (response) => {
-        this.setState({ company: response.data });
-      }
-    });
-    form.resetFields(`value`,undefined);
-    form.resetFields(`iscostoms`,0);
-    form.resetFields(`customsName`,undefined);
-    this.setState({ isCustoms: false });
-  };
+
 
   onChangeCustomsNameValue = e => {
-    console.log("test");
     const{form} = this.props;
     const kind =  form.getFieldValue('kind');
     const value =  form.getFieldValue('value');
@@ -910,57 +983,22 @@ class Application extends PureComponent {
     }
   };
 
-
-
-  renderSimpleForm() {
-    const simple = Form.create()
-    {
-      const {
-        form
-      } = this.props;
-      return (
-        <Form onSubmit={this.okHandle} layout="inline">
-          <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
-            <Col md={4} sm={20}>
-              <Form.Item
-                labelCol={{ span: 5 }}
-                wrapperCol={{ span: 6 }}
-                colon={false}
-              >
-                {form.getFieldDecorator('kind', {
-                  initialValue: "namec",
-                  rules: [{ message: '搜索类型' }],
-                })(
-                  <Select placeholder="搜索类型">
-                    <Option value="namec">检验机构</Option>
-                    <Option value="adres">注册地址</Option>
-                    <Option value="tel">咨询电话</Option>
-                  </Select>
-                )}
-              </Form.Item>
-            </Col>
-            <Col md={6} sm={20}>
-              <Form.Item>
-                {form.getFieldDecorator('value', { rules: [{ message: '搜索数据' }], })(<Input placeholder="请输入"/>)}
-              </Form.Item>
-            </Col>
-
-            <Col span={7}>
-            <span className={styles.submitButtons}>
-              <Button type="primary" htmlType="submit">
-                查询
-              </Button>
-              <Button style={{ marginLeft: 12 }} onClick={this.handleFormReset}>重置查询</Button>
-            </span>
-            </Col>
-          </Row>
-        </Form>
-      );
-    }
-    return simple();
-  }
-
-
+  handleFormReset = () => {
+    const {dispatch,form} = this.props;
+    dispatch({
+      type: 'applicant/searchAllCompanyListForContact',
+      payload: {
+        // certCode: user.certCode,
+      },
+      callback: (response) => {
+        this.setState({ company: response.data });
+      }
+    });
+    form.resetFields(`iscostoms`,0);
+    form.resetFields(`customsName`,undefined);
+    this.setState({ isCustoms: false });
+    sessionStorage.setItem("applicationFormValues", undefined);
+  };
 
   render() {
     const parentMethods = {
@@ -972,6 +1010,7 @@ class Application extends PureComponent {
       form: {getFieldDecorator},
       loading,
     } = this.props;
+    const {dispatch,form} = this.props;
     const {applicantName, agentName, payerName  , checkProject, cargos, agentContacts, applicantContacts, visible, company , isCustoms,customsOption,fileList,tempFileList,placeName} = this.state;
     const uploadButton = (
       <div>
@@ -1080,7 +1119,7 @@ class Application extends PureComponent {
               </Col>
             </Row>
 
-            <div className={styles.tableListForm}>{this.renderSimpleForm()}</div>
+            <div className={styles.tableListForm}><RenderSimpleForm mvalue={this.state.mvalue} mkind={this.state.mkind} handleFormReset = {this.handleFormReset} /></div>
             <Table
               size="middle"
               loading={loading}
