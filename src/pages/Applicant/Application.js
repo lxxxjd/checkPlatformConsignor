@@ -764,14 +764,17 @@ class Application extends PureComponent {
   };
 
   handleSearch = (values)=> {
-    const{dispatch} = this.props;
+    const{dispatch,form} = this.props;
     if(values.iscostoms===1 && values.customsCompany!==undefined && values.customsCompany.length!==0){
       dispatch({
         type: 'applicant/searchCompanyList',
         payload: values,
         callback: (response) => {
           if (response) {
-            this.setState({ company: response.data })
+            this.setState({ company: response.data });
+            console.log(this.state.company);
+            console.log(form.getFieldValue("certcode"));
+            //const oneitem = areaOptions.find(item => item.value === onelevel );
           }
         }
       });
@@ -781,7 +784,9 @@ class Application extends PureComponent {
           payload: values,
           callback: (response) => {
             if (response) {
-              this.setState({ company: response.data })
+              this.setState({ company: response.data });
+              console.log(this.state.company);
+              console.log(form.getFieldValue("certcode"));
             }
           }
         });
