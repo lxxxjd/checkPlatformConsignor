@@ -772,9 +772,20 @@ class Application extends PureComponent {
         callback: (response) => {
           if (response) {
             this.setState({ company: response.data });
-            console.log(this.state.company);
-            console.log(form.getFieldValue("certcode"));
-            //const oneitem = areaOptions.find(item => item.value === onelevel );
+            const certcode = form.getFieldValue("certcode");
+            if(certcode !== undefined){
+              if(this.state.company !== undefined && this.state.company.length!==0) {
+                const result = this.state.company.find(item=>(item.certcode === certcode));
+                if(result === undefined){
+                  console.log("setFieldsValue4");
+                  form.setFieldsValue({ 'certcode': undefined });
+                }
+              }else{
+                console.log("setFieldsValue3");
+                form.setFieldsValue({ 'certcode': undefined });
+              }
+            }
+
           }
         }
       });
@@ -785,8 +796,19 @@ class Application extends PureComponent {
           callback: (response) => {
             if (response) {
               this.setState({ company: response.data });
-              console.log(this.state.company);
-              console.log(form.getFieldValue("certcode"));
+              const certcode = form.getFieldValue("certcode");
+              if(certcode !== undefined){
+                if(this.state.company !== undefined && this.state.company.length!==0) {
+                  const result = this.state.company.find(item=>(item.certcode === certcode));
+                  if(result === undefined){
+                    console.log("setFieldsValue1");
+                    form.setFieldsValue({ 'certcode': undefined });
+                  }
+                }else{
+                  console.log("setFieldsValue2");
+                  form.setFieldsValue({ 'certcode': undefined });
+                }
+              }
             }
           }
         });
