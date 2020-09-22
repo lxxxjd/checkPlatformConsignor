@@ -777,11 +777,9 @@ class Application extends PureComponent {
               if(this.state.company !== undefined && this.state.company.length!==0) {
                 const result = this.state.company.find(item=>(item.certcode === certcode));
                 if(result === undefined){
-                  console.log("setFieldsValue4");
                   form.setFieldsValue({ 'certcode': undefined });
                 }
               }else{
-                console.log("setFieldsValue3");
                 form.setFieldsValue({ 'certcode': undefined });
               }
             }
@@ -801,11 +799,9 @@ class Application extends PureComponent {
                 if(this.state.company !== undefined && this.state.company.length!==0) {
                   const result = this.state.company.find(item=>(item.certcode === certcode));
                   if(result === undefined){
-                    console.log("setFieldsValue1");
                     form.setFieldsValue({ 'certcode': undefined });
                   }
                 }else{
-                  console.log("setFieldsValue2");
                   form.setFieldsValue({ 'certcode': undefined });
                 }
               }
