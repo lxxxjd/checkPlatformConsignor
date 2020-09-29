@@ -205,7 +205,8 @@ class Application extends PureComponent {
       title: '操作',
       render: (text, record) => (
         <Fragment>
-          <a onClick={() => this.deleteItem(text, record)}>删除</a>
+          <a onClick={() => this.deleteItem(text, record)}>删除 &nbsp;&nbsp;</a>
+          <a onClick={() => this.previewItem(text, record)}>预览</a>
         </Fragment>
       ),
     },
@@ -620,6 +621,17 @@ class Application extends PureComponent {
     }
     this.setState({ tempFileList: files });
     this.forceUpdate();
+  };
+
+
+  previewItem = text => {
+    let files = this.state.tempFileList;
+    for (let file in files) {
+      if (files[file].name === text.name) {
+        console.log(files[file].thumbUrl)
+        break;
+      }
+    }
   };
 
   onChange = e => {
@@ -1119,7 +1131,7 @@ class Application extends PureComponent {
               </Col>
             </Row>
 
-            <div className={styles.tableListForm}><RenderSimpleForm mvalue={this.state.mvalue} mkind={this.state.mkind} handleFormReset = {this.handleFormReset} /></div>
+            <div className={styles.tableListForm}></div>
             <Table
               size="middle"
               loading={loading}
