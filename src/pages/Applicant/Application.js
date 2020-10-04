@@ -950,7 +950,6 @@ class Application extends PureComponent {
     sessionStorage.setItem("applicationFormValues", undefined);
   };
 
-
   renderSimpleForm() {
     const simple = Form.create()
     {
@@ -1120,7 +1119,7 @@ class Application extends PureComponent {
               </Col>
             </Row>
 
-            <div className={styles.tableListForm}>{this.renderSimpleForm()}</div>
+            <div className={styles.tableListForm}></div>
             <Table
               size="middle"
               loading={loading}
