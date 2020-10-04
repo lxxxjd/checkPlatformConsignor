@@ -93,6 +93,8 @@ const fieldLabels = {
 
 };
 
+
+
 function getBase64(file) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
@@ -128,6 +130,8 @@ class Application extends PureComponent {
     customsOption: [],
     isCustoms: false,
     dataSource: [],
+    mkind:"namec",
+    mvalue:"",
   };
 
   columns = [
@@ -139,7 +143,8 @@ class Application extends PureComponent {
       title: '操作',
       render: (text, record) => (
         <Fragment>
-          <a onClick={() => this.deleteItem(text, record)}>删除</a>
+          <a onClick={() => this.deleteItem(text, record)}>删除 &nbsp;&nbsp;</a>
+          <a onClick={() => this.previewItem(text, record)}>预览</a>
         </Fragment>
       ),
     },
@@ -257,15 +262,6 @@ class Application extends PureComponent {
     //     this.setState({cargos: response})
     //   }
     // });
-    dispatch({
-      type: 'applicant/searchAllCompanyListForContact',
-      payload: {
-        // certCode: user.certCode,
-      },
-      callback: (response) => {
-        this.setState({ company: response.data })
-      }
-    });
 
     dispatch({
       type: 'applicant/getCustomInfos',
@@ -328,6 +324,8 @@ class Application extends PureComponent {
           }
         });
         this.setState({ isCustoms: false });
+        this.setState({ mvalue: "" });
+        this.setState({ mkind: "namec" });
       }
     });
   };
@@ -351,11 +349,12 @@ class Application extends PureComponent {
     const { form } = this.props;
     const formValues = {
       isCustoms:this.state.isCustoms,
+      mkind:this.state.mkind,
+      mvalue:this.state.mvalue,
       ...form.getFieldsValue(),
     };
     sessionStorage.setItem("applicationFormValues", JSON.stringify(formValues));
   };
-
   setFormInfo = () => {
     const { form, dispatch } = this.props;
     const applicationFormValues = sessionStorage.getItem("applicationFormValues");
@@ -438,14 +437,43 @@ class Application extends PureComponent {
 
       if (!(formValues.customsNo === undefined || formValues.customsNo === null)) {
         form.setFieldsValue({ 'customsNo': formValues.customsNo });
+        this.setState({ company: formValues.company })
       }
       if (!(formValues.customsName === undefined || formValues.customsName === null)) {
         form.setFieldsValue({ 'customsName': formValues.customsName });
       }
       if (!(formValues.iscostoms === undefined || formValues.iscostoms === null)) {
-        this.setState({isCustoms:true})
+        this.setState({ isCustoms: true })
         form.setFieldsValue({ 'iscostoms': formValues.iscostoms });
       }
+      if (!(formValues.mkind === undefined || formValues.mkind === null)) {
+        this.setState({ mkind: formValues.mkind })
+      }
+      if (!(formValues.mvalue === undefined || formValues.mvalue === null)) {
+        this.setState({ mvalue: formValues.mvalue })
+      }
+
+      const kind =  form.getFieldValue('kind');
+      const value =  form.getFieldValue('value');
+      const iscostoms =  form.getFieldValue('iscostoms');
+      const customsNameItem =   form.getFieldValue('customsName');
+      if(iscostoms===1&&customsNameItem!==undefined && customsNameItem.length!==0){
+        const values={
+          kind,
+          value,
+          iscostoms,
+          customsCompany:customsNameItem[1],
+        };
+        this.handleSearch(values);
+      }else{
+        const values={
+          kind,
+          value,
+          iscostoms,
+        };
+        this.handleSearch(values);
+      }
+
       this.forceUpdate();
     }
   };
@@ -531,6 +559,17 @@ class Application extends PureComponent {
     }
     this.setState({ tempFileList: files });
     this.forceUpdate();
+  };
+
+
+  previewItem = text => {
+    let files = this.state.tempFileList;
+    for (let file in files) {
+      if (files[file].name === text.name) {
+        console.log(files[file].thumbUrl)
+        break;
+      }
+    }
   };
 
   onChange = e => {
@@ -821,48 +860,32 @@ class Application extends PureComponent {
         }
       });
     } else{
-        dispatch({
-          type: 'applicant/searchAllCompanyListForContact',
-          payload: values,
-          callback: (response) => {
-            if (response) {
-              this.setState({ company: response.data });
-              const certcode = form.getFieldValue("certcode");
-              if(certcode !== undefined){
-                if(this.state.company !== undefined && this.state.company.length!==0) {
-                  const result = this.state.company.find(item=>(item.certcode === certcode));
-                  if(result === undefined){
-                    form.setFieldsValue({ 'certcode': undefined });
-                  }
-                }else{
+      dispatch({
+        type: 'applicant/searchAllCompanyListForContact',
+        payload: values,
+        callback: (response) => {
+          if (response) {
+            this.setState({ company: response.data });
+            const certcode = form.getFieldValue("certcode");
+            if(certcode !== undefined){
+              if(this.state.company !== undefined && this.state.company.length!==0) {
+                const result = this.state.company.find(item=>(item.certcode === certcode));
+                if(result === undefined){
                   form.setFieldsValue({ 'certcode': undefined });
                 }
+              }else{
+                form.setFieldsValue({ 'certcode': undefined });
               }
             }
           }
-        });
-      }
+        }
+      });
+    }
   };
 
-  handleFormReset = () => {
-    const { dispatch,form} = this.props;
-    dispatch({
-      type: 'applicant/searchAllCompanyListForContact',
-      payload: {
-        // certCode: user.certCode,
-      },
-      callback: (response) => {
-        this.setState({ company: response.data });
-      }
-    });
-    form.resetFields(`value`,undefined);
-    form.resetFields(`iscostoms`,0);
-    form.resetFields(`customsName`,undefined);
-    this.setState({ isCustoms: false });
-  };
+
 
   onChangeCustomsNameValue = e => {
-    console.log("test");
     const{form} = this.props;
     const kind =  form.getFieldValue('kind');
     const value =  form.getFieldValue('value');
@@ -910,6 +933,22 @@ class Application extends PureComponent {
     }
   };
 
+  handleFormReset = () => {
+    const {dispatch,form} = this.props;
+    dispatch({
+      type: 'applicant/searchAllCompanyListForContact',
+      payload: {
+        // certCode: user.certCode,
+      },
+      callback: (response) => {
+        this.setState({ company: response.data });
+      }
+    });
+    form.resetFields(`iscostoms`,0);
+    form.resetFields(`customsName`,undefined);
+    this.setState({ isCustoms: false });
+    sessionStorage.setItem("applicationFormValues", undefined);
+  };
 
 
   renderSimpleForm() {
@@ -928,7 +967,7 @@ class Application extends PureComponent {
                 colon={false}
               >
                 {form.getFieldDecorator('kind', {
-                  initialValue: "namec",
+                  initialValue: this.state.mkind,
                   rules: [{ message: '搜索类型' }],
                 })(
                   <Select placeholder="搜索类型">
@@ -941,7 +980,8 @@ class Application extends PureComponent {
             </Col>
             <Col md={6} sm={20}>
               <Form.Item>
-                {form.getFieldDecorator('value', { rules: [{ message: '搜索数据' }], })(<Input placeholder="请输入"/>)}
+                {form.getFieldDecorator('value', { initialValue: this.state.mvalue,
+                  rules: [{ message: '搜索数据' }], })(<Input placeholder="请输入" />)}
               </Form.Item>
             </Col>
 
@@ -961,7 +1001,6 @@ class Application extends PureComponent {
   }
 
 
-
   render() {
     const parentMethods = {
       handleOk:this.handleOk,
@@ -972,6 +1011,7 @@ class Application extends PureComponent {
       form: {getFieldDecorator},
       loading,
     } = this.props;
+    const {dispatch,form} = this.props;
     const {applicantName, agentName, payerName  , checkProject, cargos, agentContacts, applicantContacts, visible, company , isCustoms,customsOption,fileList,tempFileList,placeName} = this.state;
     const uploadButton = (
       <div>
@@ -1316,8 +1356,8 @@ class Application extends PureComponent {
                   })(
                     <Select placeholder="请选择">
                       <Option value="公吨">公吨</Option>
-<Option value="立方米">立方米</Option>
-<Option value="桶">桶</Option>
+                      <Option value="立方米">立方米</Option>
+                      <Option value="桶">桶</Option>
                       <Option value="包">包</Option>
                       <Option value="千克">千克</Option>
                       <Option value="个">个</Option>
@@ -1430,15 +1470,15 @@ class Application extends PureComponent {
               <Button style={{ marginBottom: 12 }} type="primary" onClick={this.show}>上传文件</Button>
             </Col>
           </Row>
-        <Modal
+          <Modal
             title="文件上传"
             visible={visible}
             onOk={this.handleOk}
             onCancel={this.handleCancel}
-         >
-          <Form.Item label="文件上传">
-                {getFieldDecorator('MultipartFile', {
-                  rules: visible ?[{required: true, message: '请输入文件上传'}]:[],
+          >
+            <Form.Item label="文件上传">
+              {getFieldDecorator('MultipartFile', {
+                rules: visible ?[{required: true, message: '请输入文件上传'}]:[],
               })(
                 <Upload
                   listType="picture-card"
@@ -1450,16 +1490,16 @@ class Application extends PureComponent {
                   {fileList.length >= 1 ? null : uploadButton}
                 </Upload>
               )}
-              </Form.Item>
-              <Form.Item label="文件名称">
-                {getFieldDecorator('filename', {
-                  rules: visible ? [{required: true, message: '请输入文件名称'}]:[],
+            </Form.Item>
+            <Form.Item label="文件名称">
+              {getFieldDecorator('filename', {
+                rules: visible ? [{required: true, message: '请输入文件名称'}]:[],
               })(
                 <Input style={{width: '100%'}} placeholder="请输入文件名称"/>
               )}
             </Form.Item>
-        </Modal>
-        <Table
+          </Modal>
+          <Table
             size="middle"
             loading={loading}
             dataSource={tempFileList}
