@@ -355,6 +355,7 @@ class Application extends PureComponent {
     };
     sessionStorage.setItem("applicationFormValues", JSON.stringify(formValues));
   };
+
   setFormInfo = () => {
     const { form, dispatch } = this.props;
     const applicationFormValues = sessionStorage.getItem("applicationFormValues");
@@ -443,7 +444,7 @@ class Application extends PureComponent {
         form.setFieldsValue({ 'customsName': formValues.customsName });
       }
       if (!(formValues.iscostoms === undefined || formValues.iscostoms === null)) {
-        this.setState({ isCustoms: true })
+        this.setState({ isCustoms: formValues.iscostoms })
         form.setFieldsValue({ 'iscostoms': formValues.iscostoms });
       }
       if (!(formValues.mkind === undefined || formValues.mkind === null)) {
@@ -473,7 +474,6 @@ class Application extends PureComponent {
         };
         this.handleSearch(values);
       }
-
       this.forceUpdate();
     }
   };

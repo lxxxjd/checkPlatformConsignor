@@ -217,6 +217,7 @@ isValidDate =date=> {
     this.setState({visible:false});
   };
 
+
   renderSimpleForm() {
     const {
       form: { getFieldDecorator },
@@ -245,7 +246,7 @@ isValidDate =date=> {
               wrapperCol={{ span: 20 }}
               colon={false}
             >
-              {getFieldDecorator('randomcode',{rules: [{ message: '请输入密码' }],})(<Input.Password placeholder="请输入密码" />)}
+              {getFieldDecorator('randomcode',{rules: [{ message: '请输入密码' }],})(<Input type="password" name="password" autoComplete="new-password" placeholder="请输入密码" />)}
             </FormItem>
           </Col>
 

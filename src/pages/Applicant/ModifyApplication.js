@@ -205,10 +205,6 @@ class ModifyApplication extends PureComponent {
             },
             callback: (response2) => {
               this.setState({checkProject: response2});
-              const placecodes=[];
-              placecodes.push(`${response.data.inspplace1.substring(0,2)}0000`);
-              placecodes.push(`${response.data.inspplace1.substring(0,4)}00`);
-              placecodes.push(response.data.inspplace1);
               form.setFieldsValue({
                 'certcode': response.data.certcode,
                 'unit': response.data.unit,
@@ -223,12 +219,18 @@ class ModifyApplication extends PureComponent {
                 'inspdate': moment(response.data.inspdate, "YYYY-MM-DD"),
                 'quantityd': response.data.quantityd,
                 'chineselocalname': response.data.chineselocalname,
-                'inspplace1': placecodes,
                 'inspplace2': response.data.inspplace2,
                 'applicantname':response.data.applicantname,
                 'inspway': response.data.inspway.split(" "),
                 'inspwaymemo1': response.data.inspwaymemo1,
               });
+              if(response.data.inspplace1!==undefined && response.data.inspplace1 !== null){
+                const placecodes=[];
+                placecodes.push(`${response.data.inspplace1.substring(0,2)}0000`);
+                placecodes.push(`${response.data.inspplace1.substring(0,4)}00`);
+                placecodes.push(response.data.inspplace1);
+                form.setFieldsValue({ 'inspplace1': placecodes });
+              }
               if (!(response.data.customsNo === undefined || response.data.customsNo === null)) {
                 form.setFieldsValue({ 'customsNo': response.data.customsNo });
               }
