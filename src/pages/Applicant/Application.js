@@ -26,8 +26,8 @@ import { formatMessage } from 'umi-plugin-react/locale';
 import {connect} from 'dva';
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
 import moment from 'moment'
-import areaOptions from './areaOptions'
 import router from 'umi/router';
+import areaOptions from './areaOptions'
 import styles from '../table.less';
 
 
@@ -201,9 +201,9 @@ class Application extends PureComponent {
 
   componentDidMount() {
     const { form } = this.props;
-    form.setFieldsValue({ ['unit']: "公吨" });
+    form.setFieldsValue({ 'unit': "公吨" });
     const now = moment().format("YYYY-MM-DD HH:mm:ss");
-    form.setFieldsValue({ ['inspdate']: moment(now, "YYYY-MM-DD HH:mm:ss") });
+    form.setFieldsValue({ 'inspdate': moment(now, "YYYY-MM-DD HH:mm:ss") });
     const user = JSON.parse(localStorage.getItem("consignor_userinfo"));
     const { dispatch } = this.props;
     dispatch({
@@ -272,6 +272,15 @@ class Application extends PureComponent {
     });
 
     this.setFormInfo();
+    dispatch({
+      type: 'applicant/searchAllCompanyListForContact',
+      payload: {
+        // certCode: user.certCode,
+      },
+      callback: (response) => {
+        this.setState({ company: response.data });
+      }
+    });
   }
 
   componentWillUnmount() {
@@ -506,7 +515,7 @@ class Application extends PureComponent {
               },
               callback: (response) => {
                 if (response.code === 200) {
-                  let formData = new FormData();
+                  const formData = new FormData();
                   const user = JSON.parse(localStorage.getItem("consignor_userinfo"));
                   tempFileList.forEach(file => {
                     formData.append('files', file.originFileObj);
@@ -521,7 +530,7 @@ class Application extends PureComponent {
                         notification.open({
                           message: '添加成功',
                         });
-                        //sessionStorage.setItem('prereportno',response.data);
+                        // sessionStorage.setItem('prereportno',response.data);
                         router.push({
                           pathname: '/Applicant/UnAccept',
                         });
@@ -550,8 +559,8 @@ class Application extends PureComponent {
   };
 
   deleteItem = text => {
-    let files = this.state.tempFileList;
-    for (let file in files) {
+    const files = this.state.tempFileList;
+    for (const file in files) {
       if (files[file].name === text.name) {
         files.splice(file, 1);
         break;
@@ -563,8 +572,8 @@ class Application extends PureComponent {
 
 
   previewItem = text => {
-    let files = this.state.tempFileList;
-    for (let file in files) {
+    const files = this.state.tempFileList;
+    for (const file in files) {
       if (files[file].name === text.name) {
         console.log(files[file].thumbUrl)
         break;
@@ -578,9 +587,9 @@ class Application extends PureComponent {
     });
     const { form } = this.props;
     if (this.state.value === 1) {
-      form.setFieldsValue({ ['payer']: form.getFieldValue('applicant') });
+      form.setFieldsValue({ 'payer': form.getFieldValue('applicant') });
     } else {
-      form.setFieldsValue({ ['payer']: form.getFieldValue('agent') });
+      form.setFieldsValue({ 'payer': form.getFieldValue('agent') });
     }
   };
 
@@ -733,7 +742,7 @@ class Application extends PureComponent {
         title: '只能上传JPG 、JPEG 、GIF、 PNG、 PDF格式的图片~',
       });
       return;
-    } else if (!size) {
+    } if (!size) {
       Modal.error({
         title: '超过20M限制，不允许上传~',
       });
@@ -747,7 +756,7 @@ class Application extends PureComponent {
     const {
       form
     } = this.props;
-    form.setFieldsValue({ ['filename']: val });
+    form.setFieldsValue({ 'filename': val });
     this.setState({ fileList });
   };
 
@@ -985,12 +994,12 @@ class Application extends PureComponent {
             </Col>
 
             <Col span={7}>
-            <span className={styles.submitButtons}>
-              <Button type="primary" htmlType="submit">
+              <span className={styles.submitButtons}>
+                <Button type="primary" htmlType="submit">
                 查询
-              </Button>
-              <Button style={{ marginLeft: 12 }} onClick={this.handleFormReset}>重置查询</Button>
-            </span>
+                </Button>
+                <Button style={{ marginLeft: 12 }} onClick={this.handleFormReset}>重置查询</Button>
+              </span>
             </Col>
           </Row>
         </Form>
@@ -1069,7 +1078,7 @@ class Application extends PureComponent {
                 <Form.Item> <div style={{color:'grey',paddingLeft:10}}>说明：可在下面列表搜索后选取</div></Form.Item>
               </Col>
             </Row>
-            <Row gutter={16}>
+            <Row gutter={16} hidden>
               <Col span={10}>
                 <Form.Item
                   label={fieldLabels.iscostoms}
@@ -1119,7 +1128,7 @@ class Application extends PureComponent {
               </Col>
             </Row>
 
-            <div className={styles.tableListForm}></div>
+            <div className={styles.tableListForm} />
             <Table
               size="middle"
               loading={loading}
@@ -1180,7 +1189,7 @@ class Application extends PureComponent {
                   wrapperCol={{span: 18}}
                   colon={false}
                 >
-                  {getFieldDecorator('applicanttel', {})(<Input style={{width: '100%'}} placeholder="请输入手机"/>)}
+                  {getFieldDecorator('applicanttel', {})(<Input style={{width: '100%'}} placeholder="请输入手机" />)}
                 </Form.Item>
               </Col>
             </Row>
@@ -1243,7 +1252,7 @@ class Application extends PureComponent {
                   colon={false}
                 >
                   {getFieldDecorator('payer', {
-                    //rules: [{required: true, message: '请输入付款人'}],
+                    // rules: [{required: true, message: '请输入付款人'}],
                   })(
                     <AutoComplete
                       className="global-search"
@@ -1305,8 +1314,7 @@ class Application extends PureComponent {
                       onSearch={this.cargoSearch}
                       placeholder="请输入货物名称"
                     >
-                      <Input
-                      />
+                      <Input />
                     </AutoComplete>
 
                   )}
@@ -1457,7 +1465,7 @@ class Application extends PureComponent {
                   wrapperCol={{span: 22}}
                   colon={false}
                 >
-                  {getFieldDecorator('inspwaymemo1', {})(<TextArea style={{minHeight: 32}} rows={5}  placeholder="申请品质时，请简要说明品质指标要求" />)}
+                  {getFieldDecorator('inspwaymemo1', {})(<TextArea style={{minHeight: 32}} rows={5} placeholder="申请品质时，请简要说明品质指标要求" />)}
                 </Form.Item>
               </Col>
             </Row>
@@ -1494,7 +1502,7 @@ class Application extends PureComponent {
               {getFieldDecorator('filename', {
                 rules: visible ? [{required: true, message: '请输入文件名称'}]:[],
               })(
-                <Input style={{width: '100%'}} placeholder="请输入文件名称"/>
+                <Input style={{width: '100%'}} placeholder="请输入文件名称" />
               )}
             </Form.Item>
           </Modal>

@@ -904,7 +904,7 @@ class ModifyApplication extends PureComponent {
                 <Form.Item> <div style={{color:'grey',paddingLeft:10}}>说明：可在下面列表搜索后选取</div></Form.Item>
               </Col>
             </Row>
-            <Row gutter={16}>
+            <Row gutter={16} hidden>
               <Col span={10}>
                 <Form.Item
                   label={fieldLabels.iscostoms}
