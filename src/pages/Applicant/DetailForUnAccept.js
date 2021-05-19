@@ -70,27 +70,40 @@ class DetailForUnAccept extends Component {
       }
     });
   }
+
   previewItem = text => {
     const { dispatch } = this.props;
-    dispatch({
-      type: 'applicant/getOssPdf',
-      payload:{
-        osspath:text.filepath
-      },
-      callback:(response) =>{
-        if(response.code === 400){
-          notification.open({
-            message: '打开失败',
-            description:response.data,
-          });
-        }else{
-          const url = response.data;
-          this.setState({url:url});
-          //window.open(url);
+    const osspath = text.filepath
+    if(osspath === undefined || osspath === null){
+      return;
+    }
+    var extension = osspath.substring(osspath.lastIndexOf(".")+1);
+    if(extension==="pdf"){
+      dispatch({
+        type: 'applicant/getOssPdf',
+        payload:{
+          osspath
+        },
+        callback:(response) =>{
+          console.log(response);
+          if(response.code === 400){
+            notification.open({
+              message: '打开失败',
+              description:response.data,
+            });
+          }else{
+            const url = response.data;
+            this.setState({url:url});
+            console.log(url);
+            window.open(url);
+          }
         }
-      }
-    });
-    this.setState({showVisible:true});
+      });
+    }else{
+      const picUrl = `https://www.smlq.vip/api/cert_report/getFileStream?osspath=${osspath}`;
+      window.open(picUrl);
+    }
+    // this.setState({showVisible:true});
   };
 
   handleOk = e => {
@@ -179,7 +192,8 @@ class DetailForUnAccept extends Component {
             style={{ top: 10 }}
             width={800}
           >
-            <embed src={url} width="700" height="700" type="application/pdf" />
+            {/*<embed src={url} width="700" height="700" type="application/pdf" />*/}
+            <image src={url} />
           </Modal>
           <Divider style={{ marginBottom: 32 }} />
           <Descriptions size="large" title="业务信息" style={{ marginBottom: 32 }} bordered>

@@ -2,7 +2,7 @@ import {getAllClientName,getCheckProject,getCargos,getContacts,
   searchCargos,getCompanyList,upload,getPremaininfoList, addPremaininfo,getPremaininfo,deletePremaininfo,getReportByConfigor,getPreRecord,
   deletePreRecord,getReportByRandomCode,follow,unfollow, getOssPdf, updatePremaininfo, getReportInfo ,
   getRecordInfo,getCnasInfo,getAllMan,getConfigorPlaceList, addEvaluation, getCertFiles, getPdfByOssPath,
-  addReadRecord, getApplyReason, returnReadRecord,getBusiness, getConfigorCargoList, getCerFilesByRandomCode,getCustomInfos,getRepeatCustomsNo} from '@/services/Applicant';
+  addReadRecord, getApplyReason, returnReadRecord,getBusiness, getConfigorCargoList, getCerFilesByRandomCode,getCustomInfos,getRepeatCustomsNo,getFileStream} from '@/services/Applicant';
 import{searchPlaceByPlaceCode} from '@/services/manage';
 import{searchCompanyList,searchAllCompanyListForContact} from '@/services/company';
 
@@ -146,6 +146,10 @@ export default {
     },
     *getOssPdf({ payload ,callback}, { call, put }) {
       const response = yield call(getOssPdf, payload);
+      if (callback) callback(response);
+    },
+    *getFileStream({ payload ,callback}, { call, put }) {
+      const response = yield call(getFileStream, payload);
       if (callback) callback(response);
     },
     *follow({ payload ,callback}, { call, put }) {

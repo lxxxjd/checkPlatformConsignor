@@ -10,6 +10,11 @@ export async function getPdfByOssPath(params) {
   return request(`/api/cert_report/get_pdf?osspath=${params.osspath}`);
 }
 
+export async function getFileStream(params) {
+  return request(`/api/cert_report/getFileStream?osspath=${params.osspath}`);
+}
+
+
 export async function getReportInfo(params) {
   return request(`/api/report/get_report?reportNo=${params.reportno}`);
 }
